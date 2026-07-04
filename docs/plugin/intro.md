@@ -31,13 +31,13 @@ description: MCP-плагин для Cursor, Claude Code и Codex, которы�
 
 ## Как это работает технически
 
-Плагин — это remote MCP-сервер по адресу `https://mcp.preview.layero.ru/mcp`, работающий по транспорту [Streamable HTTP](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#streamable-http).
+Плагин — это remote MCP-сервер по адресу `https://mcp.layero.ru/mcp`, работающий по транспорту [Streamable HTTP](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#streamable-http).
 
 ```
 [ Cursor / Claude Code ]
          │ JSON-RPC over HTTPS
          ▼
-[ mcp.preview.layero.ru ]   ← MCP-сервер на Python (FastMCP)
+[ mcp.layero.ru ]   ← MCP-сервер на Python (FastMCP)
          │
          ├── tools: compose_landing, add_integration, deploy, list_design_systems, list_structures
          ├── prompts: welcome, make_premium, make_friendly, integrate_telegram, ...

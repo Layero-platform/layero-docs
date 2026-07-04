@@ -14,7 +14,7 @@ description: Один клик в Cursor через deeplink, copy-paste ком�
 Install MCP Server
   Name:      layero
   Transport: http
-  URL:       https://mcp.preview.layero.ru/mcp
+  URL:       https://mcp.layero.ru/mcp
 
   [Cancel]   [Install]
 ```
@@ -28,7 +28,7 @@ Install MCP Server
 ```
 cursor://anysphere.cursor-deeplink/mcp/install
   ?name=layero
-  &config=<base64({"url":"https://mcp.preview.layero.ru/mcp","type":"http"})>
+  &config=<base64({"url":"https://mcp.layero.ru/mcp","type":"http"})>
 ```
 
 Cursor парсит base64, валидирует и применяет.
@@ -49,7 +49,7 @@ Cursor парсит base64, валидирует и применяет.
 В Codex нет URL-протокола И нет встроенного маркетплейса. Установка — одна команда в терминале:
 
 ```bash
-codex mcp add layero --url https://mcp.preview.layero.ru/mcp --transport http
+codex mcp add layero --url https://mcp.layero.ru/mcp --transport http
 ```
 
 Перезапусти Codex, чтобы он перечитал `~/.codex/config.toml`.
@@ -62,7 +62,7 @@ codex mcp add layero --url https://mcp.preview.layero.ru/mcp --transport http
 {
   "mcpServers": {
     "layero": {
-      "url": "https://mcp.preview.layero.ru/mcp",
+      "url": "https://mcp.layero.ru/mcp",
       "transport": "http"
     }
   }
