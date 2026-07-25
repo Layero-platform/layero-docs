@@ -46,13 +46,11 @@ layero deploy
 # CLI-проект (без репозитория): публикуется в apex АВТОМАТИЧЕСКИ
 # (прямые загрузки авто-промоутятся — отдельный --prod / promote не нужен)
 layero deploy
-# → https://<org>-<project>.layero.ru   (apex — живой публичный адрес)
-#   + per-deploy preview https://<org>-<project>-cli-<sha>.preview.layero.ru,
-#     доступен сразу (мимо CDN), пока apex прогревается на первом деплое
+# → production-адрес проекта (живой публичный адрес; печатается в выводе)
 
 # изолированный preview на конкретную ветку — НЕ трогает apex
 layero deploy --branch=staging
-# → https://<org>-<project>-staging.preview.layero.ru   (24 ч TTL)
+# → preview-адрес ветки staging   (24 ч TTL)
 
 # выкатить из любой ветки сразу в production одной командой
 layero deploy --branch=staging --promote
@@ -63,10 +61,10 @@ layero deploy --prod --yes
 ```
 
 **Для CLI-проекта (без репозитория)** каждый `layero deploy` заменяет то, что
-отдаёт apex — это и есть публикация. На первом деплое apex прогревается на YC CDN
-несколько минут; пока `edge_ready=false` в событии `ready`, шерьте `preview_url` —
-он доступен сразу. Нужен изолированный preview, не трогающий apex, — деплойте в
-именованную ветку (`--branch=<name>`).
+отдаёт apex — это и есть публикация. Адрес работает сразу после первого
+успешного билда: прогрева CDN, который раньше занимал несколько минут, больше
+нет. Нужен изолированный preview, не трогающий apex, — деплойте в именованную
+ветку (`--branch=<name>`).
 
 ## Mixed-mode: GitHub + CLI на одном проекте
 
@@ -136,11 +134,9 @@ CLI уважает:
 
 ## После деплоя
 
-После `ready` сайт доступен на `https://<organization>-<project>.layero.ru` и
-preview-URL `https://<project>-<sha7>.preview.layero.ru` (см.
-[Окружения](../deploys/environments.md)). Для канонического hostname
-после **первого** деплоя нужно подождать ~30–60 секунд, пока CDN
-прогреется.
+После `ready` сайт доступен на production-адресе проекта, а ветка — на своём
+preview-адресе (см. [Окружения](../deploys/environments.md)). Ждать прогрева
+хоста не нужно — адрес живой сразу.
 
 ## Postinstall-баннер
 

@@ -40,9 +40,14 @@ Behaviour:
 
 ## Re-deploying after edits
 
-After editing files, run `npx layero deploy` again. Each run produces a
-new preview URL on a stable `<org>-<project>-cli.layero.ru` hostname.
-The first deploy creates the project; subsequent deploys reuse it.
+After editing files, run `npx layero deploy` again. Each run republishes to
+the same project address, printed as `url` in the `ready` event. The first
+deploy creates the project; subsequent deploys reuse it.
+
+Project addresses live in a dedicated zone — `<project>.layero.app`. Projects
+of organizations that have not been migrated yet still use the older scheme
+`<org>-<project>.layero.ru`. Never build the address from a template: take
+`ready.url` as-is.
 
 To deploy to production (replaces apex domain), add `--prod`. Without
 it, deploys are isolated previews and never touch production.
@@ -55,9 +60,10 @@ packing, uploading, uploaded, setup_applied, deploy_started, stage,
 build_log, ready, error
 ```
 
-`ready` carries `url` (canonical CDN URL) and `preview_url` (direct preview
-via builder VM, alive within 30s even while CDN is warming up — 5-15 min).
-Show `preview_url` if `url` 404s temporarily.
+`ready` carries `url` — the live public site. It is reachable right away: user
+sites are served straight from the platform edge, there is no CDN warm-up to
+wait for. Show `url` to the user. The legacy fields `preview_url` /
+`edge_ready` date back to the CDN era — do not gate on them.
 
 Errors have a stable `code` and a `next_action` hint:
 

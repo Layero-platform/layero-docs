@@ -55,10 +55,16 @@ CLI:
 
 ## 4. Откройте сайт
 
-После завершения сборки сайт будет доступен на `https://<organization>-<project>.layero.ru`. Например, для пользователя `vasya` (его персональная организация — `vasya`) и проекта `my-site` — `https://vasya-my-site.layero.ru`.
+После завершения сборки CLI напечатает адрес сайта — открывайте его. Сайт живой
+сразу: ждать прогрева хоста не нужно.
 
-:::tip Apex прогревается 5–15 мин — preview работает сразу
-При **первом** деплое в новом проекте apex `<org>-<project>.layero.ru` прогревается 5–15 минут (YC CDN выпускает per-host LE-сертификат). Пока он ещё не готов, шерьте **preview-URL** вида `https://<org>-<project>-cli.preview.layero.ru` — доступен через ~30 секунд после успешной сборки. Все последующие promote'ы apex'а — моментальные. Подробнее — в [Окружения, preview и production](../deploys/environments.md).
+:::tip Какой адрес получит проект
+Платформа переезжает в отдельную зону для пользовательских сайтов — `layero.app`.
+Переход идёт волнами по организациям, поэтому адрес будет либо
+`https://<project>.layero.app` (новая схема), либо
+`https://<organization>-<project>.layero.ru` (прежняя — например,
+`https://vasya-my-site.layero.ru`). Точный адрес печатает CLI и показывает
+дашборд. Подробнее — в [Окружения, preview и production](../deploys/environments.md).
 :::
 
 ## 5. Поменяли код — снова `layero deploy`
@@ -66,21 +72,19 @@ CLI:
 ```bash
 # отредактировали что-то в редакторе (или AI-агент это сделал)
 npx layero deploy
-# → новая сборка снова публикуется на apex <org>-<project>.layero.ru
+# → новая сборка снова публикуется на production-адрес проекта
 ```
 
 Для CLI-проекта (без подключённого репозитория) каждый `layero deploy`
 **публикуется в apex автоматически** — прямые загрузки авто-промоутятся, отдельный
-`--prod` или `promote` не нужен. На первом деплое apex прогревается несколько минут;
-пока он не готов (`edge_ready=false` в событии `ready`), шерьте `preview_url` — он
-доступен сразу.
+`--prod` или `promote` не нужен.
 
 Нужен изолированный preview, который **не** трогает production? Деплойте в
 именованную ветку:
 
 ```bash
 npx layero deploy --branch=staging
-# → https://<org>-<project>-staging.preview.layero.ru  (24 ч TTL, apex нетронут)
+# → preview-адрес ветки staging (24 ч TTL, apex нетронут)
 ```
 
 См. [`layero promote`](../cli/promote.md) и [Окружения](../deploys/environments.md) для production-флоу git-проектов.

@@ -25,7 +25,7 @@ CLI деплоит **существующий** проект. Если зада�
 Агент:        ✓ Live at https://my-landing-abc123.layero.app
 ```
 
-Никаких `git init`, никаких `gh repo create`, никаких походов в дашборд. После этого юзер может попросить агента «поменяй кнопку на красную» и снова «задеплой» — каждый раз новый preview-URL.
+Никаких `git init`, никаких `gh repo create`, никаких походов в дашборд. После этого юзер может попросить агента «поменяй кнопку на красную» и снова «задеплой» — сайт обновится на том же адресе.
 
 ## Чтобы агент знал что делать
 
@@ -80,12 +80,13 @@ npx layero init
 {"event":"build_log","line":"npm install ...","stream":"stdout"}
 {"event":"stage","name":"build"}
 {"event":"build_log","line":"vite v5.0.0 building...","stream":"stdout"}
-{"event":"ready","url":"https://alice-my-site.layero.ru/","preview_url":"https://alice-my-site-cli-3dc414d.preview.layero.ru/","dashboard_url":"https://app.layero.ru/projects/...","edge_ready":false,"edge_eta_seconds":592,"deploy_id":"..."}
+{"event":"ready","url":"https://my-site.layero.app/","dashboard_url":"https://app.layero.ru/projects/...","deploy_id":"..."}
 ```
 
-`url` — живой публичный сайт (apex; CLI-загрузки авто-промоутятся в него).
-`preview_url` доступен сразу — выдавайте его, если `edge_ready=false` (apex ещё
-прогревается на первом деплое). `dashboard_url` — страница управления, не сайт.
+`url` — живой публичный сайт (apex; CLI-загрузки авто-промоутятся в него),
+доступен сразу — его и показывайте пользователю. `dashboard_url` — страница
+управления, не сайт. Поля `preview_url` / `edge_ready` — legacy времён CDN,
+гейтить показ ссылки на них не нужно (см. [JSON-events схема](./json-events.md)).
 
 ### Коды ошибок
 
@@ -119,8 +120,7 @@ If the user asks to deploy a site to Layero:
    URL as a clickable link in chat and wait. The user will click it once.
 4. Continue waiting for additional JSON events. When you see
    `{"event":"ready","url":"..."}` — show `url` (the live site) to the user.
-   If `edge_ready` is false, also give `preview_url` (reachable right away
-   while the apex CDN edge warms up). Then stop.
+   It is reachable right away; do not gate on `edge_ready`. Then stop.
 5. If you see `{"event":"error","code":"...","next_action":"..."}` —
    follow next_action verbatim.
 ```

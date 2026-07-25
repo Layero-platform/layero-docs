@@ -67,7 +67,9 @@ client-x            team      (member)
 * **personal** — ваш личный аккаунт, создаётся при регистрации
 * **team** — команда, создаётся вручную (на дашборде или при `layero deploy --org=...`)
 
-Slug используется как префикс в hostname'ах: `<org>-<project>.layero.ru`.
+В прежней схеме имён slug организации был префиксом hostname'а
+(`<org>-<project>.layero.ru`). В новой зоне `layero.app` адрес состоит из
+одного слага проекта — см. [Окружения, preview и production](../deploys/environments.md).
 
 ## `layero projects list`
 
@@ -108,7 +110,7 @@ npx layero deploys list --limit 50            # больше истории
 
 ## `layero promote`
 
-Перевести production apex `<org>-<project>.layero.ru` на конкретный ready-деплой. Подробно — [`layero promote`](./promote.md).
+Перевести production apex проекта на конкретный ready-деплой. Подробно — [`layero promote`](./promote.md).
 
 ```bash
 npx layero promote                        # default-ветка → последний ready

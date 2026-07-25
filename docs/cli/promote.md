@@ -6,7 +6,7 @@ description: Перевести production apex на конкретный деп
 
 # `layero promote`
 
-Перевести production apex `<org>-<project>.layero.ru` на указанный деплой. Двигает указатель `production_deploy_id` — без пересборки, апекс начинает отдавать новый артефакт через ~30–60 секунд (время CDN cache propagation).
+Перевести production apex проекта на указанный деплой. Двигает указатель `production_deploy_id` — без пересборки, апекс начинает отдавать новый артефакт практически сразу (задержку даёт только короткий кеш на edge, до минуты).
 
 ## Зачем
 
@@ -52,7 +52,7 @@ layero promote --yes
    - Атомарно обновляет `projects.production_deploy_id` (CTE захватывает старое значение в `previous_production_deploy_id` — для rollback'а).
    - Записывает `promote_events` (audit log: кто, когда, source='cli', prev → new).
    - Инвалидирует resolver-кеш через Postgres NOTIFY.
-4. Через 30–60 сек CDN edge подтягивает новый артефакт. Старые edge-кеши обновляются по TTL.
+4. Edge подхватывает новый артефакт сразу; ранее закэшированные ответы обновляются по короткому TTL (до минуты).
 
 ## One-click rollback
 

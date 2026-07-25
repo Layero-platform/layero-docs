@@ -67,27 +67,30 @@ CLI читает `package.json` и характерные конфиги:
 # CLI-проект (без подключённого репозитория): публикуется в apex АВТОМАТИЧЕСКИ.
 # Прямые загрузки авто-промоутятся — отдельный --prod / promote не нужен.
 npx layero deploy
-# → https://<org>-<project>.layero.ru   (apex — живой публичный адрес)
-#   + per-deploy preview https://<org>-<project>-cli-<sha>.preview.layero.ru,
-#     доступен сразу (мимо CDN), пока apex прогревается на ПЕРВОМ деплое
+# → production-адрес проекта (живой публичный адрес; печатается в выводе)
 
 # изолированный preview на конкретную ветку — НЕ трогает apex
 npx layero deploy --branch=staging
-# → https://<org>-<project>-staging.preview.layero.ru   (24 ч TTL)
+# → preview-адрес ветки staging   (24 ч TTL)
 
 # выкатить из любой ветки сразу в production одной командой
 # (промоут идёт сразу после успешного билда, без полной поездки CI)
 npx layero deploy --branch=staging --promote
-# → apex: https://<org>-<project>.layero.ru теперь отдаёт этот деплой
+# → production-адрес проекта теперь отдаёт этот деплой
 
 # CI-режим: без подтверждения
 npx layero deploy --prod --yes
 ```
 
 **Для CLI-проекта (без репозитория)** каждый `layero deploy` заменяет то, что
-отдаёт apex — это и есть публикация. На первом деплое apex прогревается на YC CDN
-несколько минут (выпуск per-host LE-сертификата + пропагация); пока `edge_ready`
-в событии `ready` равен `false`, шерьте `preview_url` — он доступен сразу.
+отдаёт apex — это и есть публикация. Адрес работает сразу после первого
+успешного билда: прогрева CDN, который раньше занимал несколько минут, больше
+нет — пользовательские сайты идут напрямую на edge платформы.
+
+Конкретный вид адреса зависит от того, в какой доменной зоне живёт проект
+(`<project>.layero.app` или `<org>-<project>.layero.ru`) — см.
+[Окружения, preview и production](../deploys/environments.md). Не собирайте
+адрес по шаблону: берите его из поля `url` события `ready`.
 
 **Чем `--prod` отличается от `--promote`** (актуально для git-проектов; для прямых
 CLI-загрузок apex двигается и так):
@@ -145,11 +148,11 @@ npx layero deploy --json
 {"event":"uploading"}
 {"event":"deploy_started","deploy_id":"..."}
 {"event":"build_log","line":"...","stream":"stdout"}
-{"event":"ready","url":"https://alice-my-site.layero.ru/","preview_url":"https://alice-my-site-cli-3dc414d.preview.layero.ru/","dashboard_url":"https://app.layero.ru/projects/...","edge_ready":false,"edge_eta_seconds":592,"deploy_id":"..."}
+{"event":"ready","url":"https://my-site.layero.app/","dashboard_url":"https://app.layero.ru/projects/...","deploy_id":"..."}
 ```
 
-`url` — живой публичный сайт (apex), `preview_url` — доступен сразу, пока
-`edge_ready=false`. `dashboard_url` — страница управления, НЕ сам сайт.
+`url` — живой публичный сайт (apex), открывать нужно именно его.
+`dashboard_url` — страница управления, НЕ сам сайт.
 
 Ошибки приходят со стабильным `code` и `next_action`:
 
@@ -159,7 +162,7 @@ npx layero deploy --json
 
 > Не залогинены? `layero deploy` сам запустит device-flow (событие `auth_required` → клик по ссылке → poll), отдельный `layero login` не нужен.
 
-В событии `ready`: `url` — **живой публичный сайт**. Для CLI-проекта это apex `https://<org>-<project>.layero.ru` (прямые загрузки авто-промоутятся); для деплоя в именованную ветку — preview-форма. `preview_url` — per-deploy preview (`*.preview.layero.ru`), отдаётся мимо CDN и доступен **сразу**; шерьте его, пока `edge_ready=false` (apex прогревается на первом деплое, `edge_eta_seconds` — оценка остатка). `dashboard_url` — страница управления, **не** сам сайт.
+В событии `ready`: `url` — **живой публичный сайт**. Для CLI-проекта это production-адрес (прямые загрузки авто-промоутятся); для деплоя в именованную ветку — preview-адрес ветки. Показывайте пользователю именно `url` — он работает сразу. `dashboard_url` — страница управления, **не** сам сайт. Про legacy-поля `preview_url` / `edge_ready` — [JSON-events схема](./json-events.md).
 
 JSON-режим включается автоматически когда CLI запущен внутри Cursor / Claude Code / любого процесса с не-TTY stdout. Подробнее — [Деплой из AI-агентов](./agents.md), полный список событий — [JSON-events схема](./json-events.md).
 
@@ -206,14 +209,14 @@ CLI уважает:
 - **Сеть**: разрешён исходящий HTTPS к npm-зеркалу, GitHub, реестрам пакетов (npm, yarn) и S3. Произвольные внешние эндпоинты с этапа сборки недоступны — это защищает чужие билды от случайного или вредоносного трафика. Если вашему билду нужен доступ к закрытому реестру или CDN, напишите в поддержку.
 - **Изоляция**: gVisor (`runsc`) + seccomp + drop-all capabilities + read-only rootfs. Сборки разных проектов не видят друг друга и не имеют доступа к инфраструктуре Layero.
 
-Среда не персистентна между билдами: всё, что вы записали в `/tmp` или `/mnt/scratch`, исчезает после завершения. Артефакты в `output_dir` (`dist` по умолчанию) загружаются в S3 и попадают в CDN.
+Среда не персистентна между билдами: всё, что вы записали в `/tmp` или `/mnt/scratch`, исчезает после завершения. Артефакты в `output_dir` (`dist` по умолчанию) загружаются в объектное хранилище, откуда их и раздаёт edge платформы.
 
 ## После деплоя
 
 После `ready`:
 
-- **Preview-URL** `https://<org>-<project>-<...>.preview.layero.ru` доступен через ~30 сек, отдаётся мимо CDN, работает 24 часа.
-- **Apex** `https://<org>-<project>.layero.ru` отдаёт этот деплой, если он стал production: для CLI-проекта (без репозитория) это происходит автоматически на каждом `layero deploy`; для git-проекта — через auto-promote default-ветки или `--promote`. Деплой в именованную `--branch` остаётся preview и apex не трогает.
+- **Preview-URL ветки** доступен сразу после успешной сборки и работает 24 часа.
+- **Apex** (production-адрес проекта) отдаёт этот деплой, если он стал production: для CLI-проекта (без репозитория) это происходит автоматически на каждом `layero deploy`; для git-проекта — через auto-promote default-ветки или `--promote`. Деплой в именованную `--branch` остаётся preview и apex не трогает.
 
 См. [Окружения, preview и production](../deploys/environments.md) для полной картины.
 

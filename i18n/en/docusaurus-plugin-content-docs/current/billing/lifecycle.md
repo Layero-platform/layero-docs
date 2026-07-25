@@ -31,13 +31,13 @@ A suspended project:
 - **rejects new deploys** until you return to Pro.
 
 Projects within the Free limit (the 5 oldest) keep working normally and are
-served on their `*.layero.ru` addresses.
+served on their platform-issued addresses.
 
 ### Custom domain
 
 Only the **domain** is suspended — the project itself is unaffected. The DNS
 record and the domain link in Layero are kept, and the project keeps
-serving on its `*.layero.ru` address (if it's among the active ones). When
+serving on its platform-issued address (if it's among the active ones). When
 you return to Pro, the domain comes back with nothing to reconfigure.
 
 ## Data retention
@@ -76,7 +76,7 @@ within seconds.
 | Event | What happens |
 |---|---|
 | Pro ended | Account → Free; projects over 5 and custom domains suspended (not deleted) |
-| Sites on `*.layero.ru` | 5 oldest keep working; suspended ones show a placeholder (503) |
+| Sites on platform-issued addresses | 5 oldest keep working; suspended ones show a placeholder (503) |
 | Custom domain | Turned off; the project lives on, DNS and link preserved |
 | Deletion by timer | **None.** Suspended projects are kept indefinitely |
 | Paying for Pro again | Everything is restored automatically |

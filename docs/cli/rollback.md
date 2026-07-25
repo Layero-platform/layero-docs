@@ -6,7 +6,7 @@ description: Откатить production apex на предыдущий рабо
 
 # Rollback
 
-Откатить production apex `<org>-<project>.layero.ru` на **предыдущий** production-деплой. Без пересборки, без выбора commit'а — Layero запоминает прошлое значение указателя при каждом promote, и rollback просто меняет их местами.
+Откатить production apex проекта на **предыдущий** production-деплой. Без пересборки, без выбора commit'а — Layero запоминает прошлое значение указателя при каждом promote, и rollback просто меняет их местами.
 
 ## Зачем
 
@@ -35,7 +35,7 @@ projects.production_deploy_id           ── что apex отдаёт прям
 projects.previous_production_deploy_id  ── что отдавал до прошлого promote'а
 ```
 
-Rollback — это **атомарный swap** этих двух полей одним SQL-апдейтом. Apex моментально (через CDN edge cache propagation, ~30–60 сек) возвращается на прошлый рабочий билд.
+Rollback — это **атомарный swap** этих двух полей одним SQL-апдейтом. Apex возвращается на прошлый рабочий билд практически сразу — задержку даёт только короткий кеш на edge (до минуты).
 
 `previous_production_deploy_id` обновляется автоматически при каждом promote'е (UI / CLI / auto-promote), так что rollback всегда есть «куда».
 
@@ -54,7 +54,7 @@ Rollback — это **атомарный swap** этих двух полей о�
    - Атомарный swap `production_deploy_id ↔ previous_production_deploy_id`.
    - Запись в `promote_events` (action='promote', source='cli', с заметкой что это rollback).
    - Инвалидация resolver-кеша через Postgres NOTIFY.
-3. CDN propagation — 30–60 секунд, и apex отдаёт прошлую версию.
+3. Через несколько секунд (кеш на edge — до минуты) apex отдаёт прошлую версию.
 
 ## Ограничения
 
@@ -70,4 +70,4 @@ Rollback — это **атомарный swap** этих двух полей о�
 
 ## Что было раньше (до V071)
 
-В прошлой модели у каждой ветки был **свой** канонический hostname `<branch>.layero.ru`, и `layero rollback` менял `environments.active_deploy_id` per-ветка. С переходом на «один apex на проект» rollback теперь — это операция уровня проекта, не env'а. Команда `layero rollback` удалена; используйте `layero promote --rollback`.
+В прошлой модели у каждой ветки был **свой** канонический hostname, и `layero rollback` менял `environments.active_deploy_id` per-ветка. С переходом на «один apex на проект» rollback теперь — это операция уровня проекта, не env'а. Команда `layero rollback` удалена; используйте `layero promote --rollback`.

@@ -17,7 +17,7 @@ headers — например `Strict-Transport-Security`, `X-Frame-Options`,
 ## Почему через файл, а не в коде сайта
 
 У статического сайта нет вашего серверного процесса: это набор файлов,
-которые отдаёт CDN и edge-nginx Layero. HTTP response headers — часть
+которые отдаёт edge-nginx Layero. HTTP response headers — часть
 **ответа сервера**, поэтому их проставляет тот, кто отдаёт байты, а не
 сам HTML-файл. Тег `<meta http-equiv>` здесь не помогает: браузеры
 игнорируют его для `Strict-Transport-Security`, `X-Frame-Options`,
@@ -52,7 +52,7 @@ runtime-приложение (Next.js в режиме сервера, Streamlit,
 Проверить можно любым запросом с `-I`:
 
 ```bash
-curl -sI https://<org>-<project>.layero.ru/ | grep -i -E 'strict-transport|x-frame|referrer'
+curl -sI https://<адрес-вашего-проекта>/ | grep -i -E 'strict-transport|x-frame|referrer'
 ```
 
 ## Синтаксис
@@ -148,7 +148,7 @@ Layero **не** добавляет security-заголовки автомати�
 
 ## Работает и на кастомных доменах
 
-Заголовки применяются одинаково и на адресе `<org>-<project>.layero.ru`, и
+Заголовки применяются одинаково и на выданном платформой адресе проекта, и
 на подключённом [кастомном домене](./custom-domains) — правила привязаны к
 деплою, а не к конкретному хосту.
 

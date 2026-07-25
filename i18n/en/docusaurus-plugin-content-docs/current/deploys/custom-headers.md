@@ -17,7 +17,7 @@ lives in this file so the config is versioned in git next to your code.
 ## Why a file, not app code
 
 A static site has no server process of yours: it is a set of files served
-by Layero's CDN and edge nginx. HTTP response headers are part of the
+by Layero's edge nginx. HTTP response headers are part of the
 **server's response**, so they are set by whatever serves the bytes — not
 by the HTML file itself. A `<meta http-equiv>` tag does not help here:
 browsers ignore it for `Strict-Transport-Security`, `X-Frame-Options` and
@@ -50,7 +50,7 @@ Deploy — and the headers start being served on every page. Verify with any
 `-I` request:
 
 ```bash
-curl -sI https://<org>-<project>.layero.ru/ | grep -i -E 'strict-transport|x-frame|referrer'
+curl -sI https://<your-project-address>/ | grep -i -E 'strict-transport|x-frame|referrer'
 ```
 
 ## Syntax
@@ -145,7 +145,7 @@ state always reflects the latest build.
 
 ## Works on custom domains too
 
-Headers apply the same way on `<org>-<project>.layero.ru` and on a linked
+Headers apply the same way on the platform-issued project address and on a linked
 [custom domain](./custom-domains) — rules are bound to the deploy, not to a
 specific host.
 
