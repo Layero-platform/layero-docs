@@ -83,4 +83,4 @@ Space Grotesk, гигантские display-заголовки, монохром
 3. Адаптирует копирайт под реальную тему
 4. Сообщает что сделал в одном предложении
 
-Подробнее — [conversation/out-of-scope.md](https://github.com/LayeroInfra/layero/blob/main/server/prompts/conversation/out-of-scope.md).
+Подробнее — раздел [«When the user's case doesn't fit»](https://github.com/LayeroInfra/layero-claude/blob/main/SOUL.md#when-the-users-case-doesnt-fit) в SOUL.md.
