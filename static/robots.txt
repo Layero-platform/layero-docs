@@ -4,4 +4,7 @@
 User-agent: *
 Allow: /
 
+# Две локали — два sitemap. Docusaurus с i18n генерирует их раздельно,
+# общего индекса нет, поэтому объявлены оба.
 Sitemap: https://docs.layero.ru/sitemap.xml
+Sitemap: https://docs.layero.ru/en/sitemap.xml

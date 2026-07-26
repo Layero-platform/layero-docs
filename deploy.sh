@@ -71,11 +71,23 @@ fi
 INDEXNOW_KEY="305edf9b810aa739d9d8f7f022d960b2"
 echo "==> Pinging IndexNow (Yandex + Bing)"
 python3 - <<PY || true
-import json, re, urllib.request, urllib.error
+import json, os, re, urllib.request, urllib.error
 key  = "${INDEXNOW_KEY}"
 host = "docs.layero.ru"
-sitemap = open("${BUILD_DIR}/sitemap.xml", encoding="utf-8").read()
-urls = re.findall(r"<loc>([^<]+)</loc>", sitemap)
+# Docusaurus с i18n кладёт ОТДЕЛЬНЫЙ sitemap в каждую локаль: build/sitemap.xml
+# (ru) и build/en/sitemap.xml. Долгое время отправлялся только первый, и
+# 56 английских страниц не попадали в IndexNow вообще — при том, что именно
+# английская документация нужна международным краулерам.
+urls = []
+for rel in ("sitemap.xml", "en/sitemap.xml"):
+    path = os.path.join("${BUILD_DIR}", rel)
+    if not os.path.exists(path):
+        print(f"  WARN: {path} отсутствует — локаль пропущена")
+        continue
+    found = re.findall(r"<loc>([^<]+)</loc>", open(path, encoding="utf-8").read())
+    print(f"  {rel}: {len(found)} URL")
+    urls.extend(found)
+urls = list(dict.fromkeys(urls))
 payload = json.dumps({
     "host": host,
     "key": key,
