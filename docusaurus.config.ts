@@ -14,7 +14,7 @@ const config: Config = {
   url: 'https://docs.layero.ru',
   baseUrl: '/',
 
-  organizationName: 'Layero-platform',
+  organizationName: 'LayeroInfra',
   projectName: 'layero-docs',
 
   onBrokenLinks: 'throw',
@@ -37,7 +37,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           routeBasePath: '/',
           editUrl:
-            'https://github.com/Layero-platform/layero-docs/tree/main/',
+            'https://github.com/LayeroInfra/layero-docs/tree/main/',
         },
         blog: {
           showReadingTime: true,
@@ -51,7 +51,7 @@ const config: Config = {
             xslt: true,
           },
           editUrl:
-            'https://github.com/Layero-platform/layero-docs/tree/main/',
+            'https://github.com/LayeroInfra/layero-docs/tree/main/',
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -110,7 +110,7 @@ const config: Config = {
         {
           title: 'Code',
           items: [
-            {label: 'GitHub', href: 'https://github.com/Layero-platform'},
+            {label: 'GitHub', href: 'https://github.com/LayeroInfra'},
           ],
         },
       ],
