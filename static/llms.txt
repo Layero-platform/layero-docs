@@ -3,6 +3,10 @@
 > Layero is a deployment platform for static sites and SPAs (Next.js,
 > Vite, Astro, SvelteKit, Nuxt, Gatsby, CRA, Docusaurus, plain HTML).
 > It ships a local directory directly — git and GitHub are NOT required.
+> Servers are inside Russia — a Vercel/Netlify alternative for the
+> Russian market.
+
+Full expanded reference: https://layero.ru/llms-full.txt
 
 ## For AI agents: how to deploy
 
@@ -52,6 +56,34 @@ of organizations that have not been migrated yet still use the older scheme
 To deploy to production (replaces apex domain), add `--prod`. Without
 it, deploys are isolated previews and never touch production.
 
+## In CI (GitHub Actions and other pipelines)
+
+The browser sign-in above is interactive and cannot work in CI. Pipelines use
+a long-lived token instead — the user creates it at
+https://app.layero.ru/settings/cli and stores it as a repository secret:
+
+```yaml
+      - uses: LayeroInfra/deploy-action@v1
+        with:
+          token: ${{ secrets.LAYERO_TOKEN }}
+          prod: true
+```
+
+Any other CI system needs only the environment variable:
+
+```bash
+LAYERO_TOKEN=... npx layero@latest deploy --prod --yes
+```
+
+`LAYERO_TOKEN` takes priority over a local login, and `--yes` skips the
+confirmation prompt that would otherwise wait forever on a runner.
+
+Note: if the repository is already linked to a Layero project, a push builds
+it automatically and no pipeline is needed. Reach for CI only when the build
+itself needs secrets or private dependencies the platform does not have.
+
+Guide: https://docs.layero.ru/cli/github-actions
+
 ## Event types in JSON mode
 
 ```
@@ -71,10 +103,13 @@ Errors have a stable `code` and a `next_action` hint:
 {"event":"error","code":"not_logged_in","next_action":"run: layero login","message":"not authenticated"}
 ```
 
-Common codes: `not_logged_in`, `auth_expired`, `auth_timeout`, `invalid_type`,
-`project_not_found`, `project_unlinked`, `username_missing`,
+Common codes: `not_logged_in`, `auth_required`, `auth_expired`, `auth_timeout`,
+`invalid_type`, `project_not_found`, `project_unlinked`, `username_missing`,
 `org_membership_missing`, `no_organization`, `cli_deploys_disabled`,
 `deploy_failed`, `deploy_error`, `deploy_timed_out`, `internal`.
+
+`auth_required` with `next_action: set_layero_token` is the CI-only variant:
+it means the run has no credentials and no browser to get them from.
 
 Full schema with required/optional fields per event:
 https://docs.layero.ru/cli/json-events
@@ -84,6 +119,7 @@ https://docs.layero.ru/cli/json-events
 - CLI npm package: https://www.npmjs.com/package/layero
 - Docs: https://docs.layero.ru
 - Agents guide: https://docs.layero.ru/cli/agents
+- GitHub Actions guide: https://docs.layero.ru/cli/github-actions
 - JSON-events schema: https://docs.layero.ru/cli/json-events
 - Cursor rules drop-in: https://layero.ru/cursorrules
 - API base: https://api.layero.ru
