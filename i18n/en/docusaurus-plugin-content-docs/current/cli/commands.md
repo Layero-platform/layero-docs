@@ -40,8 +40,8 @@ client-x            team      (member)
 * **personal** — ваш личный аккаунт, создаётся при регистрации
 * **team** — команда, создаётся вручную (на дашборде или при `layero deploy --org=...`)
 
-В прежней схеме имён slug организации был префиксом hostname'а
-(`<org>-<project>.layero.ru`). В новой зоне `layero.app` адрес состоит из
+У проектов, созданных до переезда на `layero.app` (26 июля 2026), slug
+организации остался префиксом hostname'а; новые проекты получают адрес из
 одного слага проекта — см. [Окружения и preview-URL](../deploys/environments.md).
 
 ## `layero projects list`

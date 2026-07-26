@@ -26,7 +26,7 @@ Streamlit, Gradio и любые контейнеры с долгоживущим
 | | |
 |---|---|
 | Где хостится | Yandex Cloud, регион `ru-central1` |
-| Раздача сайтов | Собственный edge (nginx) в `ru-central1`; пользовательские зоны `*.layero.app` и `*.layero.ru` резолвятся прямо в балансировщик платформы |
+| Раздача сайтов | Собственный edge (nginx) в `ru-central1`; пользовательская зона `*.layero.app` резолвится прямо в балансировщик платформы |
 | Сертификаты | Let's Encrypt через YC Certificate Manager |
 | Хранилище артефактов | Yandex Object Storage |
 | Билд-окружение | Node.js 18 / 20 (через nvm), git |

@@ -16,7 +16,7 @@ The plan applies at the account level.
 | Price | 0 ₽ | **990 ₽/mo** |
 | Projects | up to **5** | unlimited |
 | Webhook builds | 100/mo | unlimited |
-| Serving on a platform address (`*.layero.app` / `*.layero.ru`) | ✅ | ✅ |
+| Serving on a platform address (`*.layero.app`) | ✅ | ✅ |
 | Runtime apps (SSR, Streamlit, Gradio) | ✅ | ✅ |
 | Custom domains | — | ✅ |
 | Web analytics | — | ✅ |

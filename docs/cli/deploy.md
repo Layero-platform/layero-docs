@@ -88,7 +88,7 @@ npx layero deploy --prod --yes
 нет — пользовательские сайты идут напрямую на edge платформы.
 
 Конкретный вид адреса зависит от того, в какой доменной зоне живёт проект
-(`<project>.layero.app` или `<org>-<project>.layero.ru`) — см.
+(`<project>.layero.app` или, у проектов старше 26 июля 2026, `<org>-<project>.layero.app`) — см.
 [Окружения, preview и production](../deploys/environments.md). Не собирайте
 адрес по шаблону: берите его из поля `url` события `ready`.
 

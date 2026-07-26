@@ -68,7 +68,7 @@ client-x            team      (member)
 * **team** — команда, создаётся вручную (на дашборде или при `layero deploy --org=...`)
 
 В прежней схеме имён slug организации был префиксом hostname'а
-(`<org>-<project>.layero.ru`). В новой зоне `layero.app` адрес состоит из
+(`<org>-<project>.layero.app`). У проектов, созданных после переезда, адрес состоит из
 одного слага проекта — см. [Окружения, preview и production](../deploys/environments.md).
 
 ## `layero projects list`
