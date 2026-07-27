@@ -50,7 +50,7 @@ accidental production releases right after a merge into main.
 ## A push to any other branch — preview, not production
 
 A push to any other branch creates a **preview environment** with its own URL
-(24 h TTL) — `<project>-<branch>.layero.app`, or
+— `<project>-<branch>.layero.app`, or
 `<project-label>-<branch>.layero.app` under the older scheme. The apex is
 **not touched**: production keeps serving exactly the deploy the pointer
 refers to.

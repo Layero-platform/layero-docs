@@ -49,7 +49,7 @@ and CLI uploads coexist. See [`layero deploy`](../cli/deploy).
 
 An **environment** corresponds to a branch of the repository. A push to any
 branch creates its own environment with its own deploy history and its own
-**preview URL**, valid for 24 hours.
+**preview URL** that lives as long as the branch does.
 
 A project has **one production address** — the apex. Which environment serves
 it right now is decided by `production_deploy_id` (below). That is not

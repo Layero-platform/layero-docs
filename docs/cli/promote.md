@@ -20,7 +20,7 @@ description: Перевести production apex на конкретный деп
 
 Production-флоу в Layero «как у Vercel»:
 
-1. Push в любую ветку → preview-URL ветки (24 ч TTL)
+1. Push в любую ветку → preview-URL ветки
 2. Тестируем, шерим, сравниваем
 3. Готовы выкатить — **promote** на тот ready-деплой, который проверили
 

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Environments, previews and production
-description: One stable apex per project, preview-only branches for 24 hours and an explicit promote — the Vercel-like domain model in Layero.
+description: One stable apex per project, preview links for branches and an explicit promote — the Vercel-like domain model in Layero.
 ---
 
 # Environments, previews and production
@@ -27,7 +27,7 @@ A push to any branch creates an **environment** with its own build history. An
 environment has:
 
 - `branch_name` — the git branch name (or `cli` for archive uploads);
-- its own preview URL (24 h TTL);
+- its own preview URL;
 - `active_deploy_id` — the branch's latest successful build.
 
 CLI deploys always land in the pseudo-branch `cli`, regardless of `--branch`.
@@ -82,7 +82,7 @@ Worth knowing about this zone:
 | URL | When it works | Lifetime | What for |
 |---|---|---|---|
 | Project production address | right after the first successful deploy | as long as the project lives | **The production apex** — what you show users |
-| Branch preview address | right after a successful build of the branch | **24 hours** | Branch preview — for checking and sharing |
+| Branch preview address | right after a successful build of the branch | **as long as the branch exists** | Branch preview — for checking and sharing |
 
 The per-deploy URL with a `-<sha7>` suffix existed in the old zone and is no
 longer issued: it was needed while the branch address warmed up on the CDN,
@@ -126,14 +126,19 @@ certificate at the edge and works right after a successful build.
 Preview hosts are served with `X-Robots-Tag: noindex` — search engines get the
 production address, not every branch.
 
-**24 hours** after the branch's first successful deploy the preview URL
-**stops working** (returns 404). This is deliberate, so as to:
+:::note Preview links do not expire
+A preview URL used to stop working 24 hours after the branch's first
+successful deploy, and you could extend it with a "Pin preview" button.
+Neither exists any more: the worker that retired hosts on a TTL was removed,
+and the button is gone from the UI.
 
-- not leave old demo links alive forever (legal and staleness reasons);
-- free platform resources from long-abandoned feature branches.
+Verified against live production on 27 July 2026 — preview addresses of
+branches created six and seven days earlier, with no pinning at all, return
+200. Of 579 registered hosts, 4 have been retired.
 
-If 24 hours is not enough, pin the preview through the UI ("Pin preview" on
-the environment page) — the TTL then lasts until an explicit unpin.
+The link lives as long as the branch does: deleting the branch on GitHub
+archives the environment through the `branch_deleted` webhook.
+:::
 
 ### Per-deploy URLs are gone
 

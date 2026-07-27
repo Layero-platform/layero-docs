@@ -289,7 +289,7 @@ serves.
 Once `ready` arrives:
 
 - The **branch preview URL** is available right after a successful build and
-  lives for 24 hours.
+  lives as long as the branch exists.
 - The **apex** (the project's production address) serves this deploy if it
   became production: for a CLI project (no repository) that happens
   automatically on every `layero deploy`; for a git project it happens through

@@ -22,7 +22,7 @@ minute.
 
 Layero's production flow works the way Vercel's does:
 
-1. Push to any branch → that branch's preview URL (24 h TTL)
+1. Push to any branch → that branch's preview URL
 2. Test it, share it, compare it
 3. Ready to ship — **promote** the ready deploy you just checked
 

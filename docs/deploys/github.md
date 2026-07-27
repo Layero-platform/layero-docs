@@ -51,7 +51,7 @@ default branch» → off): тогда каждый relaese — явный кли
 ## Push в другую ветку — preview, не production
 
 Push в любую другую ветку создаст **preview-окружение** с собственным
-URL (24 ч TTL) — `<project>-<branch>.layero.app` или, в прежней схеме,
+URL — `<project>-<branch>.layero.app` или, в прежней схеме,
 `<метка-проекта>-<branch>.layero.app`. Apex **не трогается** —
 production продолжает отдавать ровно тот деплой, на который указывает
 pointer.
