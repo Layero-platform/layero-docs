@@ -65,6 +65,7 @@ survive later runs and can be edited by hand.
 | `--prod` | The deploy lands on the project's default branch (the same as a push to main). If the project has auto-promote on, the apex switches to the fresh build automatically. |
 | `--promote` | After a successful build, moves `production_deploy_id` to this deploy **immediately**. Works for any branch — handy for shipping a feature branch to production in one command. |
 | `--branch <name>` | **Does not work for `deploy`** — archive uploads always land in the pseudo-branch `cli` (see below). The flag is only meaningful for `layero promote --branch`. |
+| `--prebuilt [dir]` | Ship an already-built artifact instead of building on the platform. Without an argument it picks the first existing of `dist/`, `build/`, `public/`, `out/`, `_site/`. `.gitignore` and `.layeroignore` rules are **not applied** — see the note below. |
 | `--type <preset>` | Override auto-detection: `vite`, `next`, `astro`, `cra`, `sveltekit`, `nuxt`, `gatsby`, `docusaurus`, `static`. |
 | `--name <name>` | Project name. Only on the first deploy. |
 | `--project <id_or_slug>` | Deploy into a specific project, ignoring `./.layero/project.json`. Handy for CI. |
@@ -124,6 +125,22 @@ What that means in practice:
 
 Branch previews are a git-flow feature: pushing to a branch creates the
 environment through the webhook.
+:::
+
+
+:::warning `--prebuilt` does not look at `.gitignore`
+The flag points at a **build output directory**, where source-tree rules are
+meaningless, so `.gitignore` and `.layeroignore` are not applied there. That is
+by design — but it has a flip side.
+
+`layero deploy --prebuilt .` at your project root publishes **everything that
+sits there** except the built-in denylist — including drafts and notes you hid
+via `.gitignore`. Verified on a live deploy: a `.gitignore`d file is served
+with a 200 after such a command.
+
+Secrets are still safe: `.env`, `.env.*`, `.git`, `node_modules` and the rule
+files are excluded on this path too (verified, nested directories included).
+Even so, name the directory explicitly rather than using `.`.
 :::
 
 ## Mixed mode: GitHub + CLI on one project
