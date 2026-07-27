@@ -34,5 +34,17 @@
   "sidebar.docsSidebar.category.Runtime-приложения.link.generated-index.description": {
     "message": "SSR Next.js, Streamlit, Gradio, Flask and any apps with a long-running process.",
     "description": "The generated-index page description for category 'Runtime-приложения' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.@layero — плагин для AI-IDE": {
+    "message": "@layero — the AI-IDE plugin",
+    "description": "The label for category @layero — плагин для AI-IDE in sidebar docsSidebar"
+  },
+  "sidebar.docsSidebar.category.@layero — плагин для AI-IDE.link.generated-index.title": {
+    "message": "@layero — the AI-IDE plugin",
+    "description": "The generated-index page title for category @layero — плагин для AI-IDE in sidebar docsSidebar"
+  },
+  "sidebar.docsSidebar.category.@layero — плагин для AI-IDE.link.generated-index.description": {
+    "message": "The Layero MCP plugin: build landing pages inside Cursor / Claude Code / Codex and deploy them in one move.",
+    "description": "The generated-index page description for category @layero — плагин для AI-IDE in sidebar docsSidebar"
   }
 }
