@@ -1,62 +1,83 @@
 ---
 sidebar_position: 1
-title: Деплой из GitHub
-description: Подключите репозиторий — каждый git push будет публиковать новую версию автоматически.
+title: Deploying from GitHub
+description: Connect a repository and every git push publishes a new version automatically.
 ---
 
-# Деплой из GitHub
+# Deploying from GitHub
 
-Подключите репозиторий — и каждый `git push` будет публиковать новую
-версию.
+Connect a repository and every `git push` publishes a new version.
 
-## Подключение
+## Connecting
 
-1. Залогиньтесь в [app.layero.ru](https://app.layero.ru) через **GitHub**.
-   На этапе OAuth-разрешений Layero запросит доступ к репозиториям —
-   вы можете выбрать, к каким именно.
-2. Нажмите **«Создать проект»** → **«Импортировать из GitHub»**.
-3. Выберите репозиторий и ветку. По умолчанию production-веткой
-   становится `main`.
-4. Нажмите **Deploy**. Layero склонирует код, прогонит сборку
-   и опубликует артефакты.
+1. Sign in to [app.layero.ru](https://app.layero.ru) with **GitHub**. During
+   the OAuth consent step Layero asks for repository access — you choose which
+   repositories.
+2. Press **"Create project"** → **"Import from GitHub"**.
+3. Pick the repository and the branch. `main` becomes the production branch by
+   default.
+4. Press **Deploy**. Layero clones the code, runs the build and publishes the
+   artifacts.
 
-## Что происходит на push
+## What happens on a push
 
 ```
 git push  →  GitHub webhook  →  POST /webhook/{project_id}
               │
               ▼
-        Layero создаёт деплой со SHA текущего коммита
+        Layero creates a deploy at the current commit SHA
               │
               ▼
-        Builder клонирует, ставит зависимости, собирает,
-        загружает артефакты в S3, переключает окружение.
+        The builder clones, installs dependencies, builds,
+        uploads artifacts to S3 and switches the environment.
 ```
 
-Webhook регистрируется автоматически при создании проекта. Для каждого
-проекта используется индивидуальный `webhook_secret`, подпись HMAC-SHA256
-проверяется в заголовке `X-Hub-Signature-256`.
+The webhook is registered automatically when the project is created. Each
+project uses its own `webhook_secret`, and the HMAC-SHA256 signature is
+verified from the `X-Hub-Signature-256` header.
 
-## Push в другую ветку
+## A push to the default branch — auto-promote to production
 
-Push в любую ветку, отличную от default, создаст **preview-окружение**
-с собственным hostname. Подробнее — в
-[Окружения и preview-URL](./environments.md).
+By default a successful build of the default branch becomes production
+automatically: `production_deploy_id` switches to the new deploy and the
+project's production address starts serving the fresh artifact.
 
-## Multi-provider: что если я залогинен через Яндекс ID?
+For teams this toggle is better off (Settings → "Auto-promote default branch"
+→ off): every release then becomes an explicit "Promote" click in the UI or
+[`layero promote`](../cli/promote) from the CLI. It protects against
+accidental production releases right after a merge into main.
 
-OAuth Layero поддерживает GitHub и Яндекс ID. Импорт репозиториев работает
-только для GitHub-аккаунтов. Если вы залогинены через Яндекс — добавьте
-GitHub-identity (UI: «Настройки» → «Подключённые аккаунты»), и в проекте
-появится возможность создать GitHub-источник.
+## A push to any other branch — preview, not production
 
-Альтернатива — деплоить из CLI: [`layero deploy`](../cli/deploy.md).
+A push to any other branch creates a **preview environment** with its own URL
+(24 h TTL) — `<project>-<branch>.layero.app`, or
+`<project-label>-<branch>.layero.app` under the older scheme. The apex is
+**not touched**: production keeps serving exactly the deploy the pointer
+refers to.
 
-## Первый деплой и обещание hostname
+To ship a feature branch to production without committing to main, press
+"Promote" on its latest deploy (or run `layero promote --deploy=<sha>`).
 
-После первого `ready`-деплоя:
+More on the domain model in
+[Environments, previews and production](./environments).
 
-И **preview-URL ветки**, и **канонический hostname** проекта работают сразу:
-оба покрыты wildcard-сертификатом своей зоны, регистрации хоста не требуется.
-Ожидания на 5–15 минут, которое было во времена CDN перед сайтами, больше нет
-— см. [Окружения и preview-URL](./environments.md).
+## Multi-provider: what if I signed in with Yandex ID?
+
+Layero's OAuth supports GitHub and Yandex ID. Importing repositories only
+works for GitHub accounts. If you signed in with Yandex, add a GitHub identity
+(UI: "Settings" → "Connected accounts") and the option to create a GitHub
+source will appear in the project.
+
+The alternative is deploying from the CLI: [`layero deploy`](../cli/deploy).
+
+## The first deploy and the hostname promise
+
+After the first `ready` deploy on the default branch, both the **branch
+preview URL** and the **project production address** work immediately — both
+are covered by the wildcard certificate of their zone and need no host
+registration. The 5–15 minute wait that existed back when a CDN sat in front
+of sites is gone (see
+[Environments, previews and production](./environments)).
+
+While there is no successful deploy at all, the address shows a
+**"Site coming soon"** page, so a shared link does not return a 404.
