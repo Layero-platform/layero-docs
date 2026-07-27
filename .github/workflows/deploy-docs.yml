@@ -45,6 +45,13 @@ jobs:
       - name: Install deps
         run: npm ci
 
+      # Внешние ссылки Docusaurus не проверяет вовсе — onBrokenLinks про
+      # внутренние. Из-за этого в доках жила ссылка на файл приватного
+      # репозитория, отдававшая 404 каждому читателю. Шаг валит сборку только
+      # на 404/410; 403 и таймауты (защиты от ботов, флапы) — предупреждением.
+      - name: Check external links
+        run: python3 scripts/check-external-links.py
+
       - name: Build (ru + en)
         run: npm run build
 
