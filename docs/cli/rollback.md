@@ -1,93 +1,103 @@
 ---
 sidebar_position: 6
 title: Rollback
-description: Откатить production apex на предыдущий рабочий деплой одной командой. Атомарный swap указателя, без пересборки.
+description: Как вернуть production apex на предыдущий рабочий деплой. Что делает команда rollback на самом деле и почему возвращать нужно через promote.
 ---
 
 # Rollback
 
-:::danger Проверьте, чем откатываетесь
-Проверено на живом проекте 27.07.2026:
+:::danger `layero rollback` не возвращает апекс
+Проверено на живом проекте 27.07.2026: задеплоена заведомо сломанная версия,
+дальше попытка откатиться.
 
-- **`layero promote --rollback` не существует** — CLI отвечает
-  `unknown option '--rollback'`.
-- **`layero rollback` существует**, но откатывает только окружение
-  (`environments.active_deploy_id`). Апекс продолжает отдавать сломанный
-  деплой, при этом команда рапортует «rolled back» и «CDN cache purged» —
-  то есть молча не делает то, ради чего её запускают.
-- **Рабочий способ вернуть апекс — `layero promote <commit-sha>`.** Аргумент
-  позиционный, флага `--deploy=` нет. Sha берётся из
-  `layero deploys list` (поле `commit_sha`).
+Команда печатает `rolled back to <sha>` и `CDN cache purged`, но двигает
+только `environments.active_deploy_id`. В базе после её вызова
+`production_deploy_id` остаётся на сломанном деплое — **апекс продолжает
+отдавать сломанную версию**.
 
-```bash
-layero deploys list                 # найти нужный commit_sha
-layero promote ff0d1b86 --yes       # вернуть апекс на него
-```
+Это худший вид дефекта: инструмент восстановления рапортует об успехе, не
+восстановив, и срабатывает он ровно в тот момент, когда прод уже лежит.
 :::
 
+## Рабочий способ вернуть апекс
 
-Откатить production apex проекта на **предыдущий** production-деплой. Без пересборки, без выбора commit'а — Layero запоминает прошлое значение указателя при каждом promote, и rollback просто меняет их местами.
-
-## Зачем
-
-Только что promote'нули новый билд, и оказалось, что он сломал production. Нужно мгновенно вернуть рабочую версию.
-
-Pересборка предыдущего commit'а из git-истории не сработает идемпотентно: `npm install` против сегодняшнего реестра может дать другой `node_modules` (lockfile drift, transitive republish). Rollback берёт **тот же** артефакт, что работал раньше — он уже в S3.
-
-## Использование
+Тот же `promote`, только на прошлый sha:
 
 ```bash
-# rollback: вернуть apex на предыдущий production
-layero promote --rollback
-
-# CI: без подтверждения
-layero promote --rollback --yes
+layero deploys list                 # найти commit_sha рабочего билда
+layero promote ff0d1b86 --yes       # вернуть апекс на него
 ```
 
-Это эквивалентно кнопке «Откатить production» на странице проекта в UI.
+Аргумент **позиционный**. Флага `--deploy=` не существует, команды
+`layero promote --rollback` тоже нет — CLI отвечает `unknown option`.
 
-## Как это работает
+`promote` ищет по `commit_sha`, а не по id деплоя: `promote <deploy-id>` даст
+`no deploy matching …`.
 
-Под капотом Layero хранит **два** указателя на проекте:
+## Почему не пересобрать нужный коммит
 
-```
-projects.production_deploy_id           ── что apex отдаёт прямо сейчас
-projects.previous_production_deploy_id  ── что отдавал до прошлого promote'а
-```
+Пересборка предыдущего коммита из git-истории не идемпотентна: `npm install`
+против сегодняшнего реестра может дать другой `node_modules` — lockfile drift,
+transitive republish. `promote` берёт **тот же** артефакт, который работал
+раньше: он уже лежит в S3 и не пересобирается.
 
-Rollback — это **атомарный swap** этих двух полей одним SQL-апдейтом. Apex возвращается на прошлый рабочий билд практически сразу — задержку даёт только короткий кеш на edge (до минуты).
+## Что происходит при promote на старый деплой
 
-`previous_production_deploy_id` обновляется автоматически при каждом promote'е (UI / CLI / auto-promote), так что rollback всегда есть «куда».
-
-**Стабильность ping-pong**: вызвав `layero promote --rollback` два раза подряд, вы вернётесь в исходную точку. Удобно когда хочется: откатить → проверить старую версию → вернуть новую обратно.
-
-## Что происходит
-
-1. CLI показывает план:
+1. CLI показывает план и просит подтверждения:
    ```
-   rollback plan:
+   promote plan:
      from: ce70191  2026-05-19 07:09  feature: new pricing page (current production)
-     to:   1743a29  2026-05-08 20:30  v2.4.0 — stable release   (previous production)
+     to:   1743a29  2026-05-08 20:30  v2.4.0 — stable release
    proceed? [y/N]
    ```
-2. После confirm бэкенд:
-   - Атомарный swap `production_deploy_id ↔ previous_production_deploy_id`.
-   - Запись в `promote_events` (action='promote', source='cli', с заметкой что это rollback).
-   - Инвалидация resolver-кеша через Postgres NOTIFY.
-3. Через несколько секунд (кеш на edge — до минуты) apex отдаёт прошлую версию.
+2. Бэкенд атомарно обновляет `projects.production_deploy_id`, а прошлое
+   значение забирает в `previous_production_deploy_id`; пишет
+   `promote_events` (кто, когда, source); инвалидирует resolver-кеш через
+   Postgres NOTIFY.
+3. Через несколько секунд апекс отдаёт нужную версию — задержку даёт только
+   короткий кеш на edge, до минуты.
+
+## Два указателя на проекте
+
+```
+projects.production_deploy_id           ── что апекс отдаёт прямо сейчас
+projects.previous_production_deploy_id  ── что отдавал до прошлого promote
+```
+
+`previous_production_deploy_id` обновляется при каждом promote (UI / CLI /
+auto-promote), поэтому предыдущий рабочий деплой всегда видно в истории
+промоутов: Project → Deploys → «Promote history».
 
 ## Ограничения
 
-- На проекте должен быть **минимум один** предыдущий promote — иначе rollback'у некуда (CLI вернёт ошибку с понятным сообщением).
-- Rollback двигает **production apex** проекта; preview-URL'ы веток остаются нетронутыми — у каждой ветки своя независимая история деплоев.
-- Для **runtime**-проектов (SSR Next, Streamlit, Gradio, Flask) rollback переключает указатель моментально, но running-инстанс старого билда продолжает отвечать пока его не дёрнут (cold-start на следующем запросе уже на старом артефакте).
+- Promote возможен только на `ready`-деплой с артефактом в хранилище (или
+  зарегистрированным runtime-контейнером).
+- Двигается **production apex** проекта; preview-URL веток не затрагиваются —
+  у каждой ветки своя независимая история деплоев.
+- Для **runtime**-проектов (SSR Next, Streamlit, Gradio, Flask) указатель
+  переключается моментально, но запущенный инстанс старого билда продолжает
+  отвечать, пока его не дёрнут: cold-start на следующем запросе уже возьмёт
+  нужный артефакт.
+- Если **включён** auto-promote default-ветки, следующий push в неё перетрёт
+  ручной promote. Выключите его в настройках проекта, если нужен ручной
+  контроль над production.
 
 ## Альтернативы
 
-- В UI: Project page → Production card → кнопка «Откатить».
-- Откатить **на конкретный** деплой (не предыдущий): `layero promote --deploy=<sha>`. См. [`layero promote`](./promote.md).
-- Если хочется **rebuild** прошлого коммита (а не reuse артефакта) — обычный `layero deploy` с тем кодом или Redeploy в дашборде.
+- В дашборде: страница проекта → карточка Production → кнопка «Откатить».
+  Она работает на стороне бэкенда и двигает production-указатель — в отличие
+  от CLI-команды `rollback`.
+- Если нужен именно **пересбор** старого коммита, а не переиспользование
+  артефакта — обычный `layero deploy` с тем кодом или Redeploy в дашборде.
 
-## Что было раньше (до V071)
+## Откуда взялось расхождение
 
-В прошлой модели у каждой ветки был **свой** канонический hostname, и `layero rollback` менял `environments.active_deploy_id` per-ветка. С переходом на «один apex на проект» rollback теперь — это операция уровня проекта, не env'а. Команда `layero rollback` удалена; используйте `layero promote --rollback`.
+Раньше у каждой ветки был свой канонический хост, и `layero rollback` менял
+`environments.active_deploy_id` — то есть работал по-веточно. С переходом на
+модель «один апекс на проект» (V071) откат должен двигать
+**production-указатель** проекта. CLI-команда за этой сменой не пошла: она
+осталась на старом, по-веточном пути. Отсюда и рапорт об успехе при
+неизменившемся апексе.
+
+Связано: [`layero promote`](./promote),
+[Окружения, preview и production](../deploys/environments).
