@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, layero-builder]
     # 15m was chronically tight: install + ru/en build + yc + deploy + the
     # 36-retry CDN-propagation Verify routinely lands at ~14–15m and the
     # 2026-06-25 docs deploy was killed at 15m16s. Give real headroom.
@@ -66,7 +66,7 @@ jobs:
         run: |
           install -m 600 /dev/null "$HOME/yc-sa-key.json"
           printf '%s' "$YC_CDN_SA_KEY" > "$HOME/yc-sa-key.json"
-          yc config profile create ci
+          yc config profile create ci 2>/dev/null || yc config profile activate ci
           yc config set service-account-key "$HOME/yc-sa-key.json"
           yc config set cloud-id b1ger5mmajemr152soru
           yc config set folder-id b1g5p8gs03eoj1fvu0qc
