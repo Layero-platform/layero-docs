@@ -37,7 +37,7 @@ CLI деплоит **существующий** проект. Если зада�
 npx layero init
 ```
 
-Команда дописывает блок в существующие `AGENTS.md` / `CLAUDE.md` / `.cursorrules` (или создаёт `AGENTS.md`). Блок содержит: device-flow рецепт логина (`auth_required` → клик → poll), таблицу JSON-событий с пояснениями (`detected` / `project_created` / `build_log` / `ready` / `error`), список кодов ошибок с remediation (`not_logged_in`, `auth_expired`, `cli_deploys_disabled`, ...), правила для `--prod`. Актуальный текст шаблона — в [`agentDocBlock()` в init.ts](https://github.com/LayeroInfra/core/blob/main/cli/src/commands/init.ts).
+Команда дописывает блок в существующие `AGENTS.md` / `CLAUDE.md` / `.cursorrules` (или создаёт `AGENTS.md`). Блок содержит: device-flow рецепт логина (`auth_required` → клик → poll), таблицу JSON-событий с пояснениями (`detected` / `project_created` / `build_log` / `ready` / `error`), список кодов ошибок с remediation (`not_logged_in`, `auth_expired`, `cli_deploys_disabled`, ...), правила для `--prod`. Посмотреть точный текст проще всего по факту: запустите `npx layero init` в пустой папке и откройте созданный `AGENTS.md`.
 
 Любой современный агент читает эти файлы в начале сессии и точно знает что делать без подсказок.
 
