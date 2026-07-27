@@ -22,6 +22,7 @@ description: The full list of layero commands — init, login, projects, deploy,
 | `layero deploys list` | Show recent deploys of the current project. |
 | `layero promote` | Point the production apex at a specific ready deploy. |
 | `layero promote <sha>` | Point the apex at a specific deploy by `commit_sha` — the working way to roll back, see [Rollback](./rollback). |
+| `layero hooks list/create/delete` | Deploy hooks — URL tokens that start a build on POST (CMS, cron, external CI). |
 | `layero token set <jwt>` | Set the token by hand (for CI). |
 
 The full flag list for a command:
@@ -120,6 +121,30 @@ timestamp and the deploy **source**:
 | `(push)` | Came from a GitHub webhook after a push |
 | `(cli)` | Uploaded through `layero deploy` |
 | `(manual)` | Started by hand from the dashboard (Redeploy) |
+
+
+## `layero hooks`
+
+A deploy hook is a URL that starts a build when it receives a `POST`. It is
+for cases where the build is triggered by something other than a person:
+publishing in a headless CMS, a cron job, an external CI pipeline.
+
+```bash
+layero hooks create strapi-content        # preview hook, default branch
+layero hooks create publish --prod        # production hook
+layero hooks list
+layero hooks delete <id>                  # revoked immediately
+```
+
+The command prints a URL of the form `https://api.layero.ru/hooks/<token>`.
+Verified on a live project: `POST` returns `202` with a `deploy_id` and starts
+a build, while `GET` returns `405` — so a crawler or an accidental visit in a
+browser cannot fire one.
+
+:::warning The hook URL is a credential
+Anyone holding it can start a build. To rotate, delete the hook and create a
+new one; there is no separate "regenerate token".
+:::
 
 ## `layero promote`
 

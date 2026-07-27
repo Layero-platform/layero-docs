@@ -22,6 +22,7 @@ description: Полный список команд layero — init, login, proj
 | `layero deploys list` | Показать недавние деплои текущего проекта. |
 | `layero promote` | Переключить production apex на конкретный ready-деплой. |
 | `layero promote <sha>` | Вернуть апекс на конкретный деплой по `commit_sha` — рабочий способ отката, см. [Rollback](./rollback.md). |
+| `layero hooks list/create/delete` | Deploy-хуки — URL-токены, по POST на которые запускается сборка (CMS, cron, внешний CI). |
 | `layero token set <jwt>` | Задать токен вручную (для CI). |
 
 Полный список флагов конкретной команды:
@@ -107,6 +108,29 @@ npx layero deploys list --limit 50            # больше истории
 | `(push)` | Пришёл от webhook'а GitHub после push |
 | `(cli)` | Загружен через `layero deploy` |
 | `(manual)` | Запущен вручную через дашборд (Redeploy) |
+
+
+## `layero hooks`
+
+Deploy-хук — URL, по `POST` на который запускается сборка. Нужен, когда билд
+должен инициировать не человек: публикация в headless CMS, cron, внешний CI.
+
+```bash
+layero hooks create strapi-content        # хук на preview, ветка по умолчанию
+layero hooks create publish --prod        # хук в production
+layero hooks list
+layero hooks delete <id>                  # отзывается сразу
+```
+
+Команда печатает URL вида `https://api.layero.ru/hooks/<токен>`. Проверено на
+живом проекте: `POST` возвращает `202` с `deploy_id` и запускает сборку,
+`GET` отдаёт `405` — то есть краулер или случайный переход в браузере сборку
+не запустят.
+
+:::warning URL хука — это секрет
+Кто угодно с этим адресом может запустить сборку. Ротация — удалить и создать
+заново; отдельного «обновить токен» нет.
+:::
 
 ## `layero promote`
 
