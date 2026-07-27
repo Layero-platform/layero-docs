@@ -108,7 +108,7 @@ wait for. Show `url` to the user. The legacy fields `preview_url` /
 Errors have a stable `code` and a `next_action` hint:
 
 ```json
-{"event":"error","code":"not_logged_in","next_action":"run: layero login","message":"not authenticated"}
+{"event":"error","code":"auth_required","next_action":"run `layero login` or set LAYERO_TOKEN","message":"not authenticated"}
 ```
 
 Codes the CLI actually emits (checked against its sources — do not branch on
