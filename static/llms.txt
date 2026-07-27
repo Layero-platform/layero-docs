@@ -53,8 +53,13 @@ of organizations that have not been migrated yet still use the older scheme
 `<org>-<project>.layero.ru`. Never build the address from a template: take
 `ready.url` as-is.
 
-To deploy to production (replaces apex domain), add `--prod`. Without
-it, deploys are isolated previews and never touch production.
+A project created by `layero deploy` (a CLI project) **auto-promotes to its
+live address on every deploy** — the apex is the destination, and `--prod` is
+redundant there. Do not assume a plain `deploy` is a harmless preview: it
+replaces what visitors see. To publish somewhere isolated instead, pass
+`--branch <name>`; that is the flag that does not touch the live address.
+`--prod` matters for repository-linked projects, where it targets the
+production environment rather than a branch one.
 
 ## In CI (GitHub Actions and other pipelines)
 
