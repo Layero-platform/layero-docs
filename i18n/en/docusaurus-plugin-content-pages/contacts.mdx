@@ -1,33 +1,42 @@
 ---
 title: Contact
-description: How to reach the Layero team.
+description: How to reach the Layero team — the support widget in the dashboard, a Telegram bot, email and GitHub.
 ---
 
 # Contact
 
-Drop us a line about your project, report an issue, or just say hi. The team usually replies within a couple of business days.
+Write to us if something is broken, if you want to tell us about your project,
+or just to say hi.
 
-<form
-  className="layero-contact-form"
-  onSubmit={(e) => e.preventDefault()}
-  aria-label="Contact form (placeholder)"
->
-  <label>
-    Name
-    <input type="text" name="name" placeholder="How should we address you" disabled />
-  </label>
-  <label>
-    Email
-    <input type="email" name="email" placeholder="you@example.com" disabled />
-  </label>
-  <label>
-    Message
-    <textarea name="message" placeholder="Tell us how we can help" disabled />
-  </label>
-  <button type="submit" disabled>Send</button>
-  <p className="layero-form-note">The form is coming soon. For now, use the contacts below.</p>
-</form>
+## Something broke — use the widget in the dashboard
 
-<div className="layero-contact-fallback">
-  Email: [hello@layero.ru](mailto:hello@layero.ru) · GitHub: [LayeroInfra](https://github.com/LayeroInfra)
-</div>
+The fastest route: the **💬** button in the bottom right corner of
+[app.layero.ru](https://app.layero.ru). Pick the project in the selector and we
+attach the context ourselves — the link, the branch, the last failed deploy. An
+operator sees the ticket within a few minutes, and the window then turns into a
+chat.
+
+You can attach screenshots to a message — paste from the clipboard, use the
+paperclip, or drag the file in. More on tickets and response times on the
+[Support](/en/support) page.
+
+## Telegram
+
+The [@layero_support_bot](https://t.me/layero_support_bot) bot, if you would
+rather write in Telegram. Link it from the widget with the "Connect Telegram"
+button: operator replies are then mirrored to your DMs and the history stays in
+the chat.
+
+## Email and GitHub
+
+- **hello@layero.ru** — [write to us](mailto:hello@layero.ru). General
+  questions, partnerships, anything that is not a specific broken deploy.
+- **[github.com/LayeroInfra](https://github.com/LayeroInfra)** — the example
+  sources, the GitHub Action, the AI-IDE plugin and these docs. Issues are open
+  on every repository: if you find a bug in an example or in the documentation,
+  file it there.
+
+## Response times
+
+Ordinary questions — within the working day, Moscow time. Sites that are down
+and problems with serving — within the hour.

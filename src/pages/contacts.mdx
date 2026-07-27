@@ -1,33 +1,41 @@
 ---
 title: Контакты
-description: Как связаться с командой Layero.
+description: Как связаться с командой Layero — виджет поддержки в дашборде, Telegram-бот, почта и GitHub.
 ---
 
 # Контакты
 
-Напишите нам, если хотите рассказать о своём проекте, сообщить о проблеме или просто поздороваться. Команда отвечает на сообщения в течение пары рабочих дней.
+Напишите нам, если что-то не работает, хотите рассказать о своём проекте или
+просто поздороваться.
 
-<form
-  className="layero-contact-form"
-  onSubmit={(e) => e.preventDefault()}
-  aria-label="Форма обратной связи (заглушка)"
->
-  <label>
-    Имя
-    <input type="text" name="name" placeholder="Как к вам обращаться" disabled />
-  </label>
-  <label>
-    Email
-    <input type="email" name="email" placeholder="you@example.com" disabled />
-  </label>
-  <label>
-    Сообщение
-    <textarea name="message" placeholder="Расскажите, чем мы можем помочь" disabled />
-  </label>
-  <button type="submit" disabled>Отправить</button>
-  <p className="layero-form-note">Форма скоро заработает. Пока используйте контакты ниже.</p>
-</form>
+## Если что-то сломалось — виджет в дашборде
 
-<div className="layero-contact-fallback">
-  Email: [hello@layero.ru](mailto:hello@layero.ru) · GitHub: [LayeroInfra](https://github.com/LayeroInfra)
-</div>
+Самый быстрый путь: кнопка **💬** в правом нижнем углу
+[app.layero.ru](https://app.layero.ru). Выберите проект в селекторе — мы сами
+подтянем контекст: ссылку, ветку, последний неуспешный деплой. Оператор видит
+обращение в течение нескольких минут, дальше окошко превращается в чат.
+
+К сообщению можно приложить скриншоты — вставкой из буфера, скрепкой или
+перетаскиванием. Подробно про тикеты и время ответа — на странице
+[Поддержка](/support).
+
+## Telegram
+
+Бот [@layero_support_bot](https://t.me/layero_support_bot) — если удобнее
+переписываться в Telegram. Привязывается из виджета кнопкой «Подключить
+Telegram»: после этого ответы операторов дублируются в личку, а история
+остаётся в чате.
+
+## Почта и GitHub
+
+- **hello@layero.ru** — [написать](mailto:hello@layero.ru). Общие вопросы,
+  партнёрства, всё, что не про конкретный сломавшийся деплой.
+- **[github.com/LayeroInfra](https://github.com/LayeroInfra)** — исходники
+  примеров, GitHub Action, плагин для AI-IDE и эта документация. Issues
+  открыты во всех репозиториях: нашли ошибку в примере или в доках — заводите
+  прямо там.
+
+## Время ответа
+
+Обычные вопросы — в течение рабочего дня по Москве. Упавшие сайты и проблемы
+с раздачей — в течение часа.
