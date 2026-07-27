@@ -157,7 +157,10 @@ If the user asks to deploy a site to Layero:
   auto-promotes to its apex on **every** deploy, so the apex is already the
   destination and `--prod` changes nothing. The corollary matters more: a
   plain deploy is **not** a harmless preview — it replaces what visitors see.
-  For a publish that leaves the live address alone, use `--branch <name>`.
+  There is no way around this from the CLI: `--branch` is accepted and
+  silently ignored — every archive upload is filed under the reserved `cli`
+  environment. A publish that leaves the live address alone does not exist for
+  a CLI project; it is done by connecting a repository and pushing to a branch.
 
 ## The full chain for an agent
 

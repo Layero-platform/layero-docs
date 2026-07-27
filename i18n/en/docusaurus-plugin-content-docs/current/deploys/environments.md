@@ -12,8 +12,10 @@ A project has **one stable production address** — the apex. What the apex
 serves is decided by the **production pointer**, which moves either
 automatically (a push to the default branch, **or** a direct `layero deploy`
 upload into a project with no repository — that auto-promotes to the apex) or
-by hand (promote from the UI or CLI). Named branches (`--branch`) get
-**temporary preview links** valid for 24 hours and never touch the apex.
+by hand (promote from the UI or CLI). Named branches get **temporary preview links** valid for 24
+hours and never touch the apex — but they are created by pushing to the
+repository, not by a CLI flag: `layero deploy --branch` is ignored and archive
+uploads always go to the `cli` environment (see [`layero deploy`](../cli/deploy)).
 
 This is the Vercel-style model: one production, many previews. Every branch is
 a full environment with its own deploy history, its own preview URL and its
@@ -28,7 +30,7 @@ environment has:
 - its own preview URL (24 h TTL);
 - `active_deploy_id` — the branch's latest successful build.
 
-CLI deploys without `--branch` land in the pseudo-branch `cli`.
+CLI deploys always land in the pseudo-branch `cli`, regardless of `--branch`.
 
 ## Addresses
 

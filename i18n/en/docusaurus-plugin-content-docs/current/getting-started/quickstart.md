@@ -97,13 +97,27 @@ For a CLI project (one with no repository connected) every `layero deploy`
 neither `--prod` nor `promote` is needed.
 
 The flip side is worth stating plainly: a plain deploy is **not** an isolated
-preview. It replaces what visitors see. If you want a publish that leaves
-production alone, deploy into a named branch:
+preview — it replaces what visitors see.
 
-```bash
-npx layero deploy --branch=staging
-# → the staging branch preview address (24 h TTL, the apex untouched)
-```
+:::danger `--branch` does nothing in `layero deploy`
+The flag is accepted and silently ignored: the backend files **every** archive
+upload under the reserved `cli` environment, so that a manual upload can never
+collide with a branch of a connected repository (`projects.py:2865`). Verified
+by experiment: after `layero deploy --branch=probe` no `probe` environment is
+created.
+
+What that means in practice:
+
+- **A project with no repository.** `cli` *is* its default branch, so the
+  deploy auto-promotes to the apex. **Every `layero deploy` replaces the live
+  site, and there is no way to upload a non-promoting build from the CLI.**
+- **A project with a repository connected.** `cli` is not the default branch,
+  so a CLI upload lives at its own `<project>-cli` address and does not move
+  the apex (unless `--prod` is passed).
+
+Branch previews are a git-flow feature: pushing to a branch creates the
+environment through the webhook.
+:::
 
 See [`layero promote`](../cli/promote) and
 [Environments](../deploys/environments) for the production flow of git-backed

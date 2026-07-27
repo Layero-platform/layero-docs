@@ -56,8 +56,11 @@ of organizations that have not been migrated yet still use the older scheme
 A project created by `layero deploy` (a CLI project) **auto-promotes to its
 live address on every deploy** — the apex is the destination, and `--prod` is
 redundant there. Do not assume a plain `deploy` is a harmless preview: it
-replaces what visitors see. To publish somewhere isolated instead, pass
-`--branch <name>`; that is the flag that does not touch the live address.
+replaces what visitors see. There is no way around this from the CLI: `--branch` is
+**accepted and silently ignored** — the backend files every archive upload
+under the reserved `cli` environment. A "just to look at it" publish that
+leaves the live address alone does not exist for a CLI project; it is done by
+connecting a repository and pushing to a branch.
 `--prod` matters for repository-linked projects, where it targets the
 production environment rather than a branch one.
 

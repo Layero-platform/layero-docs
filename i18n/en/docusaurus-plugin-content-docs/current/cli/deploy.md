@@ -64,7 +64,7 @@ survive later runs and can be edited by hand.
 |---|---|
 | `--prod` | The deploy lands on the project's default branch (the same as a push to main). If the project has auto-promote on, the apex switches to the fresh build automatically. |
 | `--promote` | After a successful build, moves `production_deploy_id` to this deploy **immediately**. Works for any branch — handy for shipping a feature branch to production in one command. |
-| `--branch <name>` | Deploy into a specific branch (creating the environment if it did not exist). Without the flag the CLI lands in the pseudo-branch `cli`. |
+| `--branch <name>` | **Does not work for `deploy`** — archive uploads always land in the pseudo-branch `cli` (see below). The flag is only meaningful for `layero promote --branch`. |
 | `--type <preset>` | Override auto-detection: `vite`, `next`, `astro`, `cra`, `sveltekit`, `nuxt`, `gatsby`, `docusaurus`, `static`. |
 | `--name <name>` | Project name. Only on the first deploy. |
 | `--project <id_or_slug>` | Deploy into a specific project, ignoring `./.layero/project.json`. Handy for CI. |
@@ -80,15 +80,6 @@ survive later runs and can be edited by hand.
 # Direct uploads auto-promote — no separate --prod / promote needed.
 npx layero deploy
 # → the project's production address (the live public address; printed in the output)
-
-# an isolated preview on a specific branch — does NOT touch the apex
-npx layero deploy --branch=staging
-# → the staging branch preview address (24 h TTL)
-
-# ship from any branch straight to production in one command
-# (the promote happens right after a successful build, with no full CI round trip)
-npx layero deploy --branch=staging --promote
-# → the project's production address now serves this deploy
 
 # CI mode: no confirmation
 npx layero deploy --prod --yes
@@ -115,9 +106,25 @@ direct CLI uploads the apex moves anyway):
 - `--promote` = "once it builds, point the apex at this deploy". Works for any
   branch — the short path for "hot-fix from a feature branch → production".
 
-**How to get an isolated preview without touching the apex:** deploy into a
-named branch — `layero deploy --branch=<name>`. Such a deploy lives at its own
-preview URL (24 h TTL) and leaves production alone.
+:::danger `--branch` does nothing in `layero deploy`
+The flag is accepted and silently ignored: the backend files **every** archive
+upload under the reserved `cli` environment, so that a manual upload can never
+collide with a branch of a connected repository (`projects.py:2865`). Verified
+by experiment: after `layero deploy --branch=probe` no `probe` environment is
+created.
+
+What that means in practice:
+
+- **A project with no repository.** `cli` *is* its default branch, so the
+  deploy auto-promotes to the apex. **Every `layero deploy` replaces the live
+  site, and there is no way to upload a non-promoting build from the CLI.**
+- **A project with a repository connected.** `cli` is not the default branch,
+  so a CLI upload lives at its own `<project>-cli` address and does not move
+  the apex (unless `--prod` is passed).
+
+Branch previews are a git-flow feature: pushing to a branch creates the
+environment through the webhook.
+:::
 
 ## Mixed mode: GitHub + CLI on one project
 
@@ -263,8 +270,8 @@ Once `ready` arrives:
 - The **apex** (the project's production address) serves this deploy if it
   became production: for a CLI project (no repository) that happens
   automatically on every `layero deploy`; for a git project it happens through
-  auto-promote of the default branch or `--promote`. A deploy into a named
-  `--branch` stays a preview and does not touch the apex.
+  auto-promote of the default branch or `--promote`. `--branch` changes none of this — see the note
+  above.
 
 See [Environments, previews and production](../deploys/environments) for the
 full picture.
