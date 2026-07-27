@@ -168,6 +168,27 @@ const config: Config = {
     },
   ],
 
+  // Поиска на доках не было вовсе: блока `algolia` в конфиге нет, а
+  // meta-теги `docsearch:*` Docusaurus печатает по умолчанию — это подсказки
+  // ДЛЯ краулера, а не признак настроенного поиска, и на них легко купиться.
+  //
+  // Взят локальный индекс, а не Algolia DocSearch: он не требует заявки и
+  // одобрения, не зависит от зарубежного сервиса (что для этого продукта
+  // отдельный аргумент) и одинаково работает в обеих локалях.
+  themes: [
+    [
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      {
+        hashed: true,
+        language: ['ru', 'en'],
+        indexBlog: true,
+        docsRouteBasePath: '/',
+        searchResultLimits: 8,
+        highlightSearchTermsOnTargetPage: true,
+      },
+    ],
+  ],
+
   themeConfig: {
     // Растровая, а не логотип в SVG. Ни один сборщик превью — Telegram,
     // Facebook, Slack, VK, Twitter — SVG в карточке не рисует, поддерживаются
