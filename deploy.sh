@@ -78,14 +78,43 @@ host = "docs.layero.ru"
 # (ru) и build/en/sitemap.xml. Долгое время отправлялся только первый, и
 # 56 английских страниц не попадали в IndexNow вообще — при том, что именно
 # английская документация нужна международным краулерам.
+#
+# НО: локаль en переведена частично. Docusaurus для непереведённой страницы
+# отдаёт русский текст по английскому адресу (штатный fallback). Пушить такое
+# в IndexNow нельзя: IndexNow — это заявка «страница готова, приходите», а мы
+# заявляли бы дубль русской страницы с заголовком hreflang=en-US. Поэтому
+# английские адреса фильтруются по фактическому языку СОБРАННОГО html.
+# Проверка самонастраивающаяся: по мере перевода страницы начинают попадать
+# в пуш сами, без правки этого скрипта.
+BUILD = "${BUILD_DIR}"
+
+def is_english(url: str) -> bool:
+    rel = url.replace("https://docs.layero.ru/", "").strip("/")
+    for candidate in (os.path.join(BUILD, rel, "index.html"),
+                      os.path.join(BUILD, rel + ".html")):
+        if os.path.exists(candidate):
+            html = open(candidate, encoding="utf-8", errors="ignore").read()
+            m = re.search(r"<article.*?</article>", html, re.S)
+            text = re.sub(r"<[^>]+>", " ", m.group(0) if m else "")
+            cyr = sum(1 for c in text if "а" <= c.lower() <= "я")
+            lat = sum(1 for c in text if "a" <= c.lower() <= "z")
+            return lat > cyr
+    return False  # файла нет — не рискуем
+
 urls = []
 for rel in ("sitemap.xml", "en/sitemap.xml"):
-    path = os.path.join("${BUILD_DIR}", rel)
+    path = os.path.join(BUILD, rel)
     if not os.path.exists(path):
         print(f"  WARN: {path} отсутствует — локаль пропущена")
         continue
     found = re.findall(r"<loc>([^<]+)</loc>", open(path, encoding="utf-8").read())
-    print(f"  {rel}: {len(found)} URL")
+    if rel.startswith("en/"):
+        kept = [u for u in found if is_english(u)]
+        print(f"  {rel}: {len(kept)} из {len(found)} URL "
+              f"(остальные — непереведённые, в пуш не идут)")
+        found = kept
+    else:
+        print(f"  {rel}: {len(found)} URL")
     urls.extend(found)
 urls = list(dict.fromkeys(urls))
 payload = json.dumps({
