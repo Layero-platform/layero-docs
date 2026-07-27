@@ -1,115 +1,121 @@
 ---
 sidebar_position: 2
-title: Основные концепции
-description: Проект, окружение, деплой, runtime, handle и билд-окружение — словарь, чтобы говорить о Layero одинаково.
+title: Core concepts
+description: Project, environment, deploy, runtime, handle and the build environment — the vocabulary for talking about Layero consistently.
 ---
 
-# Основные концепции
+# Core concepts
 
-Прежде чем погружаться в детали, разберёмся в словаре платформы:
-**проект**, **окружение**, **деплой**, **runtime** и **handle**.
-Эти пять понятий встречаются во всём остальном дока-сайте.
+Before going into detail, here is the platform's vocabulary: **project**,
+**environment**, **deploy**, **runtime** and **handle**. These five terms
+appear throughout the rest of the documentation.
 
-## Организация
+## Organization
 
-**Организация** — scope, объединяющий людей, проекты и интеграции под
-одним slug'ом. Бывает двух видов:
+An **organization** is the scope that groups people, projects and integrations
+under one slug. There are two kinds:
 
-* **Personal** — личная, создаётся автоматически на signup, slug =
-  ваш `username`. Один на пользователя, без приглашений.
-* **Team** — командная, создаётся вручную ("+ Создать команду"),
-  принимает приглашения по email, может подключить
-  [GitHub App](../team/github-app.md).
+* **Personal** — created automatically on signup, with your `username` as the
+  slug. One per user, no invitations.
+* **Team** — created by hand ("+ Create team"), accepts email invitations and
+  can connect the [GitHub App](../team/github-app).
 
-Подробно — [Организации](../team/organizations.md).
+Details in [Organizations](../team/organizations).
 
-В верхнем углу дашборда — **OrganizationSwitcher**, persist'ит активную
-организацию в localStorage. Все списки (проекты, репы для импорта,
-деплои) фильтруются по активной orgе.
+The **OrganizationSwitcher** in the top corner of the dashboard persists the
+active organization in localStorage. Every list — projects, repositories to
+import, deploys — is filtered by it.
 
-## Проект
+## Project
 
-**Проект** — единица деплоя. Принадлежит одной организации и получает от
-платформы канонический адрес в зоне пользовательских сайтов:
-`https://<project>.layero.app`. Подробности — [Окружения и preview-URL](../deploys/environments.md).
+A **project** is the unit of deployment. It belongs to one organization and
+gets a canonical address in the user-site zone:
+`https://<project>.layero.app`. Projects created before the move (26 July
+2026) still carry the organization prefix:
+`https://<organization>-<project>.layero.app`. The exact address is visible in
+the dashboard; see
+[Environments, previews and production](../deploys/environments).
 
-Источник кода:
+Where the code comes from:
 
-- `github` — код берётся из GitHub-репозитория, push автоматически
-  запускает деплой через webhook (OAuth или GitHub App).
-- `cli` — код приходит из локального `layero deploy` (загрузка тарбола).
+- `github` — from a GitHub repository; a push triggers a deploy automatically
+  through a webhook (OAuth or GitHub App).
+- `cli` — from a local `layero deploy` (a tarball upload).
 
-Один проект может одновременно принимать **оба** источника
-(mixed-mode): GitHub push + CLI uploads сосуществуют. См.
-[`layero deploy`](../cli/deploy.md).
+One project can accept **both** sources at once (mixed mode): GitHub pushes
+and CLI uploads coexist. See [`layero deploy`](../cli/deploy).
 
-## Окружение
+## Environment
 
-**Окружение** соответствует ветке репозитория. У каждого проекта есть
-default-окружение (обычно `main`), куда приземляется production-трафик.
-При push в другую ветку Layero создаст preview-окружение со своим
-hostname.
+An **environment** corresponds to a branch of the repository. A push to any
+branch creates its own environment with its own deploy history and its own
+**preview URL**, valid for 24 hours.
 
-См. [Окружения и preview-URL](../deploys/environments.md).
+A project has **one production address** — the apex. Which environment serves
+it right now is decided by `production_deploy_id` (below). That is not
+necessarily the default branch — it can be any promoted build.
 
-## Деплой
+See [Environments, previews and production](../deploys/environments).
 
-**Деплой** — конкретная сборка с конкретного коммита (`commit_sha`).
-У каждого деплоя есть статус:
+## Deploy
 
-| Статус | Что значит |
+A **deploy** is one build from one commit (`commit_sha`). Every deploy has a
+status:
+
+| Status | What it means |
 |---|---|
-| `queued` | поставлен в очередь, ждёт билд-инстанса |
-| `building` | сборка идёт прямо сейчас |
-| `ready` | артефакты загружены, окружение переключено на этот деплой |
-| `failed` | сборка упала, см. логи деплоя |
+| `queued` | queued, waiting for a build instance |
+| `building` | the build is running right now |
+| `ready` | artifacts uploaded; can be promoted and served |
+| `failed` | the build failed, see the deploy logs |
 
-Активный деплой окружения хранится в `environments.active_deploy_id` —
-именно он отдаётся пользователям. При новом успешном деплое указатель
-обновляется атомарно.
+`environments.active_deploy_id` is the branch's latest ready deploy, updated
+atomically after the build. It is reachable at the branch preview URL.
 
-**Rollback** — переключить указатель на любой предыдущий ready-деплой
-без пересборки. Артефакт уже лежит в S3, CDN-кеш сбрасывается, и через
-~30 секунд весь трафик ветки идёт на старый артефакт. См.
-[`layero rollback`](../cli/rollback.md) или кнопку "Откатить" на странице
-Project → Deploys.
+`projects.production_deploy_id` points at the **one** deploy the apex is
+currently serving. It moves via auto-promote on the default branch, or by hand
+through the UI or CLI promote.
 
-## Runtime: статика vs SSR
+**Rollback** swaps `production_deploy_id` and
+`previous_production_deploy_id` in a single atomic step. The apex returns to
+the previous working build instantly; rolling back again returns it. See
+[`layero promote`](../cli/promote) or the "Roll back" button in the UI.
 
-Layero различает **два режима исполнения**:
+## Runtime: static vs SSR
 
-- **SPA / static** (по умолчанию) — после сборки получаем папку
-  с HTML/JS/CSS, она лежит в объектном хранилище и отдаётся с edge платформы.
-  Никаких процессов
-  на стороне Layero не запускается. Это самый быстрый и дешёвый режим.
-- **Runtime** — приложение запускается как контейнер (SSR Next.js,
-  Streamlit, Gradio, Flask и т. п.). Контейнер активируется по первому
-  запросу и останавливается при простое. См. [Runtime](../runtime/overview.md).
+Layero distinguishes **two execution modes**:
 
-## Username и организация
+- **SPA / static** (the default) — the build produces a folder of HTML/JS/CSS
+  that lives in object storage and is served from the platform's edge servers.
+  Nothing runs on Layero's side. This is the fastest and cheapest mode.
+- **Runtime** — the application runs as a container (Next.js in server mode,
+  Streamlit, Gradio, Flask and so on). The container wakes on the first
+  request and stops when idle. See [Runtime](../runtime/overview).
 
-При первом входе вы выбираете **уникальный username** — handle вашего
-аккаунта. На его основе автоматически создаётся ваша персональная
-организация со slug'ом, равным username. В адрес сайта он больше не
-попадает: адрес состоит из одного слага проекта.
+## Username and organization
 
-Помимо персональной, можно создавать **дополнительные организации** со
-своими slug'ами — например, для совместной работы с командой. В каждой
-организации могут состоять несколько участников (admin / member),
-приглашаемых по email. Управление участниками — в разделе
-[Команда](https://app.layero.ru/account/team).
+On first sign-in you choose a **unique username** — the handle of your
+account. Your personal organization is created from it, with the same slug.
+For projects created before the move to `layero.app` that slug ended up in the
+site address (`https://alice-<project>.layero.app`). New addresses consist of
+the project slug alone, and the organization slug does not affect them.
 
-Username задаётся один раз при онбординге. Подробнее в
+Beyond the personal one you can create **additional organizations** with their
+own slugs — for working with a team, for example. Each can have several
+members (admin / member) invited by email. Members are managed in the
+[Team](https://app.layero.ru/account/team) section.
+
+The username is set once, during onboarding. More in
 [Onboarding](https://app.layero.ru/onboarding).
 
-## Билд-окружение
+## Build environment
 
-- **Node.js** — `nvm use <detected_version>`. Версия определяется
-  по `.nvmrc`, `.node-version`, `engines.node` в `package.json`.
-  По умолчанию — Node 20.
-- **Пакетный менеджер** — детектируется по lock-файлу:
-  `yarn.lock` → yarn, `pnpm-lock.yaml` → pnpm, иначе npm.
-- **`node_modules` удаляется** перед `install`.
-- **Команда сборки** — берётся из проекта (`build_cmd`), по умолчанию
-  `npm run build`. Output-директория определяется по фреймворку
-  (см. [Поддерживаемые фреймворки](./frameworks.md)).
+- **Node.js** — `nvm use <detected_version>`. The version comes from
+  `.nvmrc`, `.node-version` or `engines.node` in `package.json`. Node 20 by
+  default.
+- **Package manager** — detected from the lockfile: `yarn.lock` → yarn,
+  `pnpm-lock.yaml` → pnpm, otherwise npm.
+- **`node_modules` is removed** before `install`.
+- **Build command** — taken from the project (`build_cmd`), `npm run build` by
+  default. The output directory is determined by the framework (see
+  [Supported frameworks](./frameworks)).
