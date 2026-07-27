@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: Когда нужен runtime
-description: SSR Next.js, Streamlit, Gradio, Flask — для приложений с долгоживущим процессом. Cold start, scale-up и пресеты.
+description: SSR Next.js, любой Node-сервер (Express, NestJS, Fastify), любое WSGI/ASGI-приложение на Python (Django, FastAPI, Flask), Streamlit и Gradio — для приложений с долгоживущим процессом.
 ---
 
 # Когда нужен runtime
@@ -14,8 +14,9 @@ description: SSR Next.js, Streamlit, Gradio, Flask — для приложени
 на сервере**:
 
 - **SSR Next.js** без `output: 'export'`,
-- **Streamlit / Gradio** — Python-приложения с веб-интерфейсом,
-- **Flask / FastAPI** с серверным рендером.
+- **Node-сервер** — Express, NestJS, Fastify и любой другой, слушающий порт,
+- **Python-приложение** — Django, FastAPI, Flask и любое WSGI/ASGI,
+- **Streamlit / Gradio** — Python-приложения с веб-интерфейсом.
 
 Для них Layero запускает пользовательский **контейнер**.
 
@@ -23,15 +24,34 @@ description: SSR Next.js, Streamlit, Gradio, Flask — для приложени
 
 | `project_type` | Что это |
 |---|---|
-| `spa` | Статика (default). |
-| `ssr_next` | Next.js c SSR / API-routes. |
-| `streamlit` | Streamlit-приложение. |
-| `gradio` | Gradio-приложение. |
-| `flask` | Flask-приложение. |
+| `spa` | Статика (по умолчанию). |
+| `ssr_next` | Next.js с SSR или API-роутами. |
+| `node_web` | **Любой Node-сервер**, слушающий HTTP: Express, Fastify, NestJS, Koa, Hono и другие. |
+| `python_web` | **Любое WSGI/ASGI-приложение**: Django, FastAPI, Flask, Starlette, Litestar и другие. |
+| `streamlit` | Streamlit-приложение (нужен `app.py`). |
+| `gradio` | Gradio-приложение (нужен `app.py`). |
 
-Пресет выбирается в дашборде проекта (**Project → Runtime type**).
-Для каждого пресета используется готовый Dockerfile-шаблон —
-свой образ собирать не нужно.
+`flask` — устаревшее имя, оставленное для совместимости: это алиас
+`python_web`. Новые проекты получают `python_web`.
+
+Пресет выбирается в дашборде проекта (**Project → Runtime type**). Для
+каждого используется готовый Dockerfile-шаблон — свой образ собирать не нужно.
+
+### Что определяется автоматически
+
+Тип угадывается по зависимостям — руками выбирать обычно не нужно.
+
+**Python → `python_web`.** Фреймворки: Django, FastAPI, Flask, Starlette,
+Litestar, Quart, Sanic, BlackSheep, Falcon, Bottle, Pyramid, CherryPy,
+aiohttp, Tornado. Серверы: Uvicorn, Gunicorn, Hypercorn, Daphne. Точка
+входа ищется в `app.py`, `main.py` или `manage.py`.
+
+**Node → `node_web`.** Express, Fastify, Koa, NestJS, Hapi, Hono, AdonisJS,
+Restify, Polka, Feathers, Sails, h3, Elysia, json-server.
+
+Если вашего фреймворка в списке нет, но приложение слушает HTTP-порт — оно
+всё равно запустится: выберите `node_web` или `python_web` в настройках
+проекта вручную. Список нужен для автоопределения, а не для ограничения.
 
 ## Cold start
 
