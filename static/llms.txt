@@ -87,7 +87,7 @@ Note: if the repository is already linked to a Layero project, a push builds
 it automatically and no pipeline is needed. Reach for CI only when the build
 itself needs secrets or private dependencies the platform does not have.
 
-Guide: https://docs.layero.ru/cli/github-actions
+Guide: https://docs.layero.ru/en/cli/github-actions
 
 ## Event types in JSON mode
 
@@ -117,14 +117,14 @@ Common codes: `not_logged_in`, `auth_required`, `auth_expired`, `auth_timeout`,
 it means the run has no credentials and no browser to get them from.
 
 Full schema with required/optional fields per event:
-https://docs.layero.ru/cli/json-events
+https://docs.layero.ru/en/cli/json-events
 
 ## Links
 
 - CLI npm package: https://www.npmjs.com/package/layero
-- Docs: https://docs.layero.ru
-- Agents guide: https://docs.layero.ru/cli/agents
-- GitHub Actions guide: https://docs.layero.ru/cli/github-actions
-- JSON-events schema: https://docs.layero.ru/cli/json-events
+- Docs: https://docs.layero.ru/en/ (English) · https://docs.layero.ru (Russian)
+- Agents guide: https://docs.layero.ru/en/cli/agents
+- GitHub Actions guide: https://docs.layero.ru/en/cli/github-actions
+- JSON-events schema: https://docs.layero.ru/en/cli/json-events
 - Cursor rules drop-in: https://layero.ru/cursorrules
 - API base: https://api.layero.ru
