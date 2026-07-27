@@ -100,6 +100,64 @@ const config: Config = {
     ],
   ],
 
+  // Docusaurus сам кладёт на страницы только BreadcrumbList (и BlogPosting в
+  // блоге) — узла Organization нет нигде. То есть вся развязка сущности жила
+  // на лендинге, а 56 страниц документации не сообщали поисковику и ассистенту
+  // ничего о том, что за Layero это вообще. Омонимов при этом три: Layer0 /
+  // Edgio, layero.com и LayerOne (dev.layerone.fr, тоже с MCP-сервером).
+  //
+  // @id узла НАМЕРЕННО тот же, что на layero.ru — это один и тот же субъект на
+  // двух доменах, и совпадение @id — единственный способ сказать это явно.
+  // Значения дублируют лендинг; при правке менять в обоих местах.
+  headTags: [
+    {
+      tagName: 'script',
+      attributes: {type: 'application/ld+json'},
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'Organization',
+            '@id': 'https://layero.ru/#organization',
+            name: 'Layero',
+            alternateName: ['Лайеро', 'Layero PaaS', 'Layero.ru'],
+            url: 'https://layero.ru/',
+            logo: {
+              '@type': 'ImageObject',
+              url: 'https://layero.ru/android-chrome-512x512.png',
+              width: 512,
+              height: 512,
+            },
+            description:
+              'Бесплатный хостинг для фронтенд-сайтов и фуллстек-приложений с CDN в России.',
+            disambiguatingDescription:
+              'Российский PaaS для деплоя фронтенда и фуллстек-приложений. Не следует путать с Layer0 / Edgio — это другой продукт, не имеющий отношения к Layero.',
+            areaServed: {'@type': 'Country', name: 'Россия'},
+            sameAs: [
+              'https://www.wikidata.org/wiki/Q140078300',
+              'https://github.com/LayeroInfra',
+              'https://www.npmjs.com/package/layero',
+            ],
+            identifier: {
+              '@type': 'PropertyValue',
+              propertyID: 'Wikidata',
+              value: 'Q140078300',
+            },
+          },
+          {
+            '@type': 'WebSite',
+            '@id': 'https://docs.layero.ru/#website',
+            url: 'https://docs.layero.ru/',
+            name: 'Документация Layero',
+            description:
+              'Документация платформы Layero: деплой фронтенда из GitHub или одной командой, кастомные домены, runtime-приложения, CLI и MCP-плагин для AI-IDE.',
+            publisher: {'@id': 'https://layero.ru/#organization'},
+          },
+        ],
+      }),
+    },
+  ],
+
   themeConfig: {
     image: 'img/logo.svg',
     colorMode: {
