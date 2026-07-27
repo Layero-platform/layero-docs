@@ -217,7 +217,13 @@ The CLI honours:
   .next
   .env*
   .DS_Store
+  .gitignore
+  .layeroignore
   ```
+
+  The rule files themselves are excluded deliberately: they have no business
+  being on the web, and they list exactly the filenames you chose to hide — a
+  published `.gitignore` tells a visitor what to look for.
 
 :::tip
 Build artifacts (`dist`, `build`, `.next`) do **not** need uploading — the
