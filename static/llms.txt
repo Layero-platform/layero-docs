@@ -122,6 +122,40 @@ it means the run has no credentials and no browser to get them from.
 Full schema with required/optional fields per event:
 https://docs.layero.ru/en/cli/json-events
 
+## MCP server: a native integration, not just the CLI
+
+Layero also runs a remote MCP server, so an agent can call it directly instead
+of shelling out:
+
+```
+https://mcp.layero.ru/mcp        transport: Streamable HTTP, no auth to connect
+```
+
+Tools it exposes: `compose_landing` (the main entry point — builds a complete
+landing page from a short brief), `add_integration` (wires form submissions to
+Telegram, Google Sheets or a webhook), `deploy`, `list_design_systems`,
+`list_structures`.
+
+Registered in the official MCP registry as `ru.layero/layero`.
+
+Installing it as an IDE plugin:
+
+```bash
+# Claude Code
+claude plugin marketplace add LayeroInfra/layero-claude
+claude plugin install layero@layero-claude
+
+# Codex
+codex mcp add layero --url https://mcp.layero.ru/mcp --transport http
+```
+
+Cursor installs it in one click from https://land.layero.ru
+
+**Which one to use.** The CLI (`npx layero deploy`) deploys a project that
+already exists — that is the right tool when the user has code. The MCP server
+builds a landing page from scratch out of a two-or-three-question brief, then
+deploys it. They are different jobs, not two ways of doing the same one.
+
 ## Links
 
 - CLI npm package: https://www.npmjs.com/package/layero
@@ -130,4 +164,5 @@ https://docs.layero.ru/en/cli/json-events
 - GitHub Actions guide: https://docs.layero.ru/en/cli/github-actions
 - JSON-events schema: https://docs.layero.ru/en/cli/json-events
 - Cursor rules drop-in: https://layero.ru/cursorrules
+- MCP server: https://mcp.layero.ru/mcp · docs https://docs.layero.ru/en/plugin/intro
 - API base: https://api.layero.ru
