@@ -29,7 +29,13 @@ jobs:
     # 2026-06-25 docs deploy was killed at 15m16s. Give real headroom.
     timeout-minutes: 25
     steps:
+      # fetch-depth: 0 — не перестраховка. Docusaurus берёт <lastmod> для
+      # sitemap из даты последнего коммита файла; при клоне по умолчанию
+      # (глубина 1) история недоступна, и у ВСЕХ страниц окажется одна и та же
+      # дата — дата этого прогона. Такой sitemap хуже, чем вовсе без lastmod.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:

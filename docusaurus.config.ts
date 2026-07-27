@@ -38,6 +38,9 @@ const config: Config = {
           routeBasePath: '/',
           editUrl:
             'https://github.com/LayeroInfra/layero-docs/tree/main/',
+          // Без этого Docusaurus не вычисляет дату последней правки из git,
+          // и sitemap остаётся без <lastmod> — плагин просто нечего писать.
+          showLastUpdateTime: true,
         },
         blog: {
           showReadingTime: true,
@@ -52,12 +55,23 @@ const config: Config = {
           },
           editUrl:
             'https://github.com/LayeroInfra/layero-docs/tree/main/',
+          showLastUpdateTime: true,
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
         },
         theme: {
           customCss: './src/css/custom.css',
+        },
+        // Без этого Docusaurus отдаёт sitemap вообще без <lastmod>, и краулеру
+        // нечем отличить изменившуюся страницу от нетронутой — он либо ходит
+        // по всем 56 подряд, либо не ходит вовсе. Дата берётся из git-истории
+        // файла, поэтому в CI нужен полный клон (fetch-depth: 0), иначе у всех
+        // страниц окажется дата единственного склонированного коммита.
+        sitemap: {
+          lastmod: 'date',
+          changefreq: 'weekly',
+          priority: 0.5,
         },
       } satisfies Preset.Options,
     ],
