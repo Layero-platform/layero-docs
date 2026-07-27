@@ -1,65 +1,118 @@
 ---
 sidebar_position: 1
-title: Быстрый старт
-description: Установите CLI, залогиньтесь и опубликуйте первый сайт за одну команду.
+title: Quickstart
+description: Install the CLI, sign in and publish your first site with one command. No git required.
 ---
 
-# Быстрый старт
+# Quickstart
 
-За 30 секунд опубликуем локальный фронтенд через CLI. Если вы предпочитаете
-автодеплой по `git push`, см. раздел [Деплой из GitHub](../deploys/github.md).
+Thirty seconds to publish a local frontend through the CLI. **Git and GitHub
+are not required** — Layero uploads the local directory directly. If you want
+automatic deploys on `git push`, that is a day-N upgrade: see
+[Deploying from GitHub](../deploys/github).
 
-## 1. Поставьте CLI
+## 1. Run the CLI
 
-```bash
-npm install -g layero
-```
-
-Требуется Node.js ≥ 20.
-
-## 2. Залогиньтесь
-
-```bash
-layero login
-```
-
-Команда откроет браузер и предложит авторизоваться через **GitHub** или
-**Яндекс ID**. После успешной авторизации токен сохраняется в
-`~/.layero/config.json` (chmod 600).
-
-## 3. Задеплойте
+Nothing to install — use `npx`:
 
 ```bash
 cd my-site
-layero deploy
+npx layero@latest init
 ```
 
-CLI:
+The command detects your framework (Next / Vite / Astro / SvelteKit / Nuxt /
+Gatsby / CRA / Docusaurus / static HTML) and creates `.layero/project.json`.
 
-1. Упакует папку в tar.gz, уважая `.gitignore` и `.layeroignore`
-   (см. [layero deploy](../cli/deploy.md)).
-2. Зальёт архив в Yandex Object Storage.
-3. Запустит сборку на стороне платформы.
-4. Покажет ссылку на дашборд проекта в [app.layero.ru](https://app.layero.ru).
+Requires **Node.js ≥ 20**. If you prefer a local install:
 
-Первый деплой создаст проект и сохранит ссылку на него в
-`./.layero/project.json` — последующие `layero deploy` уйдут в тот же проект.
+```bash
+npm install -D layero
+```
 
-## 4. Откройте сайт
+## 2. Sign in
 
-После завершения сборки CLI напечатает адрес сайта — он живой сразу, ждать
-прогрева хоста не нужно.
+```bash
+npx layero login
+```
 
-:::tip Какой адрес получит проект
-Пользовательские сайты живут в отдельной зоне — `layero.app`. У проектов,
-созданных после переезда (26 июля 2026), адрес короткий:
-`https://<project>.layero.app`. У созданных раньше в адресе сохранился префикс
-организации — например, `https://vasya-my-site.layero.app`. Точный адрес
-печатает CLI и показывает дашборд. Подробнее — в [Окружения и preview-URL](../deploys/environments.md).
+The command prints a URL like `https://app.layero.ru/cli?code=ABCD-1234` and,
+when run in a normal terminal, opens it in the browser. There you pick a
+provider — **GitHub** or **Yandex ID**; a Layero account is created
+automatically on the first OAuth — and press "Allow access". The CLI picks up
+the token within a couple of seconds and saves it to `~/.layero/config.json`
+(chmod 600).
+
+:::tip CLI on one machine, browser on another
+This is a device flow, like `gh auth login` or an Apple TV. The CLI does not
+open a local HTTP server — the exchange goes through `api.layero.ru`. So the
+login works from SSH, a Docker container, the Cursor sandbox and anywhere else
+with an internet connection.
 :::
 
-## Что дальше
+## 3. Deploy
 
-- Поднимите свой проект из GitHub: [Деплой из GitHub](../deploys/github.md).
-- Добавьте переменные окружения: [Env vars](../deploys/env-vars.md).
-- Подключите свой домен: [Custom domains](../deploys/custom-domains.md).
+```bash
+npx layero deploy
+```
+
+The CLI will:
+
+1. Auto-detect the framework and fill in `build_cmd` / `output_dir` if they are
+   not set yet.
+2. Pack the directory into a tar.gz, honouring `.gitignore` and
+   `.layeroignore` (see [`layero deploy`](../cli/deploy)).
+3. Upload the archive to Yandex Object Storage.
+4. Start the build on the platform side.
+5. Stream the logs to your terminal and print the address at the end.
+
+The first deploy creates a project and records it in `./.layero/project.json`,
+so later `layero deploy` runs go to the same project.
+
+## 4. Open the site
+
+When the build finishes the CLI prints the address — open it. The site is live
+straight away; there is no host warm-up to wait for.
+
+:::tip What address the project gets
+User sites live in their own zone, `layero.app`. A new project gets an address
+from a single slug: `https://my-site.layero.app`. Projects created before the
+move (26 July 2026) still carry the organization prefix:
+`https://vasya-my-site.layero.app`.
+
+The exact address is printed by the CLI and shown in the dashboard — do not
+assemble it from a template. More in
+[Environments, previews and production](../deploys/environments).
+:::
+
+## 5. Changed the code — run `layero deploy` again
+
+```bash
+# you edited something in the editor (or an AI agent did)
+npx layero deploy
+# → the new build is published to the project's production address again
+```
+
+For a CLI project (one with no repository connected) every `layero deploy`
+**publishes to the apex automatically** — direct uploads auto-promote, and
+neither `--prod` nor `promote` is needed.
+
+The flip side is worth stating plainly: a plain deploy is **not** an isolated
+preview. It replaces what visitors see. If you want a publish that leaves
+production alone, deploy into a named branch:
+
+```bash
+npx layero deploy --branch=staging
+# → the staging branch preview address (24 h TTL, the apex untouched)
+```
+
+See [`layero promote`](../cli/promote) and
+[Environments](../deploys/environments) for the production flow of git-backed
+projects.
+
+## Where to go next
+
+- Using Cursor, Claude Code or another AI agent? —
+  [Deploying from AI agents](../cli/agents).
+- Bring a project up from GitHub: [Deploying from GitHub](../deploys/github).
+- Add environment variables: [Env vars](../deploys/env-vars).
+- Connect your own domain: [Custom domains](../deploys/custom-domains).
