@@ -1,55 +1,57 @@
 ---
 sidebar_position: 1
-title: Когда нужен runtime
-description: SSR Next.js, Streamlit, Gradio, Flask — для приложений с долгоживущим процессом. Cold start, scale-up и пресеты.
+title: When you need a runtime
+description: SSR Next.js, Streamlit, Gradio, Flask — for applications with a long-lived process. Cold start, scale-up and presets.
 ---
 
-# Когда нужен runtime
+# When you need a runtime
 
-Большинство фронтенд-проектов — статика: после `npm run build` получается
-папка с HTML/JS/CSS, и её достаточно положить в хранилище. Это самый быстрый
-и самый дешёвый режим Layero.
+Most frontend projects are static: `npm run build` produces a folder of
+HTML/JS/CSS and putting that in storage is enough. This is Layero's fastest
+and cheapest mode.
 
-Но некоторые приложения нельзя превратить в SPA — им нужен **процесс
-на сервере**:
+But some applications cannot be turned into an SPA — they need a **process on
+the server**:
 
-- **SSR Next.js** без `output: 'export'`,
-- **Streamlit / Gradio** — Python-приложения с веб-интерфейсом,
-- **Flask / FastAPI** с серверным рендером.
+- **SSR Next.js** without `output: 'export'`;
+- **Streamlit / Gradio** — Python applications with a web interface;
+- **Flask / FastAPI** with server-side rendering.
 
-Для них Layero запускает пользовательский **контейнер**.
+For those Layero runs a user **container**.
 
-## Поддерживаемые пресеты
+## Supported presets
 
-| `project_type` | Что это |
+| `project_type` | What it is |
 |---|---|
-| `spa` | Статика (default). |
-| `ssr_next` | Next.js c SSR / API-routes. |
-| `streamlit` | Streamlit-приложение. |
-| `gradio` | Gradio-приложение. |
-| `flask` | Flask-приложение. |
+| `spa` | Static output (the default). |
+| `ssr_next` | Next.js with SSR / API routes. |
+| `streamlit` | A Streamlit application. |
+| `gradio` | A Gradio application. |
+| `flask` | A Flask application. |
 
-Пресет выбирается в дашборде проекта (**Project → Runtime type**).
-Для каждого пресета используется готовый Dockerfile-шаблон —
-свой образ собирать не нужно.
+The preset is chosen in the project dashboard (**Project → Runtime type**).
+Each preset uses a ready-made Dockerfile template — you do not build your own
+image.
 
 ## Cold start
 
-Контейнер **поднимается по первому запросу**, обслуживает трафик
-и **засыпает при простое**. Это значит:
+The container **starts on the first request**, serves traffic and **goes to
+sleep when idle**. Which means:
 
-- Разбуженное из «тёплого» состояния приложение отвечает за **~0.2–0.3 с**,
-  полностью холодный старт — **~2–4 с** (реальные медианы платформы;
-  подробности и все состояния — в [Жизненном цикле](./lifecycle.md)).
-- Приложения с регулярным трафиком платформа **прогревает автоматически**.
-- В простое проект ничего не стоит по compute — за это serverless и любят.
+- Woken from a warm state, an application answers in **~0.2–0.3 s**; a fully
+  cold start takes **~2–4 s** (real platform medians; the details and all the
+  states are in the [Lifecycle](./lifecycle)).
+- Applications with regular traffic are **kept warm automatically** by the
+  platform.
+- While idle, a project costs nothing in compute — which is what people like
+  serverless for.
 
-Выделенный keep-warm (гарантированно без холодных стартов) — платная
-настройка в планах.
+Dedicated keep-warm (guaranteed no cold starts) is a paid setting in the
+plans.
 
-## Stateless-инвариант
+## The stateless invariant
 
-Файловая система контейнера **эфемерна** — это важное ограничение,
-которое легко проглядеть. Прочтите [Stateless-инвариант](./stateless.md)
-**прежде чем** мигрировать существующее SSR-приложение, использующее
-SQLite, файловые сессии или локальный кеш.
+The container's filesystem is **ephemeral** — an important constraint that is
+easy to overlook. Read [The stateless invariant](./stateless) **before**
+migrating an existing SSR application that uses SQLite, file-based sessions or
+a local cache.

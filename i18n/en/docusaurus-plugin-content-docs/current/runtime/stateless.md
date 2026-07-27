@@ -1,51 +1,50 @@
 ---
 sidebar_position: 2
-title: Stateless-инвариант
-description: Файловая система runtime-контейнера эфемерна. Что НЕ работает (SQLite-запись, файловые сессии) и как делать правильно.
+title: The stateless invariant
+description: A runtime container's filesystem is ephemeral. What does NOT work (writing to SQLite, file-based sessions) and how to do it properly.
 ---
 
-# Stateless-инвариант
+# The stateless invariant
 
-Файловая система runtime-контейнера в Layero **эфемерна**. Это
-продуктовая граница платформы, а не временный технический долг — те же
-ограничения у Vercel / Netlify / Cloudflare Workers.
+The filesystem of a runtime container on Layero is **ephemeral**. This is a
+product boundary of the platform rather than temporary technical debt — Vercel,
+Netlify and Cloudflare Workers have the same constraints.
 
-## Что значит «эфемерна»
+## What "ephemeral" means
 
-- При **cold start** контейнер поднимается из чистого образа. Всё, что
-  предыдущий инстанс записал в локальную FS, пропадает.
-- Остановить контейнер платформа может в любой момент простоя (см.
-  [Жизненный цикл](./lifecycle.md)) — рассчитывать на «файл доживёт до
-  завтра» нельзя даже при регулярном трафике.
-- Для быстрых временных файлов есть **`/tmp`** (in-memory, **64 MB**).
-  Содержимое живёт только пока жив текущий инстанс.
+- On a **cold start** the container comes up from a clean image. Everything the
+  previous instance wrote to the local filesystem is gone.
+- The platform may stop the container at any point of idleness (see the
+  [Lifecycle](./lifecycle)) — you cannot count on "the file will survive until
+  tomorrow" even with regular traffic.
+- For fast temporary files there is **`/tmp`** (in-memory, **64 MB**). Its
+  contents live only as long as the current instance.
 
-## Что НЕ работает
+## What does NOT work
 
-- **SQLite с записью** — БД переживёт только время жизни инстанса.
-- **`node-persist`, `lowdb`, `nedb`** и любые «файловые БД».
-- **Файловые сессии** — `express-session` с FileStore, файловые сессии
-  в Flask, Streamlit с локальным `~/.streamlit/session.json` и т. п.
-- **Запись пользовательских загрузок на диск** — файл пропадёт при
-  следующем запросе.
-- **In-process кеш между запросами** для multi-pod деплоев — каждый pod
-  не видит кеш остальных.
+- **SQLite with writes** — the database only survives as long as the instance.
+- **`node-persist`, `lowdb`, `nedb`** and any other "file databases".
+- **File-based sessions** — `express-session` with FileStore, file sessions in
+  Flask, Streamlit with a local `~/.streamlit/session.json`, and so on.
+- **Writing user uploads to disk** — the file disappears on the next request.
+- **An in-process cache shared between requests** for multi-pod deploys — each
+  pod cannot see the others' cache.
 
-## Что РАБОТАЕТ
+## What DOES work
 
-- **Read-only SQLite** с контентом, зашитым в образ.
-- **In-process кеш в рамках одного pod'а** — пока pod жив, кеш живёт.
-- **Временные файлы в `/tmp`** в пределах одного запроса.
+- **Read-only SQLite** with content baked into the image.
+- **An in-process cache within a single pod** — while the pod lives, the cache
+  lives.
+- **Temporary files in `/tmp`** within a single request.
 
-## Как делать правильно
+## How to do it properly
 
-| Задача | Решение |
+| Task | Solution |
 |---|---|
-| Persistent данные | Внешний managed Postgres (например, YC Managed PostgreSQL). |
-| Кеш | Внешний Redis (YC Managed Redis). |
-| Загруженные файлы | Внешний S3-совместимый сторадж (Yandex Object Storage). |
-| Сессии | JWT в cookie или Redis-store. |
+| Persistent data | An external managed Postgres (YC Managed PostgreSQL, for example). |
+| Cache | External Redis (YC Managed Redis). |
+| Uploaded files | External S3-compatible storage (Yandex Object Storage). |
+| Sessions | A JWT in a cookie, or a Redis store. |
 
-Если ваше приложение **обязано** иметь локальный диск — вероятно,
-Layero вам не подойдёт. Платформа не предоставляет persistent volumes
-ни сейчас, ни в плане.
+If your application **must** have a local disk, Layero is probably not for
+you. The platform does not offer persistent volumes, now or on the roadmap.

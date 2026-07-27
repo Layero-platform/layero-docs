@@ -1,46 +1,46 @@
 ---
 sidebar_position: 3
-title: Переменные окружения
-description: Env vars шифруются AES-256-GCM, доступны на стадии сборки и в runtime-контейнере.
+title: Environment variables
+description: Env vars are encrypted with AES-256-GCM and available at build time and inside the runtime container.
 ---
 
-# Переменные окружения
+# Environment variables
 
-Env vars задаются в дашборде проекта (**Project → Environment Variables**)
-или через API. Они доступны процессу сборки и попадают в `process.env`.
+Env vars are set in the project dashboard (**Project → Environment
+Variables**) or through the API. They are available to the build process and
+end up in `process.env`.
 
-## Где они применяются
+## Where they apply
 
-Env vars подставляются в окружение **на стадии сборки** (этап `env`
-в pipeline билдера, до `install`). Это значит, что фреймворки, которые
-встраивают переменные в бандл (Vite, Next.js с `NEXT_PUBLIC_*`, CRA с
-`REACT_APP_*`), увидят их и зашьют в артефакты.
+Env vars are injected into the environment **at build time** (the `env` stage
+of the builder pipeline, before `install`). This means frameworks that inline
+variables into the bundle (Vite, Next.js with `NEXT_PUBLIC_*`, CRA with
+`REACT_APP_*`) will see them and bake them into the artifacts.
 
-Для **runtime-проектов** (SSR Next, Streamlit, Gradio) переменные
-дополнительно прокидываются в окружение запущенного контейнера —
-доступны в runtime через тот же `process.env` / `os.environ`.
+For **runtime projects** (SSR Next, Streamlit, Gradio) the variables are
+additionally passed into the environment of the running container — available
+at runtime through the same `process.env` / `os.environ`.
 
-## Безопасность
+## Security
 
-Значения шифруются в БД алгоритмом **AES-256-GCM** с уникальным nonce
-на запись. Ключ шифрования (`ENV_ENCRYPTION_KEY`) хранится отдельно от
-БД и не доступен из приложений. В UI значения скрыты по умолчанию, при
-просмотре можно «раскрыть» конкретную запись.
+Values are encrypted in the database with **AES-256-GCM**, with a unique nonce
+per record. The encryption key (`ENV_ENCRYPTION_KEY`) is stored separately from
+the database and is not reachable from applications. In the UI values are
+hidden by default; you can reveal a specific record when viewing.
 
-## Что НЕ хранить
+## What not to store
 
-- **Никогда не коммитьте `.env*`** — `.env`, `.env.local` и т. п.
-  попадают в встроенный denylist `layero deploy` и в любом случае не
-  заливаются. Но если они окажутся в git-репо при GitHub-flow — Layero
-  склонирует их на стадии `clone`.
-- **Production-секреты не должны попадать в `NEXT_PUBLIC_*` /
-  `VITE_*` / `REACT_APP_*`** — эти префиксы означают «попасть в
-  клиентский бандл». Используйте их только для публичных значений
-  (например, public API endpoints, токены аналитики и т. п.).
+- **Never commit `.env*`.** `.env`, `.env.local` and the like are in the
+  built-in denylist of `layero deploy` and are not uploaded in any case. But if
+  they end up in the git repository under the GitHub flow, Layero will clone
+  them at the `clone` stage.
+- **Production secrets must not go into `NEXT_PUBLIC_*` / `VITE_*` /
+  `REACT_APP_*`.** Those prefixes mean "goes into the client bundle". Use them
+  only for public values — public API endpoints, analytics tokens and so on.
 
 ## CLI / API
 
-Через UI — самый простой путь. Если нужен скрипт:
+The UI is the simplest path. If you need a script:
 
 ```bash
 curl -X PUT https://api.layero.ru/projects/{id}/env \
@@ -49,4 +49,4 @@ curl -X PUT https://api.layero.ru/projects/{id}/env \
   -d '{"vars": [{"key": "API_URL", "value": "https://api.example.com"}]}'
 ```
 
-(Полная спека API публикуется отдельно.)
+(The full API specification is published separately.)
