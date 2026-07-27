@@ -21,7 +21,7 @@ description: Полный список команд layero — init, login, proj
 | `layero deploy --json` | Machine-readable стрим событий — для агентов и CI. |
 | `layero deploys list` | Показать недавние деплои текущего проекта. |
 | `layero promote` | Переключить production apex на конкретный ready-деплой. |
-| `layero promote --rollback` | Атомарный rollback apex'а на предыдущий production. |
+| `layero promote <sha>` | Вернуть апекс на конкретный деплой по `commit_sha` — рабочий способ отката, см. [Rollback](./rollback.md). |
 | `layero token set <jwt>` | Задать токен вручную (для CI). |
 
 Полный список флагов конкретной команды:
@@ -115,9 +115,8 @@ npx layero deploys list --limit 50            # больше истории
 ```bash
 npx layero promote                        # default-ветка → последний ready
 npx layero promote --branch=staging       # последний ready ветки staging
-npx layero promote --deploy=a3f9c2b       # конкретный commit/deploy
-npx layero promote --rollback             # вернуть apex на прошлый production
+npx layero promote a3f9c2b                # конкретный деплой по commit_sha (позиционный аргумент)
 npx layero promote --yes                  # без подтверждения (CI)
 ```
 
-`layero deploy --promote` — короткий путь: «собери и сразу выкати в production», эквивалент `layero deploy ... && layero promote --deploy=<last>`.
+`layero deploy --promote` — короткий путь: «собери и сразу выкати в production», эквивалент `layero deploy ... && layero promote <last-sha>`.

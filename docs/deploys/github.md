@@ -57,7 +57,7 @@ production продолжает отдавать ровно тот деплой,
 pointer.
 
 Чтобы выкатить feature-ветку в production без коммита в main —
-жмите «Promote» на её свежем деплое (или `layero promote --deploy=<sha>`).
+жмите «Promote» на её свежем деплое (или `layero promote <sha>`).
 
 Подробнее про модель доменов — [Окружения, preview и production](./environments.md).
 

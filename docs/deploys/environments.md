@@ -155,8 +155,7 @@ Production-адрес проекта всегда отдаёт **именно** 
 layero promote
 
 # promote конкретного деплоя по SHA или ID
-layero promote --deploy=a3f9c2b
-layero promote --deploy=550e8400-e29b-41d4-a716-446655440000
+layero promote a3f9c2b
 
 # выкатить из dev-ветки сразу в production одной командой
 layero deploy --branch=staging --promote
@@ -169,8 +168,13 @@ layero deploy --branch=staging --promote
 При каждом promote'е Layero сохраняет **предыдущий** production-деплой в `previous_production_deploy_id`. Кнопка «Откатить production» делает атомарный swap двух полей — apex возвращается на прошлый рабочий билд практически сразу; задержку даёт только короткий кеш на edge (до минуты).
 
 ```bash
-layero promote --rollback
+layero deploys list            # найти нужный commit_sha
+layero promote <commit-sha>   # вернуть апекс на него
 ```
+
+⚠️ `layero promote --rollback` не существует, а `layero rollback` двигает
+только окружение и апекс не возвращает — подробности и проверка в
+[Rollback](../cli/rollback.md).
 
 Rollback стабильный: вызвав его дважды, вернётесь к исходному состоянию (ping-pong).
 

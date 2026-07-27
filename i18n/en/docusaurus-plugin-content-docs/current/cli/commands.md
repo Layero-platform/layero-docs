@@ -21,7 +21,7 @@ description: The full list of layero commands — init, login, projects, deploy,
 | `layero deploy --json` | A machine-readable event stream — for agents and CI. |
 | `layero deploys list` | Show recent deploys of the current project. |
 | `layero promote` | Point the production apex at a specific ready deploy. |
-| `layero promote --rollback` | Atomically roll the apex back to the previous production. |
+| `layero promote <sha>` | Point the apex at a specific deploy by `commit_sha` — the working way to roll back, see [Rollback](./rollback). |
 | `layero token set <jwt>` | Set the token by hand (for CI). |
 
 The full flag list for a command:
@@ -129,11 +129,10 @@ Point the project's production apex at a specific ready deploy. Details in
 ```bash
 npx layero promote                        # default branch → latest ready
 npx layero promote --branch=staging       # latest ready of the staging branch
-npx layero promote --deploy=a3f9c2b       # a specific commit/deploy
-npx layero promote --rollback             # return the apex to the previous production
+npx layero promote a3f9c2b                # a specific deploy by commit_sha (positional)
 npx layero promote --yes                  # no confirmation (CI)
 ```
 
 `layero deploy --promote` is the short path — "build it and ship it to
 production straight away", equivalent to
-`layero deploy … && layero promote --deploy=<last>`.
+`layero deploy … && layero promote <last-sha>`.

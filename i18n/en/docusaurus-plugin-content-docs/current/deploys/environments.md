@@ -183,8 +183,7 @@ From the CLI:
 layero promote
 
 # promote a specific deploy by SHA or ID
-layero promote --deploy=a3f9c2b
-layero promote --deploy=550e8400-e29b-41d4-a716-446655440000
+layero promote a3f9c2b
 
 # ship straight from a dev branch to production in one command
 layero deploy --branch=staging --promote
@@ -201,8 +200,13 @@ atomic swap of the two fields — the apex returns to the last working build
 almost immediately; the only delay is a short edge cache (up to a minute).
 
 ```bash
-layero promote --rollback
+layero deploys list            # find the commit_sha you want
+layero promote <commit-sha>   # point the apex back at it
 ```
+
+⚠️ `layero promote --rollback` does not exist, and `layero rollback` only
+moves the environment without bringing the apex back — details and the
+verification in [Rollback](../cli/rollback).
 
 Rollback is stable: call it twice and you are back where you started
 (ping-pong).

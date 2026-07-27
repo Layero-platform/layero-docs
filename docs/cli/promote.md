@@ -6,6 +6,14 @@ description: Перевести production apex на конкретный деп
 
 # `layero promote`
 
+
+:::danger Формы команды проверены 27.07.2026
+- Деплой указывается **позиционным аргументом**: `layero promote <commit-sha>`.
+  Флага `--deploy=` не существует. Sha берётся из `layero deploys list`.
+- **`layero promote --rollback` не существует** — CLI отвечает
+  `unknown option`. Про рабочий откат — [Rollback](./rollback).
+:::
+
 Перевести production apex проекта на указанный деплой. Двигает указатель `production_deploy_id` — без пересборки, апекс начинает отдавать новый артефакт практически сразу (задержку даёт только короткий кеш на edge, до минуты).
 
 ## Зачем
@@ -25,14 +33,13 @@ Production-флоу в Layero «как у Vercel»:
 layero promote
 
 # promote по commit SHA (первые 7+ символов) или полному deploy id
-layero promote --deploy=a3f9c2b
-layero promote --deploy=550e8400-e29b-41d4-a716-446655440000
+layero promote a3f9c2b
 
 # конкретная ветка → её последний ready
 layero promote --branch=staging
 
 # rollback: вернуть apex на предыдущий production-деплой
-layero promote --rollback
+layero rollback
 
 # CI: без подтверждения
 layero promote --yes
@@ -57,7 +64,7 @@ layero promote --yes
 ## One-click rollback
 
 ```bash
-layero promote --rollback
+layero rollback
 ```
 
 Делает атомарный swap `production_deploy_id ↔ previous_production_deploy_id`. **Стабильный**: вызвали два раза подряд — вернулись в исходную точку (ping-pong). Удобно когда хочется быстро откатиться, попробовать, и при необходимости вернуться обратно.
@@ -90,4 +97,4 @@ layero deploy --branch=hot-fix --promote --yes
 
 ## Как это связано с rollback
 
-Раньше `layero rollback` менял `environments.active_deploy_id` (per-ветка). Под V071 модель доменов одна-на-проект: rollback теперь — это «откати **production apex** на прошлый pinned-деплой», т.е. swap двух полей проекта. Команда `layero rollback` удалена; используйте `layero promote --rollback`.
+Раньше `layero rollback` менял `environments.active_deploy_id` (per-ветка). Под V071 модель доменов одна-на-проект: rollback теперь — это «откати **production apex** на прошлый pinned-деплой», т.е. swap двух полей проекта. Команда `layero rollback` удалена; используйте `layero rollback`.

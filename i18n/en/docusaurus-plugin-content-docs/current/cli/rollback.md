@@ -6,6 +6,26 @@ description: Return the production apex to the previous working deploy with one 
 
 # Rollback
 
+:::danger Check what you are rolling back with
+Verified on a live project, 27 July 2026:
+
+- **`layero promote --rollback` does not exist** — the CLI answers
+  `unknown option '--rollback'`.
+- **`layero rollback` does exist**, but it only rolls back the environment
+  (`environments.active_deploy_id`). The apex keeps serving the broken deploy
+  while the command reports "rolled back" and "CDN cache purged" — it silently
+  fails to do the one thing you ran it for.
+- **The working way to bring the apex back is `layero promote <commit-sha>`.**
+  The argument is positional; there is no `--deploy=` flag. Take the sha from
+  `layero deploys list` (the `commit_sha` field).
+
+```bash
+layero deploys list                 # find the commit_sha you want
+layero promote ff0d1b86 --yes       # point the apex back at it
+```
+:::
+
+
 Return a project's production apex to the **previous** production deploy. No
 rebuild, no picking a commit — Layero remembers the old pointer value on every
 promote, and rollback simply swaps the two.

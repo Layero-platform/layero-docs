@@ -56,7 +56,7 @@ A push to any other branch creates a **preview environment** with its own URL
 refers to.
 
 To ship a feature branch to production without committing to main, press
-"Promote" on its latest deploy (or run `layero promote --deploy=<sha>`).
+"Promote" on its latest deploy (or run `layero promote <sha>`).
 
 More on the domain model in
 [Environments, previews and production](./environments).

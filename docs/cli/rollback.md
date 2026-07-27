@@ -6,6 +6,26 @@ description: Откатить production apex на предыдущий рабо
 
 # Rollback
 
+:::danger Проверьте, чем откатываетесь
+Проверено на живом проекте 27.07.2026:
+
+- **`layero promote --rollback` не существует** — CLI отвечает
+  `unknown option '--rollback'`.
+- **`layero rollback` существует**, но откатывает только окружение
+  (`environments.active_deploy_id`). Апекс продолжает отдавать сломанный
+  деплой, при этом команда рапортует «rolled back» и «CDN cache purged» —
+  то есть молча не делает то, ради чего её запускают.
+- **Рабочий способ вернуть апекс — `layero promote <commit-sha>`.** Аргумент
+  позиционный, флага `--deploy=` нет. Sha берётся из
+  `layero deploys list` (поле `commit_sha`).
+
+```bash
+layero deploys list                 # найти нужный commit_sha
+layero promote ff0d1b86 --yes       # вернуть апекс на него
+```
+:::
+
+
 Откатить production apex проекта на **предыдущий** production-деплой. Без пересборки, без выбора commit'а — Layero запоминает прошлое значение указателя при каждом promote, и rollback просто меняет их местами.
 
 ## Зачем
