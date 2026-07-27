@@ -1,86 +1,91 @@
 ---
 sidebar_position: 1
-title: Организации (личная и командная)
-description: Чем отличается личный аккаунт от команды, когда что использовать, как переключаться.
+title: Organizations (personal and team)
+description: How a personal account differs from a team, when to use which, and how to switch between them.
 ---
 
-# Организации
+# Organizations
 
-Layero, как и Vercel, организует всё вокруг **scope** — активной
-организации. Любой проект, член, домен и интеграция принадлежат конкретной
-организации. В верхнем левом углу дашборда — **OrganizationSwitcher**,
-по образцу Vercel:
+Layero, like Vercel, organises everything around a **scope** — the active
+organization. Every project, member, domain and integration belongs to a
+specific organization. In the top left corner of the dashboard is the
+**OrganizationSwitcher**:
 
-* **Personal Account** — ваш личный аккаунт. Создаётся автоматически
-  при регистрации, slug = ваш `username`. Один на пользователя, нельзя
-  удалить или переименовать в другой slug.
-* **Teams** — командные организации. Создаются через **+ Создать
-  команду** в нижней части switcher'а или на странице Команда.
+* **Personal Account** — your personal account. Created automatically at
+  signup, with your `username` as the slug. One per user; it cannot be deleted
+  or renamed to another slug.
+* **Teams** — team organizations. Created through **+ Create team** at the
+  bottom of the switcher, or on the Team page.
 
-## Чем отличается personal от team
+## How personal differs from team
 
 | | Personal | Team |
 |---|---|---|
-| Кто member | Только владелец | Несколько |
-| Приглашения | Нет | Да |
-| Роли | — | admin / member |
-| GitHub-репозитории | Личный GitHub-аккаунт через OAuth | GitHub Organization через GitHub App |
-| Удаляется | Нет (живёт пока существует юзер) | Да |
-| Переименование | slug фиксирован = username | Слаг можно поменять |
+| Who is a member | The owner only | Several people |
+| Invitations | No | Yes |
+| Roles | — | admin / member |
+| GitHub repositories | A personal GitHub account through OAuth | A GitHub Organization through the GitHub App |
+| Can be deleted | No (it lives as long as the user does) | Yes |
+| Can be renamed | The slug is fixed to the username | The slug can be changed |
 
-**Важно:** Personal Layero ≠ Personal GitHub. Это разные понятия.
-* Личный Layero-аккаунт может быть подключен к личному GitHub
-  (репы из `github.com/<login>/...`).
-* Командная Layero-orga подключается к **GitHub Organization** через
-  [GitHub App](./github-app.md), чтобы доступ к репам не зависел от
-  одного человека.
+**Important:** a personal Layero account is not the same thing as a personal
+GitHub account.
 
-## Создать команду
+* A personal Layero account can be connected to a personal GitHub
+  (repositories under `github.com/<login>/…`).
+* A Layero team organization connects to a **GitHub Organization** through the
+  [GitHub App](./github-app), so that access to repositories does not depend on
+  one person.
 
-1. Кликни **+ Создать команду** в OrganizationSwitcher (или на странице
-   Команда → раздел "Создать новую команду").
-2. Введи slug организации. В [адрес сайта](../deploys/environments.md) он
-   больше не попадает — адрес состоит из одного слага проекта.
-3. Команда создана, ты — admin.
-4. Опционально: подключи [GitHub App](./github-app.md), пригласи участников.
+## Creating a team
 
-## Пригласить участника
+1. Click **+ Create team** in the OrganizationSwitcher (or on the Team page →
+   "Create a new team").
+2. Enter the organization slug. For projects created before the move to
+   [`layero.app`](../deploys/environments) it ended up in the site address
+   (`<org>-<project>.layero.app`). For new ones the address consists of the
+   project slug alone, and the organization slug is only visible in the
+   dashboard and the CLI.
+3. The team is created and you are its admin.
+4. Optionally: connect the [GitHub App](./github-app) and invite members.
 
-`/account/team` → выбери team-orgу → раздел **"Пригласить по email"** →
-введи email + роль (admin/member) → создать invite. CLI получит ссылку,
-которую можно отправить приглашённому. Когда тот залогинится через
-GitHub/Yandex с этим email — invite применится автоматически.
+## Inviting a member
 
-## Роли
+`/account/team` → pick the team organization → the **"Invite by email"**
+section → enter the email and role (admin/member) → create the invite. The CLI
+returns a link you can send to the invitee. When they sign in through
+GitHub/Yandex with that email, the invite applies automatically.
 
-| Роль | Может |
+## Roles
+
+| Role | Can |
 |---|---|
-| admin | Всё: управлять членами, настройками, проектами, billing'ом |
-| member | Видеть проекты команды; роль на конкретном проекте задаётся отдельно (owner/editor/viewer) |
+| admin | Everything: manage members, settings, projects and billing |
+| member | See the team's projects; the role on a specific project is set separately (owner/editor/viewer) |
 
-Роли на уровне организации **отдельно** от ролей на проекте. Member
-команды не значит автоматически editor проекта — добавление в проект
-делается на странице Project → Members.
+Organization roles are **separate** from project roles. Being a member of a
+team does not automatically make you an editor of a project — that is done on
+the Project → Members page.
 
-## Переключение scope
+## Switching scope
 
-Top-bar OrganizationSwitcher persist'ит активный scope в localStorage —
-после refresh'а ты возвращаешься в ту же организацию. Все списки
-(Projects, Deploys, Repos для импорта) фильтруются по активной orgе.
+The top-bar OrganizationSwitcher persists the active scope in localStorage, so
+a refresh returns you to the same organization. Every list (Projects, Deploys,
+repositories to import) is filtered by the active organization.
 
-## Перенос проекта между организациями
+## Transferring a project between organizations
 
-Strana **Project → Settings → Transfer** инициирует transfer на target
-organization. Target-admin принимает запрос на странице Команда →
-"Входящие передачи проектов". Текущий owner после трансфера может быть
-сохранён как editor (опция в форме transfer'а) или потерять доступ.
+**Project → Settings → Transfer** starts a transfer to a target organization.
+An admin of the target accepts the request on the Team page → "Incoming
+project transfers". The current owner can be kept as an editor after the
+transfer (an option in the transfer form) or lose access.
 
-## Через CLI
+## From the CLI
 
-Каждая команда CLI работает в контексте Layero-организации. По умолчанию —
-ваша личная.
+Every CLI command works in the context of a Layero organization — your
+personal one by default.
 
-### Посмотреть список организаций
+### List organizations
 
 ```bash
 layero orgs list
@@ -88,27 +93,27 @@ layero orgs list
 # acme-team           team      (admin)
 ```
 
-### Создать проект в конкретной команде
+### Create a project in a specific team
 
 ```bash
-# первый layero deploy в директории создаёт project; --org указывает где
+# the first layero deploy in a directory creates the project; --org says where
 layero deploy --org acme-team
 ```
 
-Если у вас несколько организаций и `--org` не задан, CLI спросит интерактивно
-(или возьмёт personal для `--yes` / `--config`).
+If you belong to several organizations and `--org` is not given, the CLI asks
+interactively (or takes the personal one under `--yes` / `--config`).
 
-После первого деплоя project привязывается к организации; следующие
-`layero deploy` в той же папке используют ту же команду без `--org`.
+After the first deploy the project is bound to that organization; later
+`layero deploy` runs in the same folder use the same team without `--org`.
 
-### Удаление команды
+### Deleting a team
 
-CLI не поддерживает удаление команды — это разрушительная операция.
-Сделайте через дашборд: Команда → Опасная зона → Удалить команду.
-Команда должна быть пустой (без активных проектов).
+The CLI does not support deleting a team — that is a destructive operation. Do
+it from the dashboard: Team → Danger zone → Delete team. The team must be empty
+(no active projects).
 
-## GitHub-binding
+## GitHub binding
 
-Личный аккаунт привязывается **только** к личному GitHub-аккаунту.
-Команда — к личному GitHub **или** к GitHub Organization. Это enforced на
-backend и в UI. Подробно — [GitHub App](./github-app.md).
+A personal account binds **only** to a personal GitHub account. A team binds to
+a personal GitHub **or** to a GitHub Organization. This is enforced on the
+backend and in the UI. Details in the [GitHub App](./github-app) page.

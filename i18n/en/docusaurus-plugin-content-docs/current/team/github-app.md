@@ -1,93 +1,94 @@
 ---
 sidebar_position: 2
-title: GitHub App интеграция
-description: Зачем нужен GitHub App, как установить на personal или organization, в чём отличие от OAuth, как отключить.
+title: The GitHub App integration
+description: Why the GitHub App exists, how to install it on a personal account or an organization, how it differs from OAuth, and how to disconnect it.
 ---
 
-# GitHub App интеграция
+# The GitHub App integration
 
-Layero может работать с GitHub двумя способами:
+Layero can work with GitHub in two ways:
 
-* **OAuth App** (legacy) — токен конкретного пользователя. Layero
-  использует его для clone'а и создания per-repo webhook'ов. Ломается,
-  если этот пользователь уходит из организации или revoke'ает токен.
-* **GitHub App** (рекомендуется) — installation на GitHub-аккаунт или
-  GitHub Organization. Layero получает короткоживущий installation token
-  по запросу. Не зависит от конкретного юзера, переживает смену состава
-  команды.
+* **OAuth App** (legacy) — a specific user's token. Layero uses it to clone and
+  to create per-repository webhooks. It breaks when that person leaves the
+  organization or revokes the token.
+* **GitHub App** (recommended) — an installation on a GitHub account or a
+  GitHub Organization. Layero mints a short-lived installation token on
+  demand. It does not depend on any one user and survives changes in the team.
 
-Для command-organization GitHub App — **обязательный** способ доступа к
-репам: иначе все деплои привязаны к OAuth-токену одного человека.
+For a team organization the GitHub App is the **required** way to reach
+repositories: otherwise every deploy hangs on one person's OAuth token.
 
-## Подключение
+## Connecting
 
-1. https://app.layero.ru → выбери организацию в OrganizationSwitcher
-2. Перейди на страницу **Команда** (`/account/team`)
-3. В блоке **GitHub интеграция** жми **Подключить GitHub**
-4. Откроется picker:
-   * Если у твоего OAuth-токена нет scope `read:org` — Layero
-     автоматически прогонит OAuth round-trip, чтобы получить полный
-     список твоих GitHub-organizations
-   * После round-trip picker заново откроется со списком всех orgs
-5. Выбери GitHub Organization из списка — Layero отправит тебя сразу
-   на GitHub install page для этой orgы (никакого "personal account"
-   exhaust trap)
-6. На GitHub: выбери **All repositories** или конкретный список → Install
-7. GitHub редиректнет назад на `/account/team?github_app=connected`
+1. Go to https://app.layero.ru and pick the organization in the
+   OrganizationSwitcher.
+2. Open the **Team** page (`/account/team`).
+3. In the **GitHub integration** block press **Connect GitHub**.
+4. A picker opens:
+   * if your OAuth token lacks the `read:org` scope, Layero runs an OAuth
+     round trip automatically to obtain the full list of your GitHub
+     organizations;
+   * after the round trip the picker reopens with all organizations listed.
+5. Pick the GitHub Organization from the list — Layero sends you straight to
+   the GitHub install page for that organization (no "personal account"
+   dead end).
+6. On GitHub: choose **All repositories** or a specific list → Install.
+7. GitHub redirects back to `/account/team?github_app=connected`.
 
-После успешной установки в блоке **GitHub интеграция** появится:
+After a successful install the **GitHub integration** block shows:
 
 ```
-Подключено: layero-platform (GitHub Org)        [Отключить]
+Connected: layero-platform (GitHub Org)        [Disconnect]
 ```
 
-## Personal Layero org → Personal GitHub
+## A personal Layero org → personal GitHub
 
-Личный Layero-аккаунт тоже может использовать GitHub App, если ты
-хочешь App-подобный flow (без OAuth-токена) для своих личных репо.
-Picker предложит твой GitHub-юзер вместо organization'а. Это валидный
-сценарий, App установится на твой GitHub-юзер.
+A personal Layero account can use the GitHub App too, if you want the App-style
+flow (without an OAuth token) for your own repositories. The picker offers your
+GitHub user instead of an organization. That is a valid scenario — the App
+installs on your GitHub user.
 
-## Отключение
+## Disconnecting
 
-`/account/team` → **Отключить** в блоке GitHub интеграция. Это убирает
-связь Layero ↔ installation на нашей стороне. Сам App в GitHub
-остаётся установленным — чтобы полностью убрать, иди в `https://github.com/settings/installations`
-(или `https://github.com/organizations/<org>/settings/installations`)
-и uninstall.
+`/account/team` → **Disconnect** in the GitHub integration block. That removes
+the Layero ↔ installation link on our side. The App itself stays installed on
+GitHub — to remove it completely go to
+`https://github.com/settings/installations` (or
+`https://github.com/organizations/<org>/settings/installations`) and uninstall.
 
-После отключения существующие проекты под этой Layero-orgой потеряют
-App-токен. Следующий деплой упадёт с "no installation token" — нужно
-либо переподключить App, либо мигрировать проект на CLI-only.
+After disconnecting, existing projects under that Layero organization lose the
+App token. The next deploy fails with "no installation token" — you need either
+to reconnect the App or to migrate the project to CLI-only.
 
-## Что даёт App
+## What the App gives you
 
-* **Repo listing scoped to installation:** dashboard "New Project" → Import
-  Git Repository показывает только репы, к которым App имеет доступ
-  (а не все репы owner'а).
-* **Push events** через единый webhook `/webhook/github-app` (не нужно
-  per-repo webhook'и).
-* **Installation token** живёт 1 час, минтуется по запросу. Не нужно
-  хранить access token конкретного юзера.
-* **Builder context** автоматически предпочитает installation token при
-  clone'е репо.
+* **Repository listing scoped to the installation:** dashboard "New Project" →
+  Import Git Repository shows only the repositories the App has access to,
+  rather than everything the owner has.
+* **Push events** through one webhook `/webhook/github-app` — no per-repository
+  webhooks needed.
+* **An installation token** that lives for an hour and is minted on demand.
+  There is no need to store any user's access token.
+* **Builder context** automatically prefers the installation token when cloning
+  a repository.
 
 ## Troubleshooting
 
-### "Список ваших GitHub-организаций неполный"
+### "The list of your GitHub organizations is incomplete"
 
-OAuth-токен не имеет scope `read:org`. Нажми **Подключить GitHub** —
-Layero автоматически отправит на повторную авторизацию, GitHub попросит
-подтвердить новый scope.
+The OAuth token lacks the `read:org` scope. Press **Connect GitHub** — Layero
+sends you through authorization again and GitHub asks you to confirm the new
+scope.
 
 ### "GitHub App can't see X on this installation"
 
-App установлен, но repo не выбрана в его scope. Иди в
+The App is installed but the repository is not in its scope. Go to
 `https://github.com/organizations/<org>/settings/installations/<id>` →
-"Repository access" → выбери нужную repo.
+"Repository access" → select the repository you need.
 
-### "Не вижу свою organization в picker'е"
+### "I don't see my organization in the picker"
 
-После round-trip с `read:org` все orgs где ты member должны появиться.
-Если всё ещё не видно — введи имя orgи вручную через **"Не видишь нужную
-organization? Ввести вручную"**. Layero резолвит её через App JWT.
+After the `read:org` round trip every organization you are a member of should
+appear. If it still does not, enter the organization name by hand through
+**"Can't see the organization you need? Enter it manually"** — Layero resolves
+it through the App JWT.
