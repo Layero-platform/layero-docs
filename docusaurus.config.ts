@@ -159,7 +159,11 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/logo.svg',
+    // Растровая, а не логотип в SVG. Ни один сборщик превью — Telegram,
+    // Facebook, Slack, VK, Twitter — SVG в карточке не рисует, поддерживаются
+    // только PNG/JPEG/WebP. С logo.svg все 56 страниц и оба поста блога
+    // разворачивались в чате без картинки.
+    image: 'img/og-image.png',
     colorMode: {
       respectPrefersColorScheme: true,
     },
