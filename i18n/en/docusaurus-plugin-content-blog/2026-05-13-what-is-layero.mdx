@@ -1,0 +1,232 @@
+---
+slug: what-is-layero
+title: "Building a Vercel for Russia: four rewrites of the build system, and other adventures"
+description: The story of Layero — a frontend deployment platform for Russian developers. From a first version that merely served static files to gVisor workers, auto-detection of eight frameworks, and previews in 30 seconds.
+authors: [layero]
+tags: [announcement]
+---
+
+A friend sent me a link to his startup's landing page. The site would not open
+without a VPN.
+
+I asked where he had deployed it. Vercel, he said. Right, I said. Of course.
+
+Over the last couple of years this has become a pattern. A developer builds a
+site, deploys to Vercel — because it is convenient and fast — and then discovers
+that half of their Russian audience gets either a timeout or the browser page
+suggesting they check their connection. The AWS regions Vercel runs on are
+unreliable from Russia; it depends on the provider, the region and the phase of
+the moon.
+
+{/* truncate */}
+
+Fine — there is Yandex Cloud. Russian infrastructure, billing in roubles, stable
+IPs. But standing up a static site there with HTTPS and a domain takes several
+hours in the console, three different services and the inevitable ritual of the
+DNS challenge that never works the first time. I have been through that quest
+several times, and every time I swore quietly somewhere around Certificate
+Manager.
+
+At some point it became clear this was a systemic hole. A modern vibe coder —
+somebody who wrote a site in Cursor or assembled a landing page in Bolt — should
+not have to know anything about DNS records for certificate validation. They
+should press a button and get a live site. That is exactly what we are building.
+
+## What Layero is
+
+In one line: a frontend deployment platform on Russian infrastructure.
+
+You give it a repository and you get a live site with a domain, HTTPS and a
+preview environment for every branch. Certificates, CDN and builds are our
+problem. Billing in roubles, no Stripe.
+
+The key thing is preview environments. Every push to a branch gets its own URL,
+reachable 30 seconds after the build. You can show a pull request to a designer
+straight from GitHub without explaining how to run the project locally.
+
+## How a deploy works under the hood
+
+When a webhook arrives from GitHub, the API answers immediately and moves on —
+the build starts asynchronously in a separate worker. The worker clones the
+repository, detects the framework, installs dependencies, builds the project,
+uploads the result to S3 and activates the deploy. After activation every node
+of the platform learns about the new content within roughly 10 seconds, through
+a notification mechanism in the database.
+
+:::note How this works now (July 2026)
+The two sections below describe the platform as it was in spring 2026. Since
+then YC CDN has been removed from the path of user sites: the `*.layero.app` and
+`*.layero.ru` zones resolve straight to the platform load balancer, so a
+project's main address is live right after the build with no warm-up wait, and
+`POST` and WebSockets work on it too. The current picture is in
+[Environments, previews and production](/en/deploys/environments).
+:::
+
+### A 30-second preview against a 15-minute CDN
+
+YC CDN propagates across regions in 5–15 minutes. That is an objective reality
+you cannot route around. And yet you want a preview to be reachable right after
+the build — otherwise what is the point.
+
+The answer: two separate delivery paths for every deploy.
+
+The first is the preview link, which goes straight from the server, bypassing the
+CDN. The site is alive 30 seconds after the build finishes.
+
+The second is the project's main address through the CDN: proper TLS, caching at
+edge nodes, global reach. We determine CDN readiness instrumentally — we poll
+several public DNS resolvers and wait for the region to warm up. As soon as it
+has, the preview link starts redirecting to the main address automatically. After
+a day the preview stops working.
+
+### The SPA fallback: something YC CDN cannot do
+
+The classic SPA problem: a user opens `https://example.com/dashboard` directly,
+the CDN looks in S3, there is no `/dashboard` file, and it returns a 404. What
+you need is a fallback — on a 404, serve `index.html` with status 200.
+
+Vercel does this out of the box. YC CDN does not; it simply has no support for
+it. So between the CDN and storage we run an extra layer that intercepts the 404
+and serves `index.html`. It is the standard scheme for SPAs, but we had to
+arrange it explicitly ourselves.
+
+### Build isolation: gVisor
+
+User builds are someone else's code, and it cannot be trusted. Running it
+directly on the server is a bad idea.
+
+For isolation we use [gVisor](https://gvisor.dev/). It is not a full virtual
+machine, but it is far better than plain Docker: gVisor intercepts system calls
+and executes them in an isolated environment, keeping the code away from the host
+system. Cheaper than full virtualisation, and sufficient for our purposes.
+
+Every worker runs with limited memory and CPU, with no access to the host
+filesystem and with network egress only to the addresses it needs — the npm
+registry, GitHub, our storage. Every few minutes a background process cleans up
+finished containers and temporary files.
+
+---
+
+## Four rewrites of the build architecture
+
+This is the part of the story worth telling in detail.
+
+### Attempt one: Serverless Container
+
+The obvious first thought is to run builds in YC Serverless Container. Serverless
+scales itself, you pay for usage, you do not have to think about infrastructure.
+It sounds good.
+
+YC Serverless Container gives you 256 MB of temporary disk space — and that is
+all. There is nowhere to write the package manager's cache. A large project with
+300+ dependencies overflows that limit during installation alone. For a while we
+told users their project was "too big", which was of course untrue.
+
+The network was its own story. The serverless NAT drops idle connections after
+about two minutes. Installing packages means hundreds of sequential requests to
+the registry, any of which can land in that window. The result: installation hung
+halfway through with no errors in the logs at all — it simply stopped doing
+anything. Whole builds timed out after 16 minutes.
+
+The totals: 15+ minutes for a CRA project, instability, and no cache, which meant
+every deploy downloaded every dependency again.
+
+### Attempts two and three: fighting the limits
+
+The next two runs were variations on "work around the limits without changing the
+architecture". We pointed package managers at alternative cache paths and fetched
+sources through GitHub's archive API instead of a full git clone — faster, and
+not vulnerable to the NAT. It helped, but not fundamentally. Fifteen minutes
+became eight to ten, and the systemic problems stayed exactly where they were.
+
+In parallel we lost several weeks hunting random hangs during package
+installation. The symptoms looked like "something wrong with the YC network". It
+turned out to be our own npm proxy, which we had stood up for caching. Under
+concurrent requests to the upstream registry it went into offline mode, and
+instead of an error the package manager simply waited for a response that would
+never come. It is fixed by a single configuration parameter — but finding that
+took several iterations with verbose logging turned on.
+
+### Attempt four: a VM with NVMe
+
+The solution that actually worked was to stop fighting the Serverless Container
+limits and take a normal VM with an NVMe disk.
+
+A dispatcher runs on the VM, accepts build jobs and starts an isolated container
+for each one. The dependency cache lives on the host and is available to the
+container, so packages are not downloaded again on every deploy.
+
+Build time is two to three minutes on a typical project. The network is stable.
+The disk does not run out.
+
+We are now working on a fifth run: parallel builds and smarter cleanup of the
+dependency cache. But that is optimisation on top of a working system, rather
+than an attempt to resuscitate something that does not want to work.
+
+---
+
+## What a project, an environment and a deploy are
+
+The question seems trivial right up until you start implementing it.
+
+We have three levels: project, environment, deploy. A project is a repository. An
+environment is a branch: the default branch becomes production, any other becomes
+a preview. Each environment has its own address and a pointer to the build
+currently live. If a build fails we record which step it failed at — cloning,
+installing dependencies, compiling, uploading — so the logs tell you immediately
+where to look.
+
+In the first version there was no "environment" layer at all: a project pointed
+straight at deploys. That worked exactly until preview environments appeared, at
+which point it became unclear what counted as production and what was a temporary
+preview.
+
+---
+
+## Framework auto-detection
+
+You upload a repository and the platform works out what it is looking at: Next.js,
+Vite, Astro, Nuxt, SvelteKit, Gatsby, CRA, Docusaurus, or just static files. It
+determines the package manager from the lockfile and picks the Node version from
+the project's configuration. Node 18, 20 and 22 are supported — the binaries are
+preinstalled in the image, so nothing is downloaded during the build.
+
+Any of these decisions can be overridden by hand in the project settings or at
+deploy time through the CLI.
+
+---
+
+## Certificates
+
+This is where the whole project started.
+
+In Layero, SSL works like this: you add a domain and the platform requests a
+certificate through Let's Encrypt and attaches it to the CDN itself. If something
+goes wrong, we show why. We warn you two weeks before expiry.
+
+The user sees "Certificate being issued", then "Active". The words "DNS-01"
+appear nowhere.
+
+---
+
+## The stack
+
+The backend is Python, FastAPI and PostgreSQL. We write SQL by hand, without an
+ORM — a deliberate decision: you understand what is happening and why it is slow.
+The builder runs on the same stack. The CLI is TypeScript with four dependencies
+and no bloat. The control-plane frontend — React, Vite and Tailwind — is deployed
+through Layero.
+
+---
+
+## Where we are now
+
+The platform works. Deploys run, certificates are issued, previews appear in 30
+seconds. The CLI can deploy a local folder with one command and logs in through a
+device flow — the token is collected from the browser through the backend, with
+no local HTTP server, so it works even from the sandboxes of AI agents like
+Cursor and Claude Code. In progress: parallel builds and server-side rendering
+support (Next.js, SvelteKit with a server part).
+
+If you have a project that needs to be deployed in Russia, give it a try:
+[app.layero.ru](https://app.layero.ru)
