@@ -1,0 +1,135 @@
+---
+sidebar_position: 5
+title: layero promote
+description: Point the production apex at a specific deploy — from any branch, without a rebuild. Also the working way to roll production back.
+---
+
+# `layero promote`
+
+:::danger The command forms were verified on 27 July 2026
+- The deploy is given as a **positional argument**: `layero promote <commit-sha>`.
+  There is no `--deploy=` flag. Take the sha from `layero deploys list`.
+- **`layero promote --rollback` does not exist** — the CLI answers
+  `unknown option`. For the working rollback, see [Rollback](./rollback).
+:::
+
+Point a project's production apex at the given deploy. It moves the
+`production_deploy_id` pointer — no rebuild — and the apex starts serving the new
+artifact almost immediately; the only delay is a short edge cache, up to a
+minute.
+
+## What it is for
+
+Layero's production flow works the way Vercel's does:
+
+1. Push to any branch → that branch's preview URL (24 h TTL)
+2. Test it, share it, compare it
+3. Ready to ship — **promote** the ready deploy you just checked
+
+Without a promote the apex keeps serving the previous production. That is the
+safeguard against accidental releases right after a merge into main, when
+auto-promote is off for the team.
+
+## Usage
+
+```bash
+# promote the latest ready deploy of the default branch
+layero promote
+
+# promote by commit SHA (the first 7+ characters) or a full deploy id
+layero promote a3f9c2b
+
+# a specific branch → its latest ready deploy
+layero promote --branch=staging
+
+# roll back: return the apex to a previous working deploy, by its sha
+layero promote <commit-sha>
+
+# CI: no confirmation
+layero promote --yes
+```
+
+## What happens
+
+1. The CLI finds the deploy (by the positional sha, by the latest ready deploy
+   in `--branch`, or by the latest ready deploy of the default branch).
+2. It shows the plan:
+   ```
+   promote plan:
+     from: 1743a29  2026-05-08 20:30  v2.4.1 — bugfix release
+     to:   ce70191  2026-05-19 07:09  feature: new pricing page
+   proceed? [y/N]
+   ```
+3. Once you confirm, the backend:
+   - atomically updates `projects.production_deploy_id` (a CTE captures the old
+     value into `previous_production_deploy_id`, for rollbacks);
+   - writes to `promote_events` (an audit log: who, when, source='cli',
+     prev → new);
+   - invalidates the resolver cache through a Postgres NOTIFY.
+4. The edge picks up the new artifact at once; previously cached responses
+   refresh on a short TTL, up to a minute.
+
+## Rolling back
+
+:::warning `layero rollback` does not bring the apex back
+Verified on a live project on 27 July 2026: the command prints
+`rolled back to <sha>` and `CDN cache purged`, but it only moves
+`environments.active_deploy_id`. `production_deploy_id` stays on the broken
+deploy — **the apex keeps serving the broken version**.
+:::
+
+The working rollback is the same `promote`, pointed at the earlier sha:
+
+```bash
+layero deploys list                # find the commit_sha of a working build
+layero promote ff0d1b86 --yes      # point the apex back at it
+```
+
+The platform keeps two pointers on the project — `production_deploy_id` and
+`previous_production_deploy_id`. The second is updated on every promote, so the
+previous working deploy is always visible in the promote history. More in
+[Rollback](./rollback).
+
+## `--promote` as a flag on `layero deploy`
+
+If you want build → promote in one command, without waiting for `ready` in the
+UI:
+
+```bash
+layero deploy --branch=hot-fix --promote --yes
+```
+
+The build finishes, the CLI moves straight to the promote and confirms it. It is
+equivalent to `layero deploy … && layero promote <last-sha>`, minus the second
+manual command.
+
+## Limits
+
+- You can only promote a `ready` deploy that has an `s3_path` (or a registered
+  runtime container).
+- For **runtime** projects (SSR Next, Streamlit, Gradio, Flask) the promote
+  switches the pointer instantly, but a running instance of the old build keeps
+  answering until it is cycled — the next cold start already uses the new
+  artifact.
+- If auto-promote of the default branch is **on**, the next push to that branch
+  will overwrite your manual promote. Turn auto-promote off in the project's
+  Settings if you want to keep manual control over production.
+
+## Alternatives
+
+- In the dashboard, on the deploy page — the "Promote to production" button.
+- On the project page, in the Production card — the "Roll back" button. It works
+  on the backend and does move the production pointer, unlike the CLI's
+  `rollback` command.
+- The promote history — Project → Deploys → "Promote history" (it shows auto vs
+  ui vs cli, and who did it).
+
+## How this relates to rollback
+
+Each branch used to have its own canonical hostname, and `layero rollback`
+changed `environments.active_deploy_id` — that is, it worked per branch. Under
+V071 the domain model became one-per-project, and a rollback has to move the
+project's **production pointer**. The CLI command did not follow that change: it
+stayed on the old per-branch path, which is why it does not bring the apex back.
+The working rollback is a `promote` onto the right sha — see
+[Rollback](./rollback).

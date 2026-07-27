@@ -38,8 +38,8 @@ layero promote a3f9c2b
 # конкретная ветка → её последний ready
 layero promote --branch=staging
 
-# rollback: вернуть apex на предыдущий production-деплой
-layero rollback
+# откат: вернуть apex на прошлый рабочий деплой — по его sha
+layero promote <commit-sha>
 
 # CI: без подтверждения
 layero promote --yes
@@ -47,7 +47,7 @@ layero promote --yes
 
 ## Что происходит
 
-1. CLI находит deploy (по `--deploy`, по последнему ready в `--branch`, или по последнему ready в default-ветке).
+1. CLI находит deploy (по позиционному sha, по последнему ready в `--branch`, или по последнему ready в default-ветке).
 2. Показывает план:
    ```
    promote plan:
@@ -61,17 +61,26 @@ layero promote --yes
    - Инвалидирует resolver-кеш через Postgres NOTIFY.
 4. Edge подхватывает новый артефакт сразу; ранее закэшированные ответы обновляются по короткому TTL (до минуты).
 
-## One-click rollback
+## Откат
+
+:::warning `layero rollback` не возвращает апекс
+Проверено на живом проекте 27.07.2026: команда печатает `rolled back to <sha>`
+и `CDN cache purged`, но двигает только `environments.active_deploy_id`.
+`production_deploy_id` остаётся на сломанном деплое — **апекс продолжает
+отдавать сломанную версию**.
+:::
+
+Рабочий откат — тот же `promote`, только на прошлый sha:
 
 ```bash
-layero rollback
+layero deploys list                # взять commit_sha рабочего билда
+layero promote ff0d1b86 --yes      # вернуть на него апекс
 ```
 
-Делает атомарный swap `production_deploy_id ↔ previous_production_deploy_id`. **Стабильный**: вызвали два раза подряд — вернулись в исходную точку (ping-pong). Удобно когда хочется быстро откатиться, попробовать, и при необходимости вернуться обратно.
-
-Rollback **не требует** ввода commit SHA — оба деплоя уже зафиксированы платформой при предыдущем promote'е.
-
-Если `previous_production_deploy_id` пуст (на проекте ещё ни одного promote не было) — CLI вернёт ошибку: откатываться некуда, надо хотя бы один promote сделать сначала.
+Платформа хранит на проекте два указателя — `production_deploy_id` и
+`previous_production_deploy_id`; второй обновляется при каждом promote, поэтому
+предыдущий рабочий деплой всегда видно в истории промоутов. Подробности —
+[Rollback](./rollback).
 
 ## `--promote` как флаг `layero deploy`
 
@@ -81,7 +90,7 @@ Rollback **не требует** ввода commit SHA — оба деплоя �
 layero deploy --branch=hot-fix --promote --yes
 ```
 
-Билд завершится, CLI автоматом перейдёт в promote и подтвердит. Эквивалентно `layero deploy ... && layero promote --deploy=<last>`, но без второй ручной команды.
+Билд завершится, CLI автоматом перейдёт в promote и подтвердит. Эквивалентно `layero deploy ... && layero promote <last-sha>`, но без второй ручной команды.
 
 ## Ограничения
 
@@ -92,9 +101,14 @@ layero deploy --branch=hot-fix --promote --yes
 ## Альтернативы
 
 - В дашборде на странице деплоя — кнопка «Promote to production».
-- На странице проекта в Production card — кнопка «Откатить» = эквивалент `--rollback`.
+- На странице проекта в Production card — кнопка «Откатить». Она работает на стороне бэкенда и двигает production-указатель, в отличие от CLI-команды `rollback`.
 - История промоутов — Project → Deploys → «Promote history» (видно auto vs ui vs cli + кто).
 
 ## Как это связано с rollback
 
-Раньше `layero rollback` менял `environments.active_deploy_id` (per-ветка). Под V071 модель доменов одна-на-проект: rollback теперь — это «откати **production apex** на прошлый pinned-деплой», т.е. swap двух полей проекта. Команда `layero rollback` удалена; используйте `layero rollback`.
+Раньше у каждой ветки был свой канонический хост, и `layero rollback` менял
+`environments.active_deploy_id` — то есть работал по-веточно. Под V071 модель
+доменов стала одна-на-проект, и откат должен двигать **production-указатель**
+проекта. CLI-команда за этой сменой не пошла: она осталась на старом,
+по-веточном пути, и поэтому апекс не возвращает. Рабочий откат — `promote` на
+нужный sha, см. [Rollback](./rollback).
