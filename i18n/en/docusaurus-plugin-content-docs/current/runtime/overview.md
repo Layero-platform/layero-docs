@@ -38,9 +38,10 @@ image.
 The container **starts on the first request**, serves traffic and **goes to
 sleep when idle**. Which means:
 
-- Woken from a warm state, an application answers in **~0.2–0.3 s**; a fully
-  cold start takes **~2–4 s** (real platform medians; the details and all the
-  states are in the [Lifecycle](./lifecycle)).
+- Woken from a warm state, an application answers in **~0.2 s**; a fully cold
+  start takes **4–12 s** depending on the stack (Python is faster, Streamlit
+  slower). These are medians of real measurements; the per-stack table and all
+  the states are in [Lifecycle](./lifecycle).
 - Applications with regular traffic are **kept warm automatically** by the
   platform.
 - While idle, a project costs nothing in compute — which is what people like

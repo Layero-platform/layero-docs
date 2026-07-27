@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: Lifecycle & speed
-description: "Layero's serverless model: warm responses in ~0.25 s, cold starts in 2–4 s, freeze on idle. Real measurements and what they mean for your app."
+description: "Layero's serverless model: warm responses in ~0.2 s, cold starts of 4–12 s depending on the stack, freeze on idle. Real measurements and what they mean for your app."
 ---
 
 # Lifecycle & speed
@@ -16,13 +16,32 @@ Here are the honest numbers.
 |---|---|---|
 | **Hot** | the process is serving traffic | your app's normal speed (~0.1–0.2 s) |
 | **Warm** | process frozen in memory (after ~20 s idle) | **~0.2–0.3 s** — instant thaw |
-| **Cold** | container stopped, image kept on the node | **~2–4 s** — fresh process start |
+| **Cold** | container stopped, image kept on the node | **~4–12 s** — fresh process start, depends on the stack |
 | **Archived** | no visits for 30+ days (free tier) | like cold, slightly longer |
 
-These are medians of real platform measurements (July 2026), not
-marketing: we continuously probe every app with a synthetic monitor.
-Heavy SSR apps can pay more on cold start — that's *your* process's
-boot time.
+These are medians of real platform measurements, not marketing: we
+continuously probe every app with a synthetic monitor. Fourteen days of data
+(July 2026), user applications only:
+
+| State | Median | 90th percentile |
+|---|---|---|
+| Hot | 0.13 s | 0.53 s |
+| Warm | 0.20 s | 0.70 s |
+| Cold | **10.9 s** | **20.7 s** |
+
+A cold start depends heavily on the stack — it is your process's boot time
+plus bringing the container up:
+
+| Kind of app | Median cold start |
+|---|---|
+| Python (Flask, FastAPI) | 4.5 s |
+| Node (Express, Fastify) | 6.1 s |
+| SSR Next.js | 9.3 s |
+| Streamlit | 11.8 s |
+
+Cold starts are rare: over those same fourteen days there were 8,800 hot
+responses against 335 cold ones. But when one happens the visitor waits
+seconds, not fractions of a second — plan against that number.
 
 ## Why visitors usually don't wait
 
@@ -64,4 +83,5 @@ An always-running container costs money even when nobody opens the
 site. The serverless model lets Layero host your app **cheaply or for
 free**: a sleeping project consumes almost nothing, and wakes faster
 than alternatives in this class (some competitors' free projects take
-30–60 seconds to wake; ours: warm — 0.2–0.3 s, cold — 2–4 s).
+30–60 seconds to wake; ours: the warm state answers in 0.2 s, and the
+vast majority of requests land in it).
