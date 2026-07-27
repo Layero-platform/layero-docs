@@ -157,7 +157,7 @@ claude plugin install layero@layero-claude
 codex mcp add layero --url https://mcp.layero.ru/mcp --transport http
 ```
 
-Cursor installs it in one click from https://land.layero.ru
+Cursor installs it in one click from https://land.layero.app
 
 **Which one to use.** The CLI (`npx layero deploy`) deploys a project that
 already exists — that is the right tool when the user has code. The MCP server

@@ -8,7 +8,7 @@ description: One click in Cursor through a deeplink, copy-paste commands in Clau
 
 ## Cursor (one click)
 
-Open [land.layero.ru](https://land.layero.ru) and press **Add to Cursor**. The
+Open [land.layero.app](https://land.layero.app) and press **Add to Cursor**. The
 browser fires a deeplink, the IDE opens and shows a dialog:
 
 ```

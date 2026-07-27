@@ -8,7 +8,7 @@ description: Один клик в Cursor через deeplink, copy-paste ком�
 
 ## Cursor (one-click)
 
-Открой [land.layero.ru](https://land.layero.ru), нажми **Add to Cursor**. Браузер выкинет deeplink — IDE откроется и покажет диалог:
+Открой [land.layero.app](https://land.layero.app), нажми **Add to Cursor**. Браузер выкинет deeplink — IDE откроется и покажет диалог:
 
 ```
 Install MCP Server

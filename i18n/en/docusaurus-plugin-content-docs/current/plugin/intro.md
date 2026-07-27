@@ -30,7 +30,7 @@ Unlike the [CLI flow](/en/cli/install), which deploys an **existing** project,
 
 ## Quick start
 
-1. Open [land.layero.ru](https://land.layero.ru) (the install page)
+1. Open [land.layero.app](https://land.layero.app) (the install page)
 2. Press **Add to Cursor** — the IDE opens and offers to install the MCP server
 3. In the IDE chat, write:
    ```

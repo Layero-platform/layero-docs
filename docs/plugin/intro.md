@@ -20,7 +20,7 @@ description: MCP-плагин для Cursor, Claude Code и Codex, которы�
 
 ## Быстрый старт
 
-1. Открой [land.layero.ru](https://land.layero.ru) (страница установки)
+1. Открой [land.layero.app](https://land.layero.app) (страница установки)
 2. Нажми **Add to Cursor** — IDE откроется и предложит установить MCP-сервер
 3. В чате IDE напиши:
    ```
