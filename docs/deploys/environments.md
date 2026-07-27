@@ -179,9 +179,11 @@ layero deploys list            # найти нужный commit_sha
 layero promote <commit-sha>   # вернуть апекс на него
 ```
 
-⚠️ `layero promote --rollback` не существует, а `layero rollback` двигает
-только окружение и апекс не возвращает — подробности и проверка в
-[Rollback](../cli/rollback.md).
+`layero rollback` возвращает и апекс — при условии, что production
+обслуживается той же веткой (починено 27.07.2026; раньше двигалось только
+окружение). Флага `layero promote --rollback` не существует; чтобы вернуться
+на конкретный старый деплой, используйте `layero promote <commit-sha>`.
+Подробности — в [Rollback](../cli/rollback.md).
 
 Rollback стабильный: вызвав его дважды, вернётесь к исходному состоянию (ping-pong).
 
