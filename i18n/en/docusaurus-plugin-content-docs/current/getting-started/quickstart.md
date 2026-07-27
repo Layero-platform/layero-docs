@@ -11,6 +11,14 @@ are not required** — Layero uploads the local directory directly. If you want
 automatic deploys on `git push`, that is a day-N upgrade: see
 [Deploying from GitHub](../deploys/github).
 
+:::note No code yet?
+This page is about publishing a project that **already exists**. If the site
+does not exist yet and you want to build it from scratch inside the IDE chat,
+that is a different tool: the [`@layero` plugin](../plugin/intro) for Cursor,
+Claude Code and Codex. Describe the idea in one sentence, answer two or three
+short questions, and get a finished page published straight away.
+:::
+
 ## 1. Run the CLI
 
 Nothing to install — use `npx`:
