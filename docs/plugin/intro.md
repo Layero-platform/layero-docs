@@ -39,10 +39,20 @@ description: MCP-плагин для Cursor, Claude Code и Codex, которы�
          ▼
 [ mcp.layero.ru ]   ← MCP-сервер на Python (FastMCP)
          │
-         ├── tools: compose_landing, add_integration, deploy, list_design_systems, list_structures
-         ├── prompts: welcome, make_premium, make_friendly, integrate_telegram, ...
-         └── resources: layero://soul, layero://playbook/deploy, layero://catalogue
+         ├── сборка:    compose_landing, list_design_systems, list_structures
+         ├── публикация: publish_landing, add_integration
+         ├── эксплуатация: site_status, diagnose_deploy, check_performance
+         ├── настройка:  env_vars, connect_domain, check_domain, list_domains
+         ├── аналитика:  connect_analytics, site_analytics
+         ├── аккаунт:    whoami, my_projects
+         └── ресурсы:    layero://soul, layero://catalogue
 ```
+
+Шестнадцать инструментов, и это уже не только «собери лендинг». Плагин
+умеет опубликовать результат сам — без Node и терминала у вас, — показать
+состояние сайта, разобрать упавший деплой, подключить домен и аналитику,
+сравнить скорость до и после. То есть закрывает цикл целиком, а не первый
+шаг.
 
 ## SOUL — философия плагина
 

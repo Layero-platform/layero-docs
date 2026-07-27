@@ -51,10 +51,20 @@ transport.
          ▼
 [ mcp.layero.ru ]   ← MCP server in Python (FastMCP)
          │
-         ├── tools: compose_landing, add_integration, deploy, list_design_systems, list_structures
-         ├── prompts: welcome, make_premium, make_friendly, integrate_telegram, ...
-         └── resources: layero://soul, layero://playbook/deploy, layero://catalogue
+         ├── building:  compose_landing, list_design_systems, list_structures
+         ├── shipping:  publish_landing, add_integration
+         ├── operating: site_status, diagnose_deploy, check_performance
+         ├── setup:     env_vars, connect_domain, check_domain, list_domains
+         ├── analytics: connect_analytics, site_analytics
+         ├── account:   whoami, my_projects
+         └── resources: layero://soul, layero://catalogue
 ```
+
+Sixteen tools — and no longer just "build me a landing page". The plugin
+publishes the result itself (no Node and no terminal on your side), reports
+the state of a site, diagnoses a failed deploy, connects a domain and
+analytics, and compares speed before and after. It covers the whole cycle,
+not only the first step.
 
 ## SOUL — the plugin's philosophy
 
