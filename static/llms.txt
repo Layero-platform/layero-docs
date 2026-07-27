@@ -131,10 +131,18 @@ of shelling out:
 https://mcp.layero.ru/mcp        transport: Streamable HTTP, no auth to connect
 ```
 
-Tools it exposes: `compose_landing` (the main entry point — builds a complete
-landing page from a short brief), `add_integration` (wires form submissions to
-Telegram, Google Sheets or a webhook), `deploy`, `list_design_systems`,
-`list_structures`.
+Sixteen tools, covering the whole cycle rather than just the first step:
+
+- **build** — `compose_landing` (the main entry point: a complete landing page
+  from a short brief), `list_design_systems`, `list_structures`
+- **ship** — `publish_landing` (uploads and builds server-side; the user needs
+  neither Node nor a terminal), `add_integration` (form submissions to
+  Telegram, Google Sheets or a webhook)
+- **operate** — `site_status`, `diagnose_deploy` (reads a failed build and says
+  what to fix), `check_performance`
+- **configure** — `env_vars`, `connect_domain`, `check_domain`, `list_domains`
+- **measure** — `connect_analytics`, `site_analytics`
+- **account** — `whoami`, `my_projects`
 
 Registered in the official MCP registry as `ru.layero/layero`.
 

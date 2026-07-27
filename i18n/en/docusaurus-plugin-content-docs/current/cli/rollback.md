@@ -1,27 +1,41 @@
 ---
 sidebar_position: 6
 title: Rollback
-description: How to bring the production apex back to the previous working deploy. What the rollback command actually does, and why you roll back through promote.
+description: How to bring the production apex back to a working deploy — with the rollback command, or with a targeted promote onto a specific commit_sha.
 ---
 
 # Rollback
 
-:::danger `layero rollback` does not bring the apex back
-Verified on a live project on 27 July 2026: a deliberately broken build was
-deployed, then rolled back.
+:::tip Fixed on 27 July 2026
+`layero rollback` used to print `rolled back to <sha>` while moving only
+`environments.active_deploy_id` — and the public address resolves through
+`projects.production_deploy_id`. The command reported success without
+restoring anything, precisely at the moment production was already down.
 
-The command prints `rolled back to <sha>` and `CDN cache purged`, but it only
-moves `environments.active_deploy_id`. After it runs,
-`production_deploy_id` still points at the broken deploy — **the apex keeps
-serving the broken version**.
+Rollback now moves the pointer as well: if the apex is served by the branch
+being rolled back, the public address comes back with it. Verified on a live
+project — three deploys, a rollback, and the apex serves the previous version
+from the very first request. The pointer change is recorded in the history as
+a separate `rollback` action.
 
-This is the worst kind of defect: the recovery tool reports success without
-recovering, and it fires exactly when production is already down.
+Rolling back a *different* branch still leaves the apex alone: if the owner
+deliberately keeps production on another branch, that is their choice.
 :::
 
-## The working way to bring the apex back
+## How to roll back
 
-The same `promote`, pointed at the earlier sha:
+```bash
+layero rollback              # return to the previous successful deploy
+layero rollback --yes        # no confirmation
+```
+
+The command shows a plan and, once confirmed, restores both the environment's
+active deploy and — if the apex is served by this branch — the public address.
+
+## When you want promote instead
+
+If you need to go back not to the previous deploy but to a specific older one,
+by `commit_sha`:
 
 ```bash
 layero deploys list                 # find the commit_sha of a working build
@@ -85,19 +99,13 @@ history: Project → Deploys → "Promote history".
 ## Alternatives
 
 - In the dashboard: the project page → the Production card → the "Roll back"
-  button. It works on the backend and does move the production pointer, unlike
-  the CLI's `rollback` command.
+  button, which moves the production pointer on the backend.
+- The per-deploy "Roll back the active deploy" control in the deploys list
+  behaves the same way: since 27 July 2026 it also returns the apex when the
+  production pointer is served by that branch.
 - If you want an actual **rebuild** of the older commit rather than reusing the
   artifact, run an ordinary `layero deploy` with that code, or Redeploy from
   the dashboard.
-
-## Where the discrepancy comes from
-
-Each branch used to have its own canonical hostname, and `layero rollback`
-changed `environments.active_deploy_id` — that is, it worked per branch. With
-the move to one-apex-per-project (V071) a rollback has to move the project's
-**production pointer**. The CLI command did not follow that change: it stayed
-on the old per-branch path. Hence the success report with an unchanged apex.
 
 Related: [`layero promote`](./promote),
 [Environments, previews and production](../deploys/environments).

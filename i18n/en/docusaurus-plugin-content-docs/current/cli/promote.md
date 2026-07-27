@@ -71,14 +71,12 @@ layero promote --yes
 
 ## Rolling back
 
-:::warning `layero rollback` does not bring the apex back
-Verified on a live project on 27 July 2026: the command prints
-`rolled back to <sha>` and `CDN cache purged`, but it only moves
-`environments.active_deploy_id`. `production_deploy_id` stays on the broken
-deploy — **the apex keeps serving the broken version**.
-:::
+`layero rollback` returns the **previous** successful deploy and, since
+27 July 2026, moves the production pointer with it — see
+[Rollback](./rollback).
 
-The working rollback is the same `promote`, pointed at the earlier sha:
+Use `promote` when you need a **specific** older deploy rather than the
+previous one:
 
 ```bash
 layero deploys list                # find the commit_sha of a working build
@@ -129,7 +127,7 @@ manual command.
 Each branch used to have its own canonical hostname, and `layero rollback`
 changed `environments.active_deploy_id` — that is, it worked per branch. Under
 V071 the domain model became one-per-project, and a rollback has to move the
-project's **production pointer**. The CLI command did not follow that change: it
-stayed on the old per-branch path, which is why it does not bring the apex back.
-The working rollback is a `promote` onto the right sha — see
+project's **production pointer**. For a while the CLI command lagged behind that
+change and did not bring the apex back; fixed on 27 July 2026 — `rollback` now
+moves the pointer too, when the apex is served by the same branch. Details in
 [Rollback](./rollback).
