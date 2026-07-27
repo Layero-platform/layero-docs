@@ -178,22 +178,42 @@ CLI упаковал директорию в tar.gz.
 
 ## Коды ошибок
 
+Список сверен с исходниками CLI: это все коды, которые он действительно
+выдаёт. Не изобретайте обработку кодов, которых здесь нет.
+
 | `code` | Когда происходит | Что делать (`next_action`) |
 |---|---|---|
-| `not_logged_in` | Нет токена в `~/.layero/config.json` | `run: layero login` |
+| `auth_required` | Нет токена ни в `~/.layero/config.json`, ни в `LAYERO_TOKEN` | `layero login`, либо задать `LAYERO_TOKEN` |
 | `auth_expired` | `user_code` истёк (15 мин TTL), пользователь не подтвердил | Запустить `layero login` ещё раз |
 | `auth_timeout` | CLI поллил 15 минут, юзер так и не подтвердил | Запустить `layero login` ещё раз |
-| `invalid_type` | `--type` с неизвестным значением | Убрать флаг (полагаемся на авто-детект) или передать валидный пресет |
-| `invalid_choice` | Интерактивный prompt получил невалидный выбор в non-TTY режиме | Передать значение явным флагом (`--org`, `--project`) |
-| `project_not_found` | `--project` указывает на несуществующий проект | `run: layero projects list` |
-| `project_unlinked` | Linked-проект удалён на сервере | Удалить `.layero/project.json` и запустить deploy заново |
-| `username_missing` | OAuth прошёл, но username не выбран | Открыть `https://app.layero.ru/onboarding` |
-| `org_membership_missing` | `--org` указывает на не-вашу организацию | Передать корректный slug или убрать флаг |
-| `no_organization` | На аккаунте нет ни одной организации | Завершить onboarding в дашборде |
-| `cli_deploys_disabled` | Админ выключил CLI-деплои в проекте | Включить в Project Settings → CLI deploys |
-| `deploy_failed` | Билд упал | Открыть deploy URL из `message`, посмотреть логи |
-| `deploy_error` / `deploy_canceled` / `deploy_timed_out` | Билд не дошёл до `ready` по разным причинам | См. сообщение |
-| `internal` | Непредвиденная ошибка CLI | Запустить с `--debug`, открыть issue |
+| `oauth_unavailable` | Провайдер входа недоступен | Это на нашей стороне — попробовать позже |
+| `project_unknown` | Команда вызвана вне каталога проекта и без `--project` | Запустить из каталога проекта или передать `--project <id\|slug>` |
+| `project_not_found` | `--project` указывает на несуществующий проект | `layero projects list` |
+| `cli_deploys_disabled` | Админ выключил CLI-деплои в проекте | Включить в Project Settings → CLI deploys, либо деплоить в другой проект |
+| `invalid_type` | `--type` с неизвестным значением | Убрать флаг (авто-детект) или передать валидный пресет — список в сообщении |
+| `invalid_choice` | Интерактивный prompt получил невалидный выбор в non-TTY | Передать значение явным флагом |
+| `prebuilt_no_dir` | Каталог из `--prebuilt` не найден | Указать явно: `--prebuilt ./dist` |
+| `prebuilt_no_index` | В каталоге `--prebuilt` нет `index.html` | Указать папку со собранным `index.html` |
+| `deploy_not_started` | Сборка не стартовала | Повторить `layero deploy`; если повторяется — смотреть проект в дашборде |
+| `deploy_failed` | Билд не дошёл до `ready` | Открыть логи по ссылке из `next_action` |
+| `no_deploy` / `no_deploys` | У проекта ещё нет деплоев | Сначала `layero deploy` |
+| `env_not_found` | Переменной нет | `layero env list` |
+| `nothing_to_set` | `layero env set` вызван без пары `KEY=value` | `layero env set KEY=value` |
+| `bad_format` | Аргумент не разобран | Формат — в сообщении |
+| `domain_not_found` | Домена нет у проекта | `layero domains list` |
+| `domain_rejected` | Платформа отклонила домен | Причина — в сообщении |
+| `forbidden` | Операции не хватает scope у токена | Выпустить токен с нужным scope |
+| `branch_without_env` | Для ветки ещё нет окружения | Сначала задеплоить эту ветку |
+| `analytics_not_connected` | Аналитика не подключена | `layero analytics connect` |
+| `no_runs` | Нет прогонов замера скорости | `layero perf check` |
+| `internal` | Непредвиденная ошибка CLI (сеть, неожиданное исключение) | Перезапустить с `--debug` |
+
+:::note Код деплоя собирается из статуса
+Код неуспешного деплоя формируется как `deploy_<status>` по статусу сборки, а
+статусов у деплоя четыре: `ready`, `building`, `failed`, `cancelled`. Значит на
+практике встречаются ровно `deploy_failed` и `deploy_cancelled` — кодов
+`deploy_error` и `deploy_timed_out` не существует, не закладывайтесь на них.
+:::
 
 ## Cold-start template для агента
 

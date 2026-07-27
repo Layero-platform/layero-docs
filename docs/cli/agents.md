@@ -94,15 +94,21 @@ npx layero init
 
 | `code` | `next_action` | Когда |
 |---|---|---|
-| `not_logged_in` | run: layero login | Токена нет в `~/.layero/config.json` |
+| `auth_required` | `layero login` или `LAYERO_TOKEN` | Токена нет ни в `~/.layero/config.json`, ни в переменной |
 | `auth_expired` / `auth_timeout` | run: layero login | Пользователь не подтвердил код за 15 минут |
 | `invalid_type` | valid types: vite, next, ... | `--type` с неизвестным значением |
+| `project_unknown` | запустить из каталога проекта или `--project` | Команда вызвана вне проекта |
 | `project_not_found` | run `layero projects list` | `--project` указывает на несуществующий проект |
-| `project_unlinked` | delete .layero/project.json and re-run | Linked project удалён на сервере |
-| `username_missing` | open https://app.layero.ru/onboarding | OAuth прошёл, но username не выбран |
-| `no_organization` / `org_membership_missing` | available: foo, bar, ... | На аккаунте нет нужной организации |
 | `cli_deploys_disabled` | enable in project settings | Админ выключил CLI-деплои |
-| `deploy_failed` / `deploy_error` / `deploy_timed_out` | inspect logs at ... | Сборка не дошла до `ready` |
+| `prebuilt_no_dir` / `prebuilt_no_index` | указать `--prebuilt ./dist` | Каталога сборки нет или в нём нет `index.html` |
+| `deploy_not_started` | повторить `layero deploy` | Сборка не стартовала |
+| `deploy_failed` | inspect logs at ... | Сборка не дошла до `ready` |
+| `internal` | перезапустить с `--debug` | Непредвиденная ошибка CLI |
+
+Полный список — на странице [JSON-события](./json-events). Кодов
+`not_logged_in`, `project_unlinked`, `username_missing`,
+`org_membership_missing`, `no_organization`, `deploy_error` и
+`deploy_timed_out` **не существует** — они были в ранних версиях CLI и удалены.
 
 ## Cold-start: что ваш агент должен делать
 

@@ -186,23 +186,43 @@ The apex now points at the given deploy. Emitted by `layero promote` and by
 
 ## Error codes
 
+Checked against the CLI sources: these are all the codes it actually emits.
+Do not write handling for codes that are not on this list.
+
 | `code` | When it happens | What to do (`next_action`) |
 |---|---|---|
-| `not_logged_in` | No token in `~/.layero/config.json` | `run: layero login` |
-| `auth_required` | CI only: no credentials and no browser to obtain them | Create a token at app.layero.ru/settings/cli and pass it as `LAYERO_TOKEN` |
+| `auth_required` | No token in `~/.layero/config.json` and none in `LAYERO_TOKEN` | Run `layero login`, or set `LAYERO_TOKEN` |
 | `auth_expired` | The `user_code` expired (15 min TTL) without confirmation | Run `layero login` again |
 | `auth_timeout` | The CLI polled for 15 minutes and the user never confirmed | Run `layero login` again |
-| `invalid_type` | `--type` with an unknown value | Drop the flag (rely on auto-detection) or pass a valid preset |
-| `invalid_choice` | An interactive prompt got an invalid choice in non-TTY mode | Pass the value as an explicit flag (`--org`, `--project`) |
-| `project_not_found` | `--project` points at a project that does not exist | `run: layero projects list` |
-| `project_unlinked` | The linked project was deleted on the server | Delete `.layero/project.json` and run deploy again |
-| `username_missing` | OAuth succeeded but no username was chosen | Open `https://app.layero.ru/onboarding` |
-| `org_membership_missing` | `--org` points at an organization that is not yours | Pass a correct slug or drop the flag |
-| `no_organization` | The account has no organizations at all | Finish onboarding in the dashboard |
-| `cli_deploys_disabled` | An admin turned CLI deploys off for the project | Enable it in Project Settings → CLI deploys |
-| `deploy_failed` | The build failed | Open the deploy URL from `message` and read the logs |
-| `deploy_error` / `deploy_canceled` / `deploy_timed_out` | The build never reached `ready`, for various reasons | See the message |
-| `internal` | An unexpected CLI error | Re-run with `--debug` and open an issue |
+| `oauth_unavailable` | The sign-in provider is unreachable | Ours to fix — retry later |
+| `project_unknown` | Run outside a project directory and without `--project` | Run from the project directory or pass `--project <id\|slug>` |
+| `project_not_found` | `--project` points at a project that does not exist | `layero projects list` |
+| `cli_deploys_disabled` | An admin turned CLI deploys off for the project | Enable it in Project Settings, or deploy into another project |
+| `invalid_type` | `--type` with an unknown value | Drop the flag (auto-detection) or pass a valid preset — listed in the message |
+| `invalid_choice` | An interactive prompt got an invalid choice in non-TTY mode | Pass the value as an explicit flag |
+| `prebuilt_no_dir` | The `--prebuilt` directory does not exist | Pass it explicitly: `--prebuilt ./dist` |
+| `prebuilt_no_index` | The `--prebuilt` directory has no `index.html` | Point it at the folder containing the built `index.html` |
+| `deploy_not_started` | The build never started | Re-run `layero deploy`; if it repeats, check the project in the dashboard |
+| `deploy_failed` | The build never reached `ready` | Open the logs at the URL in `next_action` |
+| `no_deploy` / `no_deploys` | The project has no deploys yet | Run `layero deploy` first |
+| `env_not_found` | No such variable | `layero env list` |
+| `nothing_to_set` | `layero env set` called without a `KEY=value` pair | `layero env set KEY=value` |
+| `bad_format` | An argument could not be parsed | The expected format is in the message |
+| `domain_not_found` | The project has no such domain | `layero domains list` |
+| `domain_rejected` | The platform refused the domain | The reason is in the message |
+| `forbidden` | The token lacks the scope this operation needs | Issue a token with the required scope |
+| `branch_without_env` | The branch has no environment yet | Deploy that branch first |
+| `analytics_not_connected` | Analytics is not connected | `layero analytics connect` |
+| `no_runs` | No speed-check runs recorded | `layero perf check` |
+| `internal` | An unexpected CLI error (network, unhandled exception) | Re-run with `--debug` |
+
+:::note The deploy code is built from the status
+The code for an unsuccessful deploy is assembled as `deploy_<status>` from the
+build status, and a deploy has four statuses: `ready`, `building`, `failed`,
+`cancelled`. So in practice you will only ever see `deploy_failed` and
+`deploy_cancelled` — `deploy_error` and `deploy_timed_out` do not exist, do not
+branch on them.
+:::
 
 ## Cold-start template for an agent
 

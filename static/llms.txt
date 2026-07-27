@@ -111,10 +111,19 @@ Errors have a stable `code` and a `next_action` hint:
 {"event":"error","code":"not_logged_in","next_action":"run: layero login","message":"not authenticated"}
 ```
 
-Common codes: `not_logged_in`, `auth_required`, `auth_expired`, `auth_timeout`,
-`invalid_type`, `project_not_found`, `project_unlinked`, `username_missing`,
-`org_membership_missing`, `no_organization`, `cli_deploys_disabled`,
-`deploy_failed`, `deploy_error`, `deploy_timed_out`, `internal`.
+Codes the CLI actually emits (checked against its sources — do not branch on
+anything outside this list): `auth_required`, `auth_expired`, `auth_timeout`,
+`oauth_unavailable`, `project_unknown`, `project_not_found`,
+`cli_deploys_disabled`, `invalid_type`, `invalid_choice`, `prebuilt_no_dir`,
+`prebuilt_no_index`, `deploy_not_started`, `deploy_failed`, `no_deploy`,
+`no_deploys`, `env_not_found`, `nothing_to_set`, `bad_format`,
+`domain_not_found`, `domain_rejected`, `forbidden`, `branch_without_env`,
+`analytics_not_connected`, `no_runs`, `internal`.
+
+The failure code is assembled as `deploy_<status>`, and a deploy has four
+statuses (`ready`, `building`, `failed`, `cancelled`), so only `deploy_failed`
+and `deploy_cancelled` occur. `deploy_error` and `deploy_timed_out` do not
+exist.
 
 `auth_required` with `next_action: set_layero_token` is the CI-only variant:
 it means the run has no credentials and no browser to get them from.

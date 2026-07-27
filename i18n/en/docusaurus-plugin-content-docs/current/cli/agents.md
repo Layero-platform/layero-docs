@@ -110,16 +110,23 @@ short:
 
 | `code` | `next_action` | When |
 |---|---|---|
-| `not_logged_in` | run: layero login | No token in `~/.layero/config.json` |
+| `auth_required` | `layero login`, or set `LAYERO_TOKEN` | No token in `~/.layero/config.json` and none in the environment |
+| `auth_required` (`next_action: set_layero_token`) | create a token | CI only: no credentials and no browser to get them from |
 | `auth_expired` / `auth_timeout` | run: layero login | The user did not confirm the code within 15 minutes |
 | `invalid_type` | valid types: vite, next, … | `--type` with an unknown value |
+| `project_unknown` | run from the project directory, or pass `--project` | Invoked outside a project |
 | `project_not_found` | run `layero projects list` | `--project` points at a project that does not exist |
-| `project_unlinked` | delete .layero/project.json and re-run | The linked project was deleted on the server |
-| `username_missing` | open https://app.layero.ru/onboarding | OAuth succeeded but no username was chosen |
-| `no_organization` / `org_membership_missing` | available: foo, bar, … | The account has no such organization |
 | `cli_deploys_disabled` | enable in project settings | An admin turned CLI deploys off |
-| `deploy_failed` / `deploy_error` / `deploy_timed_out` | inspect logs at … | The build never reached `ready` |
-| `auth_required` (`next_action: set_layero_token`) | create a token | CI only: no credentials and no browser to get them from |
+| `prebuilt_no_dir` / `prebuilt_no_index` | pass `--prebuilt ./dist` | No build directory, or no `index.html` inside it |
+| `deploy_not_started` | re-run `layero deploy` | The build never started |
+| `deploy_failed` | inspect logs at … | The build never reached `ready` |
+| `internal` | re-run with `--debug` | An unexpected CLI error |
+
+The full list is on the [JSON events](./json-events) page. The codes
+`not_logged_in`, `project_unlinked`, `username_missing`,
+`org_membership_missing`, `no_organization`, `deploy_error` and
+`deploy_timed_out` **do not exist** — they were emitted by early versions of the
+CLI and have since been removed.
 
 ## Cold start: what your agent should do
 
