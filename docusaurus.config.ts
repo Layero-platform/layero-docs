@@ -1,6 +1,26 @@
+import {execSync} from 'node:child_process';
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+
+// `showLastUpdateTime` берёт дату из git-истории файла, и БЕЗ репозитория
+// Docusaurus не предупреждает, а падает: «This Docusaurus site is outside any
+// Git repository». Этот же репозиторий собирается двумя путями — в GitHub
+// Actions (там git есть, клон полный) и на самой Layero, куда исходники
+// приезжают тарболом без .git. Безусловное включение уронило второй путь
+// 20 раз за 6 часов, пока первый исправно катился.
+//
+// Поэтому обе опции, которым нужен git — showLastUpdateTime и sitemap.lastmod,
+// — включаем по факту наличия репозитория: где git есть, в sitemap попадает
+// честный <lastmod>; где нет — сборка просто проходит без него.
+const hasGitHistory = (() => {
+  try {
+    execSync('git rev-parse --is-inside-work-tree', {stdio: 'ignore'});
+    return true;
+  } catch {
+    return false;
+  }
+})();
 
 const config: Config = {
   title: 'Layero Docs',
@@ -40,7 +60,7 @@ const config: Config = {
             'https://github.com/LayeroInfra/layero-docs/tree/main/',
           // Без этого Docusaurus не вычисляет дату последней правки из git,
           // и sitemap остаётся без <lastmod> — плагин просто нечего писать.
-          showLastUpdateTime: true,
+          showLastUpdateTime: hasGitHistory,
         },
         blog: {
           showReadingTime: true,
@@ -55,7 +75,7 @@ const config: Config = {
           },
           editUrl:
             'https://github.com/LayeroInfra/layero-docs/tree/main/',
-          showLastUpdateTime: true,
+          showLastUpdateTime: hasGitHistory,
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -69,7 +89,10 @@ const config: Config = {
         // файла, поэтому в CI нужен полный клон (fetch-depth: 0), иначе у всех
         // страниц окажется дата единственного склонированного коммита.
         sitemap: {
-          lastmod: 'date',
+          // Требует git САМ ПО СЕБЕ, независимо от showLastUpdateTime — без
+          // репозитория падает тем же «outside any Git worktree». Проверено
+          // разделением: убрать только эту строку — сборка без git проходит.
+          lastmod: hasGitHistory ? 'date' : undefined,
           changefreq: 'weekly',
           priority: 0.5,
         },
