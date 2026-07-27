@@ -95,6 +95,33 @@ Upload succeeded.
 |---|---|
 | `archive_key` | string |
 
+### `prebuilt`
+
+The deploy ships a ready-made build (`--prebuilt <dir>`) — installing
+dependencies and building on the platform side are skipped.
+
+| field | type |
+|---|---|
+| `dir` | string — the directory holding the artifact |
+
+### `runtime_type_applied`
+
+The project was recognised as a runtime application and its type was set
+automatically.
+
+| field | type |
+|---|---|
+| `project_type` | `ssr_next` · `node_web` · `python_web` · `streamlit` · `gradio` · `flask` |
+
+### `runtime_type_apply_failed`
+
+The type was detected but could not be applied. The deploy continues with the
+project's previous type.
+
+| field | type |
+|---|---|
+| `error` | string |
+
 ### `setup_applied`
 
 Project settings (`framework_hint` / `build_cmd` / `output_dir`) were applied
@@ -138,6 +165,16 @@ an error — successful builds produce a lot of noise.
 | `edge_ready` | bool? | Whether the address answers at the moment the deploy finishes. The field used to mean "the apex warmed up on the CDN" and stayed `false` forever for new hosts; it now comes from a real probe. You still should not gate on it — the address is live immediately. |
 | `edge_eta_seconds` | number? | **Legacy, no longer emitted.** An estimate of the remaining CDN warm-up. There is nothing to propagate — user sites do not sit behind a CDN. |
 | `deploy_id` | string | |
+
+### `promoted`
+
+The apex now points at the given deploy. Emitted by `layero promote` and by
+`layero deploy --promote`.
+
+| field | type |
+|---|---|
+| `url` | string — the public address |
+| `deploy_id` | string |
 
 ### `error`
 
