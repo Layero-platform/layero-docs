@@ -24,9 +24,19 @@ at runtime through the same `process.env` / `os.environ`.
 ## Security
 
 Values are encrypted in the database with **AES-256-GCM**, with a unique nonce
-per record. The encryption key (`ENV_ENCRYPTION_KEY`) is stored separately from
-the database and is not reachable from applications. In the UI values are
-hidden by default; you can reveal a specific record when viewing.
+per record.
+
+The encryption key (`ENV_ENCRYPTION_KEY`) is **not kept in the database**: the
+source of truth is a secret store, from which the key reaches the control
+plane's environment at deploy time. What that buys you in practice: a database
+dump on its own reveals nothing — without the key it is ciphertext.
+
+The key **never reaches your containers**, neither the build one nor the
+runtime one. Only the decrypted values of the variables you added to that
+project do.
+
+In the UI values are hidden by default; you can reveal a specific record when
+viewing.
 
 ## What not to store
 
