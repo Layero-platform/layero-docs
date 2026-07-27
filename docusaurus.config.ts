@@ -110,6 +110,16 @@ const config: Config = {
   // двух доменах, и совпадение @id — единственный способ сказать это явно.
   // Значения дублируют лендинг; при правке менять в обоих местах.
   headTags: [
+    // Docusaurus объявляет ровно одну иконку — ту, что в `favicon`. У доков
+    // это был только SVG, а `/favicon.ico` отдавал 404. SVG-иконки понимают
+    // не все: старые Safari и часть мобильных браузеров, а главное —
+    // агрегаторы, читалки и сервисы превью по соглашению дёргают именно
+    // `/favicon.ico` и получали ничего. Плюс не было иконки для добавления
+    // на домашний экран. Набор взят с лендинга, чтобы бренд не разъезжался.
+    {tagName: 'link', attributes: {rel: 'icon', href: '/favicon.ico', sizes: 'any'}},
+    {tagName: 'link', attributes: {rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png'}},
+    {tagName: 'link', attributes: {rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png'}},
+    {tagName: 'link', attributes: {rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png'}},
     {
       tagName: 'script',
       attributes: {type: 'application/ld+json'},
