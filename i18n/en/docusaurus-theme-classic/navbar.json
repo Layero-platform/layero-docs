@@ -18,5 +18,9 @@
   "item.label.layero.ru": {
     "message": "layero.ru",
     "description": "Navbar item with label layero.ru"
+  },
+  "item.label.Начать": {
+    "message": "Get started",
+    "description": "Navbar item with label Начать"
   }
 }

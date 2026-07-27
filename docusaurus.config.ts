@@ -183,6 +183,15 @@ const config: Config = {
           position: 'right',
         },
         {type: 'localeDropdown', position: 'right'},
+        // Читатель документации — самый тёплый трафик, какой у нас есть: он
+        // уже разбирается, как всё устроено. До этого нажать ему было
+        // некуда — в навбаре стояли только разделы и ссылка на лендинг.
+        {
+          href: 'https://app.layero.ru',
+          label: 'Начать',
+          position: 'right',
+          className: 'navbar__cta',
+        },
       ],
     },
     footer: {

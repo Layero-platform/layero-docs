@@ -351,3 +351,20 @@ table th { font-weight: 500; color: var(--layero-graphite); text-align: left; }
   color: var(--layero-ink) !important;
 }
 
+
+/* ——— Призыв в навбаре ——— */
+/* Единственный элемент навбара, который должен читаться как кнопка: до него
+   там были только разделы и ссылка на лендинг, и тёплому читателю нажать
+   было некуда. Цвета берём из темы, чтобы не разъезжалось со светлой/тёмной. */
+.navbar__cta {
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  background: var(--ifm-color-primary);
+  color: #fff !important;
+  font-weight: 500;
+  transition: opacity 0.15s;
+}
+.navbar__cta:hover {
+  opacity: 0.88;
+  text-decoration: none;
+}
