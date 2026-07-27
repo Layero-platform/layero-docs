@@ -1,48 +1,62 @@
 ---
 sidebar_position: 1
 slug: /
-title: Что такое Layero
+title: What is Layero
 ---
 
 # Layero
 
-**Layero** — это хостинг для фронтенд-приложений с серверами в России.
-Деплой за одну команду, без VPN и без замедлений.
+**Layero** is a deployment platform for frontend applications whose build
+servers and edge run inside Russia. One command to publish, no VPN, and none
+of the slowdowns that come from serving Russian visitors from abroad.
 
-Платформа поддерживает два сценария публикации:
+If you are choosing where to host a site for an audience in Russia, that
+location is the point: the edge sits in the same country as the visitors,
+payment is in roubles, and data stays within Russian jurisdiction. In every
+other respect Layero behaves like any frontend host — Next.js, Vite, Astro,
+SvelteKit, Nuxt, Gatsby, CRA, Docusaurus and plain HTML are detected
+automatically.
 
-- **GitHub-flow** — подключите репозиторий, при каждом `git push` Layero
-  склонирует код, соберёт его и опубликует.
-- **CLI-flow** — поставьте npm-пакет `layero` и выполните `layero deploy`
-  в папке проекта. CLI упакует исходники, зальёт их и запустит сборку
-  на стороне платформы.
+There are three ways to publish:
 
-Помимо статики Layero умеет запускать **runtime-приложения** — SSR Next.js,
-Streamlit, Gradio и любые контейнеры с долгоживущим процессом. Контейнер
-поднимается по первому запросу и останавливается при простое.
+- **GitHub flow** — connect a repository, and every `git push` makes Layero
+  clone, build and publish it.
+- **CLI flow** — install the `layero` npm package and run `layero deploy` in
+  the project directory. The CLI packs the sources and uploads them; the build
+  runs on the platform side. Git is not required.
+- **The `@layero` plugin** — an MCP plugin for AI IDEs (Cursor, Claude Code,
+  Codex) that builds a landing page from scratch through a short series of
+  questions in the chat and deploys the result itself. See
+  [@layero — plugin for AI IDEs](./plugin/intro).
 
-## Что лежит в основе
+Beyond static output, Layero also runs **runtime applications** — Next.js in
+server mode, Streamlit, Gradio, and any container with a long-lived process.
+The container starts on the first request and stops when idle.
+
+## What it runs on
 
 | | |
 |---|---|
-| Где хостится | Yandex Cloud, регион `ru-central1` |
-| Раздача сайтов | Собственный edge (nginx) в `ru-central1`; пользовательская зона `*.layero.app` резолвится прямо в балансировщик платформы |
-| Сертификаты | Let's Encrypt через YC Certificate Manager |
-| Хранилище артефактов | Yandex Object Storage |
-| Билд-окружение | Node.js 18 / 20 (через nvm), git |
+| Hosting | Yandex Cloud, `ru-central1` region |
+| Serving | Own edge (nginx) in `ru-central1`; the user zone `*.layero.app` resolves straight to the platform load balancer |
+| Certificates | Let's Encrypt via YC Certificate Manager |
+| Artifact storage | Yandex Object Storage |
+| Build environment | Node.js 18 / 20 (via nvm), git |
 
-## Куда дальше
+## Where to go next
 
-- [Быстрый старт](./getting-started/quickstart.md) — задеплоить первый сайт
-  за 30 секунд.
-- [Основные концепции](./getting-started/concepts.md) — проект,
-  окружение, деплой, runtime.
-- [CLI: установка и команды](./cli/install.md) — `layero` в терминале.
-- [Поддерживаемые фреймворки](./getting-started/frameworks.md) — что
-  определяется автоматически.
+- [Quickstart](./getting-started/quickstart.md) — publish your first site in
+  30 seconds.
+- [Core concepts](./getting-started/concepts.md) — project, environment,
+  deploy, runtime.
+- [CLI: install and commands](./cli/install.md) — `layero` in the terminal.
+- [@layero — plugin for AI IDEs](./plugin/intro) — a landing page from
+  scratch inside the Cursor / Claude Code / Codex chat.
+- [Supported frameworks](./getting-started/frameworks.md) — what gets detected
+  automatically.
 
-## Полезные ссылки
+## Links
 
-- Сайт: [layero.ru](https://layero.ru)
-- Панель: [app.layero.ru](https://app.layero.ru)
+- Website: [layero.ru](https://layero.ru)
+- Dashboard: [app.layero.ru](https://app.layero.ru)
 - API: [api.layero.ru](https://api.layero.ru)
