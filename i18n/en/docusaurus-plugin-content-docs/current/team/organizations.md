@@ -67,18 +67,22 @@ Organization roles are **separate** from project roles. Being a member of a
 team does not automatically make you an editor of a project — that is done on
 the Project → Members page.
 
-## Switching scope
+## Switching between organizations
 
-The top-bar OrganizationSwitcher persists the active scope in localStorage, so
-a refresh returns you to the same organization. Every list (Projects, Deploys,
-repositories to import) is filtered by the active organization.
+The switcher in the top bar remembers your choice in the browser, so reloading
+the page puts you back in the same organization. Every list — projects,
+deploys, repositories to import — shows only what belongs to the organization
+you selected.
 
-## Transferring a project between organizations
+## Transferring a project to another organization
 
-**Project → Settings → Transfer** starts a transfer to a target organization.
-An admin of the target accepts the request on the Team page → "Incoming
-project transfers". The current owner can be kept as an editor after the
-transfer (an option in the transfer form) or lose access.
+**Project → Settings → Transfer** sends a transfer request. An admin of the
+receiving organization confirms it on the **Team → "Incoming project
+transfers"** page.
+
+The transfer form has a checkbox to keep the project's current owner as an
+editor. Without it they lose access to the project once the transfer goes
+through.
 
 ## From the CLI
 

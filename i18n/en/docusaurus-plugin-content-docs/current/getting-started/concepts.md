@@ -22,9 +22,9 @@ under one slug. There are two kinds:
 
 Details in [Organizations](../team/organizations).
 
-The **OrganizationSwitcher** in the top corner of the dashboard persists the
-active organization in localStorage. Every list — projects, repositories to
-import, deploys — is filtered by it.
+The organization switcher sits in the top corner of the dashboard. Your
+choice is remembered in the browser, and every list — projects, repositories
+to import, deploys — shows only what belongs to the organization you picked.
 
 ## Project
 
