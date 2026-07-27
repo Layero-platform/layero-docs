@@ -102,6 +102,26 @@ overrides below:
 Here `/assets/style.css` gets the long cache, everything else gets
 `must-revalidate`.
 
+:::warning `Cache-Control` currently arrives twice
+Verified on a live project on 27 July 2026. If you set `Cache-Control` in
+`_headers`, the edge still adds its own, and the response carries **two**
+headers:
+
+```
+cache-control: public, max-age=31536000, immutable          ← yours
+cache-control: public, max-age=0, s-maxage=60, stale-while-revalidate=600
+```
+
+By the standard these fields are combined into one list of directives, which
+then holds two different `max-age` values. What any particular client or
+intermediate cache does with that is undefined.
+
+In practice: **you cannot currently rely on `_headers` to give assets a long
+cache lifetime.** Every other header — including the security headers the file
+is usually created for — works as documented: they are added, not conflicted.
+Verified separately on all three path forms (`/*`, an exact path, a wildcard).
+:::
+
 ## What you can and can't set
 
 Any header is allowed, including `Content-Security-Policy`,
