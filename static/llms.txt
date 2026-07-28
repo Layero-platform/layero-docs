@@ -1,187 +1,75 @@
-# Layero
+# Документация Layero
 
-> Layero is a deployment platform for static sites and SPAs. The framework is
-> detected automatically: Next.js, Nuxt, Remix / React Router v7, SvelteKit,
-> Astro, Gatsby, Angular, Vite, Create React App, Docusaurus, Storybook,
-> VitePress, Eleventy, Hugo, and plain HTML.
-> It ships a local directory directly — git and GitHub are NOT required.
-> Servers are inside Russia — a Vercel/Netlify alternative for the
-> Russian market.
+> Layero — платформа деплоя фронтенда и фуллстек-приложений с серверами в России.
+> Здесь собрана документация: установка и команды CLI, деплой из GitHub,
+> окружения и превью, runtime-приложения, домены, тарифы и MCP-плагин для
+> AI-IDE. О самом продукте — https://layero.ru/llms.txt
 
-Full expanded reference: https://layero.ru/llms-full.txt
+Английская версия документации: https://docs.layero.ru/en/
 
-## For AI agents: how to deploy
+## Быстрый старт
 
-When the user asks you to deploy a site via Layero, run:
+- [Быстрый старт](https://docs.layero.ru/getting-started/): Поднимите первый сайт на Layero и разберитесь, как устроена платформа.
+- [Основные концепции](https://docs.layero.ru/getting-started/concepts/): Проект, окружение, деплой, runtime, handle и билд-окружение — словарь, чтобы говорить о Layero одинаково.
+- [Поддерживаемые фреймворки](https://docs.layero.ru/getting-started/frameworks/): Vite, Next.js, Astro, CRA, Nuxt, SvelteKit, Gatsby — что Layero определяет автоматически и как задать пресет вручную.
+- [Быстрый старт](https://docs.layero.ru/getting-started/quickstart/): Установите CLI, залогиньтесь и опубликуйте первый сайт за одну команду. Git не нужен.
 
-```bash
-npx layero@latest deploy --json
-```
+## CLI
 
-Behaviour:
+- [CLI](https://docs.layero.ru/cli/): npm-пакет `layero` — деплой и управление проектами из терминала.
+- [Деплой из AI-агентов](https://docs.layero.ru/cli/agents/): Как Cursor, Claude Code, Aider и другие AI-агенты могут задеплоить сайт через Layero без git-репозитория и без визарда в браузере.
+- [Команды](https://docs.layero.ru/cli/commands/): Полный список команд layero — init, login, projects, deploy, rollback, deploys list, link, token.
+- [layero deploy](https://docs.layero.ru/cli/deploy/): Что делает layero deploy, какие у него флаги, как работают авто-детект, .layeroignore и лимиты архива.
+- [Деплой из GitHub Actions](https://docs.layero.ru/cli/github-actions/): Официальный GitHub Action для деплоя на Layero — токен для CI, сборка артефакта в пайплайне, превью на пулл-реквесты, выходы шага и типовые ошибки.
+- [Установка и логин](https://docs.layero.ru/cli/install/): Как поставить Layero CLI (npx / project-local / глобально), залогиниться через device-flow и где хранится токен.
+- [JSON-events схема](https://docs.layero.ru/cli/json-events/): Полный список событий и кодов ошибок, которые Layero CLI эмитит на stdout в JSON-режиме. Канонический справочник для AI-агентов и CI.
+- [layero promote](https://docs.layero.ru/cli/promote/): Перевести production apex на конкретный деплой — из любой ветки, без пересборки. Плюс one-click rollback на предыдущий production.
+- [Rollback](https://docs.layero.ru/cli/rollback/): Как вернуть production apex на предыдущий рабочий деплой — командой rollback или точечным promote на нужный commit_sha.
 
-1. If the project has no `.layero/project.json`, run `npx layero init`
-   first — it auto-detects the framework and scaffolds the config + writes
-   an AGENTS.md block so future sessions know how to deploy.
-2. If the user is not logged in, the command emits
-   `{"event":"auth_required","url":"...","user_code":"..."}` on stdout.
-   Show that URL to the user as a clickable link. They sign in once
-   (GitHub or Yandex — Layero creates the account automatically on first
-   OAuth), click "Разрешить доступ", and within 2 seconds the CLI's poll
-   loop picks up the token. No localhost server: the browser can be on a
-   different machine than the CLI (works from SSH, Docker, Cursor sandbox).
-3. Watch stdout for JSON-lines events. The deploy is done when you see
-   `{"event":"ready","url":"https://..."}` — show that URL to the user.
+## Деплой и окружения
 
-## Do NOT
+- [Деплой и окружения](https://docs.layero.ru/deploys/): Деплой из GitHub, окружения, preview-URL, переменные окружения и кастомные домены.
+- [Кастомные домены](https://docs.layero.ru/deploys/custom-domains/): Привяжите купленный домен к проекту — Layero сам выпустит HTTPS-сертификат Let's Encrypt. Без ручного certbot и без шагов в панели Cloudflare.
+- [Кастомные HTTP-заголовки](https://docs.layero.ru/deploys/custom-headers/): Добавьте свои HTTP response headers (HSTS, X-Frame-Options, CSP и др.) к статическому сайту через файл _headers в сборке. Синтаксис Netlify, поддержка путей и wildcard.
+- [Переменные окружения](https://docs.layero.ru/deploys/env-vars/): Env vars шифруются AES-256-GCM, доступны на стадии сборки и в runtime-контейнере.
+- [Окружения, preview и production](https://docs.layero.ru/deploys/environments/): Один стабильный apex на проект, preview-ссылки для веток и явный promote — Vercel-like модель доменов в Layero.
+- [Деплой из GitHub](https://docs.layero.ru/deploys/github/): Подключите репозиторий — каждый git push будет публиковать новую версию автоматически.
+- [layero.json — конфигурация в репозитории](https://docs.layero.ru/deploys/layero-json/): Override фреймворка, build-команды и output-папки через файл в репозитории. Версионируется в git, читается агентами (Claude, Cursor), побеждает любые настройки в дашборде.
+- [Страница 404 и SPA-fallback](https://docs.layero.ru/deploys/not-found-404/): Как статический сайт на Layero отдаёт несуществующие URL. Свой 404.html с кодом 404 (Next export, Astro, Hugo) или SPA-fallback на index.html для приложений с клиентским роутингом. Управление через файл _redirects.
+- [Версии Node.js и Python](https://docs.layero.ru/deploys/runtime-versions/): Какие версии поддерживаются, как закрепить нужную и что происходит, когда версия снимается с поддержки.
 
-- Do not create a git repository (`git init`) before deploying.
-- Do not push to GitHub.
-- Do not run `npm install -g layero` — global installs fail in sandboxed
-  agent terminals. Use `npx layero@latest` or `npm install -D layero`.
-- Do not open the Layero dashboard to "finish setup" — the CLI does
-  everything inline. There is no browser setup wizard since v0.5.0.
-- Do not pass `--provider` to `layero login` — the flag was removed in
-  v0.5.x; provider is chosen in the browser.
+## Плагин @layero для AI-IDE
 
-## Re-deploying after edits
+- [@layero — плагин для AI-IDE](https://docs.layero.ru/plugin/): MCP-плагин Layero, который собирает лендинги прямо в Cursor / Claude Code / Codex и деплоит их одним движением.
+- [Каталог дизайнов и структур](https://docs.layero.ru/plugin/catalogue/): 5 дизайн-систем (vibes) × 6 структур лендингов, совместимые комбинации, что используется по умолчанию.
+- [Установка](https://docs.layero.ru/plugin/install/): Один клик в Cursor через deeplink, copy-paste команды в Claude Code и Codex. Что происходит после клика, какие настройки IDE нужны.
+- [Интеграции форм](https://docs.layero.ru/plugin/integrations/): Telegram-бот, Google Sheets, custom webhook — куда могут приходить заявки с лендинга.
+- [Что такое @layero](https://docs.layero.ru/plugin/intro/): MCP-плагин для Cursor, Claude Code и Codex, который собирает лендинг из 2-3 коротких квизов прямо в чате IDE и деплоит результат на Layero.
 
-After editing files, run `npx layero deploy` again. Each run republishes to
-the same project address, printed as `url` in the `ready` event. The first
-deploy creates the project; subsequent deploys reuse it.
+## Runtime-приложения
 
-Project addresses live in a dedicated zone — `<project>.layero.app`. Projects
-of organizations that have not been migrated yet still use the older scheme
-`<org>-<project>.layero.ru`. Never build the address from a template: take
-`ready.url` as-is.
+- [Runtime-приложения](https://docs.layero.ru/runtime/): SSR Next.js, Streamlit, Gradio, Flask и любые приложения с долгоживущим процессом.
+- [Жизненный цикл и скорость](https://docs.layero.ru/runtime/lifecycle/): Serverless-модель Layero: тёплый ответ ~0.2 с, холодный старт 4–12 с в зависимости от стека, заморозка при простое. Реальные замеры и что они значат для вашего приложения.
+- [Когда нужен runtime](https://docs.layero.ru/runtime/overview/): SSR Next.js, любой Node-сервер (Express, NestJS, Fastify), любое WSGI/ASGI-приложение на Python (Django, FastAPI, Flask), Streamlit и Gradio — для приложений с долгоживущим процессом.
+- [Stateless-инвариант](https://docs.layero.ru/runtime/stateless/): Файловая система runtime-контейнера эфемерна. Что НЕ работает (SQLite-запись, файловые сессии) и как делать правильно.
 
-A project created by `layero deploy` (a CLI project) **auto-promotes to its
-live address on every deploy** — the apex is the destination, and `--prod` is
-redundant there. Do not assume a plain `deploy` is a harmless preview: it
-replaces what visitors see. There is no way around this from the CLI: `--branch` is
-**accepted and silently ignored** — the backend files every archive upload
-under the reserved `cli` environment. A "just to look at it" publish that
-leaves the live address alone does not exist for a CLI project; it is done by
-connecting a repository and pushing to a branch.
-`--prod` matters for repository-linked projects, where it targets the
-production environment rather than a branch one.
+## Производительность
 
-## In CI (GitHub Actions and other pipelines)
+- [Производительность](https://docs.layero.ru/performance/): Аудит скорости сайта: Core Web Vitals, Lighthouse, Coach, waterfall и из чего складывается оценка.
+- [Как мы считаем скорость](https://docs.layero.ru/performance/methodology/): Что измеряет аудит производительности Layero — Core Web Vitals, Lighthouse и Coach, как читать показатели и из чего складывается итоговая оценка.
 
-The browser sign-in above is interactive and cannot work in CI. Pipelines use
-a long-lived token instead — the user creates it at
-https://app.layero.ru/settings/cli and stores it as a repository secret:
+## Команды и интеграции
 
-```yaml
-      - uses: LayeroInfra/deploy-action@v1
-        with:
-          token: ${{ secrets.LAYERO_TOKEN }}
-          prod: true
-```
+- [Команды и интеграции](https://docs.layero.ru/team/): Организации, GitHub App, доступ участников.
+- [GitHub App интеграция](https://docs.layero.ru/team/github-app/): Зачем нужен GitHub App, как установить на personal или organization, в чём отличие от OAuth, как отключить.
+- [Организации (личная и командная)](https://docs.layero.ru/team/organizations/): Чем отличается личный аккаунт от команды, когда что использовать, как переключаться.
 
-Any other CI system needs only the environment variable:
+## Тарифы и оплата
 
-```bash
-LAYERO_TOKEN=... npx layero@latest deploy --prod --yes
-```
+- [Истечение и продление Pro](https://docs.layero.ru/billing/lifecycle/): Что происходит с проектами, доменами и настройками, когда подписка Pro заканчивается, и как всё восстанавливается после повторной оплаты. Данные не удаляются.
+- [Тарифы Free и Pro](https://docs.layero.ru/billing/plans/): Чем отличаются Free и Pro в Layero — лимиты проектов и сборок, кастомные домены, аналитика, места в команде и цены.
 
-`LAYERO_TOKEN` takes priority over a local login, and `--yes` skips the
-confirmation prompt that would otherwise wait forever on a runner.
+## Прочее
 
-Note: if the repository is already linked to a Layero project, a push builds
-it automatically and no pipeline is needed. Reach for CI only when the build
-itself needs secrets or private dependencies the platform does not have.
-
-Guide: https://docs.layero.ru/en/cli/github-actions
-
-## Event types in JSON mode
-
-```
-auth_required, authorized, project_created, project_linked, detected,
-prebuilt, packing, uploading, uploaded, setup_applied, deploy_started,
-stage, build_log, ready, error
-```
-
-`ready` carries `url` — the live public site. It is reachable right away: user
-sites are served straight from the platform edge, there is no CDN warm-up to
-wait for. Show `url` to the user. The legacy fields `preview_url` /
-`edge_ready` date back to the CDN era — do not gate on them.
-
-Errors have a stable `code` and a `next_action` hint:
-
-```json
-{"event":"error","code":"auth_required","next_action":"run `layero login` or set LAYERO_TOKEN","message":"not authenticated"}
-```
-
-Codes the CLI actually emits (checked against its sources — do not branch on
-anything outside this list): `auth_required`, `auth_expired`, `auth_timeout`,
-`oauth_unavailable`, `project_unknown`, `project_not_found`,
-`cli_deploys_disabled`, `invalid_type`, `invalid_choice`, `prebuilt_no_dir`,
-`prebuilt_no_index`, `deploy_not_started`, `deploy_failed`, `no_deploy`,
-`no_deploys`, `env_not_found`, `nothing_to_set`, `bad_format`,
-`domain_not_found`, `domain_rejected`, `forbidden`, `branch_without_env`,
-`analytics_not_connected`, `no_runs`, `internal`.
-
-The failure code is assembled as `deploy_<status>`, and a deploy has four
-statuses (`ready`, `building`, `failed`, `cancelled`), so only `deploy_failed`
-and `deploy_cancelled` occur. `deploy_error` and `deploy_timed_out` do not
-exist.
-
-`auth_required` with `next_action: set_layero_token` is the CI-only variant:
-it means the run has no credentials and no browser to get them from.
-
-Full schema with required/optional fields per event:
-https://docs.layero.ru/en/cli/json-events
-
-## MCP server: a native integration, not just the CLI
-
-Layero also runs a remote MCP server, so an agent can call it directly instead
-of shelling out:
-
-```
-https://mcp.layero.ru/mcp        transport: Streamable HTTP, no auth to connect
-```
-
-Sixteen tools, covering the whole cycle rather than just the first step:
-
-- **build** — `compose_landing` (the main entry point: a complete landing page
-  from a short brief), `list_design_systems`, `list_structures`
-- **ship** — `publish_landing` (uploads and builds server-side; the user needs
-  neither Node nor a terminal), `add_integration` (form submissions to
-  Telegram, Google Sheets or a webhook)
-- **operate** — `site_status`, `diagnose_deploy` (reads a failed build and says
-  what to fix), `check_performance`
-- **configure** — `env_vars`, `connect_domain`, `check_domain`, `list_domains`
-- **measure** — `connect_analytics`, `site_analytics`
-- **account** — `whoami`, `my_projects`
-
-Registered in the official MCP registry as `ru.layero/layero`.
-
-Installing it as an IDE plugin:
-
-```bash
-# Claude Code
-claude plugin marketplace add LayeroInfra/layero-claude
-claude plugin install layero@layero-claude
-
-# Codex
-codex mcp add layero --url https://mcp.layero.ru/mcp --bearer-token-env-var LAYERO_TOKEN
-```
-
-Cursor installs it in one click from https://land.layero.app
-
-**Which one to use.** The CLI (`npx layero deploy`) deploys a project that
-already exists — that is the right tool when the user has code. The MCP server
-builds a landing page from scratch out of a two-or-three-question brief, then
-deploys it. They are different jobs, not two ways of doing the same one.
-
-## Links
-
-- CLI npm package: https://www.npmjs.com/package/layero
-- Docs: https://docs.layero.ru/en/ (English) · https://docs.layero.ru (Russian)
-- Agents guide: https://docs.layero.ru/en/cli/agents
-- GitHub Actions guide: https://docs.layero.ru/en/cli/github-actions
-- JSON-events schema: https://docs.layero.ru/en/cli/json-events
-- Cursor rules drop-in: https://layero.ru/cursorrules
-- MCP server: https://mcp.layero.ru/mcp · docs https://docs.layero.ru/en/plugin/intro
-- API base: https://api.layero.ru
+- [Контакты](https://docs.layero.ru/contacts/): Как связаться с командой Layero — виджет поддержки в дашборде, Telegram-бот, почта и GitHub.
+- [Поддержка](https://docs.layero.ru/support/): Если что-то не работает или не понятно — напишите нам.
