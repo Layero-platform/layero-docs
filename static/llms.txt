@@ -98,8 +98,8 @@ Guide: https://docs.layero.ru/en/cli/github-actions
 
 ```
 auth_required, authorized, project_created, project_linked, detected,
-packing, uploading, uploaded, setup_applied, deploy_started, stage,
-build_log, ready, error
+prebuilt, packing, uploading, uploaded, setup_applied, deploy_started,
+stage, build_log, ready, error
 ```
 
 `ready` carries `url` — the live public site. It is reachable right away: user
