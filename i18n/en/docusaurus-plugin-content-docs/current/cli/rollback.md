@@ -22,6 +22,19 @@ Rolling back a *different* branch still leaves the apex alone: if the owner
 deliberately keeps production on another branch, that is their choice.
 :::
 
+:::warning Not available for runtime apps yet
+Rollback works for static projects only. If your project runs as a runtime app
+— Next SSR, Streamlit, Gradio — `layero rollback` prints a plan and then fails:
+the artifact of such a deploy lives in the image registry rather than in Object
+Storage, and the API-side check insists on the storage path. As of 28 July 2026
+that is 113 projects out of 507.
+
+The way back for them is to **rebuild the commit you want** with an ordinary
+`layero deploy`. Do not reach for `promote` onto an older deploy on a runtime
+project: the image of that older deploy may already have been collected, and
+then the address stops resolving.
+:::
+
 ## How to roll back
 
 ```bash
