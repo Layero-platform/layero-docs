@@ -60,7 +60,7 @@ Codex has neither a URL protocol nor a built-in marketplace. Installing is one
 terminal command:
 
 ```bash
-codex mcp add layero --url https://mcp.layero.ru/mcp --transport http
+codex mcp add layero --url https://mcp.layero.ru/mcp --bearer-token-env-var LAYERO_TOKEN
 ```
 
 Restart Codex so that it re-reads `~/.codex/config.toml`.
@@ -128,8 +128,15 @@ claude mcp add --transport http layero https://mcp.layero.ru/mcp \
   --header "Authorization: Bearer <your token>"
 ```
 
-**Codex** — the same header in `~/.codex/config.toml`, inside the `layero`
-server block.
+**Codex** — the install command above already binds the server to a variable
+(`--bearer-token-env-var LAYERO_TOKEN`), so setting it is enough:
+
+```bash
+export LAYERO_TOKEN="<your token>"
+```
+
+With the variable unset Codex connects without authentication: browsing works,
+and publishing answers that no token was passed.
 
 Restart the IDE afterwards so it re-reads the config.
 

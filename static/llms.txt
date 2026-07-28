@@ -165,7 +165,7 @@ claude plugin marketplace add LayeroInfra/layero-claude
 claude plugin install layero@layero-claude
 
 # Codex
-codex mcp add layero --url https://mcp.layero.ru/mcp --transport http
+codex mcp add layero --url https://mcp.layero.ru/mcp --bearer-token-env-var LAYERO_TOKEN
 ```
 
 Cursor installs it in one click from https://land.layero.app

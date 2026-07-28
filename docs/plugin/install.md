@@ -49,7 +49,7 @@ Cursor парсит base64, валидирует и применяет.
 В Codex нет URL-протокола И нет встроенного маркетплейса. Установка — одна команда в терминале:
 
 ```bash
-codex mcp add layero --url https://mcp.layero.ru/mcp --transport http
+codex mcp add layero --url https://mcp.layero.ru/mcp --bearer-token-env-var LAYERO_TOKEN
 ```
 
 Перезапусти Codex, чтобы он перечитал `~/.codex/config.toml`.
@@ -116,7 +116,15 @@ claude mcp add --transport http layero https://mcp.layero.ru/mcp \
   --header "Authorization: Bearer <твой токен>"
 ```
 
-**Codex** — тот же заголовок в `~/.codex/config.toml`, в блоке сервера `layero`.
+**Codex** — команда установки выше уже связывает сервер с переменной
+(`--bearer-token-env-var LAYERO_TOKEN`), так что достаточно задать её:
+
+```bash
+export LAYERO_TOKEN="<твой токен>"
+```
+
+Если переменная не задана, Codex подключится без авторизации — обзор работает,
+а публикация ответит, что токен не передан.
 
 После правки перезапусти IDE, чтобы она перечитала конфиг.
 
