@@ -1,7 +1,9 @@
 # Layero
 
-> Layero is a deployment platform for static sites and SPAs (Next.js,
-> Vite, Astro, SvelteKit, Nuxt, Gatsby, CRA, Docusaurus, plain HTML).
+> Layero is a deployment platform for static sites and SPAs. The framework is
+> detected automatically: Next.js, Nuxt, Remix / React Router v7, SvelteKit,
+> Astro, Gatsby, Angular, Vite, Create React App, Docusaurus, Storybook,
+> VitePress, Eleventy, Hugo, and plain HTML.
 > It ships a local directory directly — git and GitHub are NOT required.
 > Servers are inside Russia — a Vercel/Netlify alternative for the
 > Russian market.
