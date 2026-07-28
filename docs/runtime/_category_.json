@@ -3,6 +3,7 @@
   "position": 5,
   "link": {
     "type": "generated-index",
+    "slug": "/runtime",
     "description": "SSR Next.js, Streamlit, Gradio, Flask и любые приложения с долгоживущим процессом."
   }
 }
