@@ -71,6 +71,51 @@ codex mcp add layero --url https://mcp.layero.ru/mcp --transport http
 
 Перезапусти Cursor. Готово.
 
+## Подключение аккаунта
+
+Установки достаточно, чтобы собрать лендинг: подбор структуры и дизайн-системы
+работает без всякой авторизации. А вот **публикация требует токен** — без него
+`publish_landing` отвечает:
+
+```
+Layero-токен не передан. Выпустите токен на https://app.layero.ru/settings/cli
+и добавьте его в конфиг MCP-сервера: "headers": {"Authorization": "Bearer <токен>"}.
+```
+
+Токен выпускается на [app.layero.ru/settings/cli](https://app.layero.ru/settings/cli)
+и передаётся заголовком в конфиге сервера — по одному разу на IDE.
+
+**Cursor** — в `~/.cursor/mcp.json`, рядом с `url`:
+
+```json
+{
+  "mcpServers": {
+    "layero": {
+      "url": "https://mcp.layero.ru/mcp",
+      "transport": "http",
+      "headers": { "Authorization": "Bearer <твой токен>" }
+    }
+  }
+}
+```
+
+**Claude Code** — если сервер добавлялся командой, у неё есть флаг заголовка:
+
+```bash
+claude mcp add --transport http layero https://mcp.layero.ru/mcp \
+  --header "Authorization: Bearer <твой токен>"
+```
+
+**Codex** — тот же заголовок в `~/.codex/config.toml`, в блоке сервера `layero`.
+
+После правки перезапусти IDE, чтобы она перечитала конфиг.
+
+:::tip Почему не логин из чата
+MCP-сервер не хранит сессий между вызовами и не может открыть браузер за тебя —
+он видит только тот HTTP-запрос, который прислала IDE. Поэтому аккаунт
+подключается один раз в конфиге, а не командой внутри диалога.
+:::
+
 ## Проверка установки
 
 В чате IDE напиши:

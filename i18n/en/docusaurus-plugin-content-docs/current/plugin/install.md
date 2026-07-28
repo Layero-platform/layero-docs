@@ -83,6 +83,53 @@ for example — open `~/.cursor/mcp.json` and add:
 
 Restart Cursor. That is all.
 
+## Connecting your account
+
+Installing is enough to build a landing page: picking a structure and a design
+system works with no authentication at all. **Publishing needs a token** —
+without one, `publish_landing` answers:
+
+```
+Layero-токен не передан. Выпустите токен на https://app.layero.ru/settings/cli
+и добавьте его в конфиг MCP-сервера: "headers": {"Authorization": "Bearer <токен>"}.
+```
+
+Issue a token at [app.layero.ru/settings/cli](https://app.layero.ru/settings/cli)
+and pass it as a header in the server config — once per IDE.
+
+**Cursor** — in `~/.cursor/mcp.json`, next to `url`:
+
+```json
+{
+  "mcpServers": {
+    "layero": {
+      "url": "https://mcp.layero.ru/mcp",
+      "transport": "http",
+      "headers": { "Authorization": "Bearer <your token>" }
+    }
+  }
+}
+```
+
+**Claude Code** — if you added the server from the command line, it takes a
+header flag:
+
+```bash
+claude mcp add --transport http layero https://mcp.layero.ru/mcp \
+  --header "Authorization: Bearer <your token>"
+```
+
+**Codex** — the same header in `~/.codex/config.toml`, inside the `layero`
+server block.
+
+Restart the IDE afterwards so it re-reads the config.
+
+:::tip Why there is no sign-in from the chat
+An MCP server keeps no session between calls and cannot open a browser for you
+— it only sees the HTTP request the IDE sent. So the account is wired once in
+the config rather than by a command inside the conversation.
+:::
+
 ## Checking the installation
 
 In the IDE chat, write:
