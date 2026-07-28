@@ -47,7 +47,7 @@ The command appends a block to an existing `AGENTS.md` / `CLAUDE.md` /
 `.cursorrules` (or creates `AGENTS.md`). The block contains the device-flow
 login recipe (`auth_required` → click → poll), a table of JSON events with
 explanations (`detected` / `project_created` / `build_log` / `ready` /
-`error`), the list of error codes with remediation (`not_logged_in`,
+`error`), the list of error codes with remediation (`auth_required`,
 `auth_expired`, `cli_deploys_disabled`, …) and the rules around `--prod`.
 
 Any modern agent reads those files at the start of a session and knows what to
