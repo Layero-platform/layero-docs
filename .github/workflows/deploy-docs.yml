@@ -64,14 +64,27 @@ jobs:
         env:
           YC_CDN_SA_KEY: ${{ secrets.YC_CDN_SA_KEY }}
         run: |
-          install -m 600 /dev/null "$HOME/yc-sa-key.json"
-          printf '%s' "$YC_CDN_SA_KEY" > "$HOME/yc-sa-key.json"
-          yc config profile create ci 2>/dev/null || yc config profile activate ci
-          yc config set service-account-key "$HOME/yc-sa-key.json"
-          yc config set cloud-id b1ger5mmajemr152soru
-          yc config set folder-id b1g5p8gs03eoj1fvu0qc
-          yc storage bucket get layero-docs >/dev/null
-          yc cdn resource get bc8r7guaub3kynogbziz >/dev/null
+          # 🚨 Профиль и файл ключа ДОЛЖНЫ быть уникальны для каждого workflow.
+          # Все раннеры живут на одной builder-VM под пользователем layero, то
+          # есть делят $HOME. Пока и core, и frontend, и docs, и mcp писали
+          # ключ в ~/yc-sa-key.json и настраивали профиль "ci", параллельные
+          # деплои разных репозиториев ПОДМЕНЯЛИ друг другу облачную личность:
+          # деплой api успел настроить профиль, деплой фронта переписал тот же
+          # файл ключом cdn-SA, и api пошёл в Lockbox уже не под тем аккаунтом
+          # → PermissionDenied (прод-случай 28.07 22:38). Отдельный
+          # DOCKER_CONFIG нужен по той же причине: `configure-docker` пишет
+          # credential helper с именем профиля в общий ~/.docker/config.json.
+          export DOCKER_CONFIG="$HOME/.docker-ci-docs"
+          mkdir -p "$DOCKER_CONFIG"
+          echo "DOCKER_CONFIG=$DOCKER_CONFIG" >> "$GITHUB_ENV"
+          install -m 600 /dev/null "$HOME/yc-sa-key-docs.json"
+          printf '%s' "$YC_CDN_SA_KEY" > "$HOME/yc-sa-key-docs.json"
+          yc config profile create ci-docs 2>/dev/null || yc config profile activate ci-docs
+          yc --profile ci-docs config set service-account-key "$HOME/yc-sa-key-docs.json"
+          yc --profile ci-docs config set cloud-id b1ger5mmajemr152soru
+          yc --profile ci-docs config set folder-id b1g5p8gs03eoj1fvu0qc
+          yc --profile ci-docs storage bucket get layero-docs >/dev/null
+          yc --profile ci-docs cdn resource get bc8r7guaub3kynogbziz >/dev/null
 
       - name: Deploy docs
         env:
