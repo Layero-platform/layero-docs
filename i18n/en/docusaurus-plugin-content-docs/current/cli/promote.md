@@ -117,8 +117,8 @@ manual command.
 
 - In the dashboard, on the deploy page — the "Promote to production" button.
 - On the project page, in the Production card — the "Roll back" button. It works
-  on the backend and does move the production pointer, unlike the CLI's
-  `rollback` command.
+  on the backend and moves the production pointer; since 27 July 2026 the CLI's
+  [`rollback`](./rollback) does the same.
 - The promote history — Project → Deploys → "Promote history" (it shows auto vs
   ui vs cli, and who did it).
 

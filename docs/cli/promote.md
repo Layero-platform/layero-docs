@@ -99,7 +99,7 @@ layero deploy --branch=hot-fix --promote --yes
 ## Альтернативы
 
 - В дашборде на странице деплоя — кнопка «Promote to production».
-- На странице проекта в Production card — кнопка «Откатить». Она работает на стороне бэкенда и двигает production-указатель, в отличие от CLI-команды `rollback`.
+- На странице проекта в Production card — кнопка «Откатить». Она работает на стороне бэкенда и двигает production-указатель; с 27.07.2026 то же делает и CLI-команда [`rollback`](./rollback).
 - История промоутов — Project → Deploys → «Promote history» (видно auto vs ui vs cli + кто).
 
 ## Как это связано с rollback
