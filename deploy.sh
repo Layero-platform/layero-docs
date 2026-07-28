@@ -71,7 +71,7 @@ fi
 INDEXNOW_KEY="305edf9b810aa739d9d8f7f022d960b2"
 echo "==> Pinging IndexNow (Yandex + Bing)"
 python3 - <<PY || true
-import json, os, re, urllib.request, urllib.error
+import json, os, re, urllib.parse, urllib.request, urllib.error
 key  = "${INDEXNOW_KEY}"
 host = "docs.layero.ru"
 # Docusaurus с i18n кладёт ОТДЕЛЬНЫЙ sitemap в каждую локаль: build/sitemap.xml
@@ -89,7 +89,12 @@ host = "docs.layero.ru"
 BUILD = "${BUILD_DIR}"
 
 def is_english(url: str) -> bool:
-    rel = url.replace("https://docs.layero.ru/", "").strip("/")
+    # Адрес из карты сайта процентно-закодирован, а файл на диске лежит с
+    # именем в UTF-8: страницы разделов зовутся /en/category/тарифы-и-оплата.
+    # Без unquote os.path.exists не находил их, и ВСЕ ШЕСТЬ английских
+    # страниц-разделов молча выпадали из пуша — при этом лог называл их
+    # «непереведёнными». Именно эти страницы краулеры используют как хабы.
+    rel = urllib.parse.unquote(url.replace("https://docs.layero.ru/", "")).strip("/")
     for candidate in (os.path.join(BUILD, rel, "index.html"),
                       os.path.join(BUILD, rel + ".html")):
         if os.path.exists(candidate):
@@ -98,7 +103,11 @@ def is_english(url: str) -> bool:
             text = re.sub(r"<[^>]+>", " ", m.group(0) if m else "")
             cyr = sum(1 for c in text if "а" <= c.lower() <= "я")
             lat = sum(1 for c in text if "a" <= c.lower() <= "z")
-            return lat > cyr
+            # Критерий — «страница НЕ русская», а не «латиницы больше».
+            # Прежнее `lat > cyr` на служебных страницах без <article>
+            # (/en/search, /en/blog/archive, /en/blog/authors) давало 0 > 0,
+            # то есть «ложь», и они тоже выпадали из пуша.
+            return cyr <= lat
     return False  # файла нет — не рискуем
 
 urls = []
@@ -110,8 +119,13 @@ for rel in ("sitemap.xml", "en/sitemap.xml"):
     found = re.findall(r"<loc>([^<]+)</loc>", open(path, encoding="utf-8").read())
     if rel.startswith("en/"):
         kept = [u for u in found if is_english(u)]
-        print(f"  {rel}: {len(kept)} из {len(found)} URL "
-              f"(остальные — непереведённые, в пуш не идут)")
+        # Исключённые печатаем поимённо. Прежняя строка называла их
+        # «непереведёнными», ничего не проверяя, — и десять адресов, из них
+        # шесть страниц-разделов, годами выпадали под правдоподобной подписью.
+        dropped = [u for u in found if u not in set(kept)]
+        print(f"  {rel}: {len(kept)} из {len(found)} URL")
+        for u in dropped:
+            print(f"    не отправлен: {urllib.parse.unquote(u)}")
         found = kept
     else:
         print(f"  {rel}: {len(found)} URL")

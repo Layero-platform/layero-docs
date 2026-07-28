@@ -46,5 +46,29 @@
   "sidebar.docsSidebar.category.@layero — плагин для AI-IDE.link.generated-index.description": {
     "message": "The Layero MCP plugin: build landing pages inside Cursor / Claude Code / Codex and deploy them in one move.",
     "description": "The generated-index page description for category @layero — плагин для AI-IDE in sidebar docsSidebar"
+  },
+  "sidebar.docsSidebar.category.Тарифы и оплата": {
+    "message": "Plans & billing",
+    "description": "The label for category Тарифы и оплата in sidebar docsSidebar"
+  },
+  "sidebar.docsSidebar.category.Тарифы и оплата.link.generated-index.description": {
+    "message": "The Free and Pro plans, limits, team seats, and what happens when you hit a limit.",
+    "description": "The generated-index page description for category Тарифы и оплата in sidebar docsSidebar"
+  },
+  "sidebar.docsSidebar.category.Производительность": {
+    "message": "Performance",
+    "description": "The label for category Производительность in sidebar docsSidebar"
+  },
+  "sidebar.docsSidebar.category.Производительность.link.generated-index.description": {
+    "message": "Auditing site speed: Core Web Vitals, Lighthouse, Coach, and waterfall traces.",
+    "description": "The generated-index page description for category Производительность in sidebar docsSidebar"
+  },
+  "sidebar.docsSidebar.category.Команды и интеграции": {
+    "message": "Teams & integrations",
+    "description": "The label for category Команды и интеграции in sidebar docsSidebar"
+  },
+  "sidebar.docsSidebar.category.Команды и интеграции.link.generated-index.description": {
+    "message": "Organisations, the GitHub App, and member access.",
+    "description": "The generated-index page description for category Команды и интеграции in sidebar docsSidebar"
   }
 }
