@@ -107,5 +107,13 @@ history: Project → Deploys → "Promote history".
   artifact, run an ordinary `layero deploy` with that code, or Redeploy from
   the dashboard.
 
+## Where the divergence came from
+
+Every branch used to have its own canonical host, and `layero rollback` changed
+`environments.active_deploy_id` — that is, it worked per branch. When the model
+moved to "one apex per project" (V071), a rollback had to move the project's
+**production pointer** instead. The CLI command never followed: it stayed on the
+old, per-branch path. Hence the success report while the apex never changed.
+
 Related: [`layero promote`](./promote),
 [Environments, previews and production](../deploys/environments).
