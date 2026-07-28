@@ -44,6 +44,13 @@ cache_control() {
   esac
 }
 
+# llms.txt собирается из УЖЕ СОБРАННОГО сайта, отдельно для каждой локали.
+# Статическим файлом это сделать нельзя: Docusaurus копирует static/ в сборку
+# каждой локали, и один и тот же текст оказывается и на /llms.txt, и на
+# /en/llms.txt. Ровно так 28.07 русский файл попал на английский адрес.
+echo "==> Generating llms.txt (ru + en)"
+python3 scripts/gen-llms.py --build "$BUILD_DIR"
+
 echo "==> Uploading $BUILD_DIR to s3://$BUCKET/"
 cd "$BUILD_DIR"
 find . -type f | while read -r path; do
