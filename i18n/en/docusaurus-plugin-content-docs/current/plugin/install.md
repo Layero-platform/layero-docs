@@ -111,8 +111,17 @@ and pass it as a header in the server config — once per IDE.
 }
 ```
 
-**Claude Code** — if you added the server from the command line, it takes a
-header flag:
+**Claude Code** — if you installed the plugin from the marketplace (the way
+shown above), set an environment variable: the plugin config already declares
+the header as `Bearer ${LAYERO_TOKEN}`, and Claude Code substitutes the value.
+
+```bash
+export LAYERO_TOKEN="<your token>"
+```
+
+Keep it in your shell profile (`~/.zshrc`, `~/.bashrc`) or it disappears with
+the session. If you added the server from the command line instead of
+installing the plugin, the command takes a header flag:
 
 ```bash
 claude mcp add --transport http layero https://mcp.layero.ru/mcp \
