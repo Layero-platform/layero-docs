@@ -205,6 +205,7 @@ Do not write handling for codes that are not on this list.
 | `deploy_not_started` | The build never started | Re-run `layero deploy`; if it repeats, check the project in the dashboard |
 | `deploy_failed` | The build never reached `ready` | Open the logs at the URL in `next_action` |
 | `no_deploy` / `no_deploys` | The project has no deploys yet | Run `layero deploy` first |
+| `rollback_unsupported` | The deploy has no servable artifact: either a runtime project, or static whose artifact was purged by retention | Rebuild the commit with `layero deploy` |
 | `env_not_found` | No such variable | `layero env list` |
 | `nothing_to_set` | `layero env set` called without a `KEY=value` pair | `layero env set KEY=value` |
 | `bad_format` | An argument could not be parsed | The expected format is in the message |

@@ -197,6 +197,7 @@ CLI упаковал директорию в tar.gz.
 | `deploy_not_started` | Сборка не стартовала | Повторить `layero deploy`; если повторяется — смотреть проект в дашборде |
 | `deploy_failed` | Билд не дошёл до `ready` | Открыть логи по ссылке из `next_action` |
 | `no_deploy` / `no_deploys` | У проекта ещё нет деплоев | Сначала `layero deploy` |
+| `rollback_unsupported` | У деплоя нет раздаваемого артефакта: runtime-проект либо вычищенная по ретенции статика | Пересобрать нужный коммит через `layero deploy` |
 | `env_not_found` | Переменной нет | `layero env list` |
 | `nothing_to_set` | `layero env set` вызван без пары `KEY=value` | `layero env set KEY=value` |
 | `bad_format` | Аргумент не разобран | Формат — в сообщении |
