@@ -85,13 +85,13 @@ Restart Cursor. That is all.
 
 ## If your IDE offers to authenticate
 
-Some editors try OAuth first when connecting a remote server — speculatively,
-before they know whether it is needed. Layero has none: the server is public
-and never returns a 401. The authentication card is safe to dismiss with
-**Skip**; the connection works either way.
+Dismiss the card with **Skip** — it does not affect the connection. Codex, and
+some other editors after it, try OAuth the first time they reach a remote
+server, before knowing whether it is needed. Layero has none: the server is
+public and answers without authentication.
 
 The token, when you need one, travels in a header rather than through that
-dialog. The next section shows how.
+dialog. See [Connecting your account](#connecting-your-account) below.
 
 ## Connecting your account
 
