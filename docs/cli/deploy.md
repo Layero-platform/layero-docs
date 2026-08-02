@@ -12,7 +12,7 @@ description: Что делает layero deploy, какие у него флаг�
 
 ```bash
 cd my-site
-npx layero deploy
+npx layero@latest deploy
 ```
 
 Что происходит:
@@ -67,11 +67,11 @@ CLI читает `package.json` и характерные конфиги:
 ```bash
 # CLI-проект (без подключённого репозитория): публикуется в apex АВТОМАТИЧЕСКИ.
 # Прямые загрузки авто-промоутятся — отдельный --prod / promote не нужен.
-npx layero deploy
+npx layero@latest deploy
 # → production-адрес проекта (живой публичный адрес; печатается в выводе)
 
 # CI-режим: без подтверждения
-npx layero deploy --prod --yes
+npx layero@latest deploy --prod --yes
 ```
 
 **Для CLI-проекта (без репозитория)** каждый `layero deploy` заменяет то, что
@@ -149,7 +149,7 @@ Mixed-mode удобен, когда:
 Пример CI-сборки:
 
 ```bash
-LAYERO_TOKEN=$LAYERO_DEPLOY_TOKEN npx layero deploy --prod --yes \
+LAYERO_TOKEN=$LAYERO_DEPLOY_TOKEN npx layero@latest deploy --prod --yes \
   --project alice-my-site
 ```
 
@@ -158,7 +158,7 @@ LAYERO_TOKEN=$LAYERO_DEPLOY_TOKEN npx layero deploy --prod --yes \
 Любая команда CLI поддерживает `--json` (или `LAYERO_JSON=1`):
 
 ```bash
-npx layero deploy --json
+npx layero@latest deploy --json
 ```
 
 Каждая строка stdout — JSON-объект с полем `event`:

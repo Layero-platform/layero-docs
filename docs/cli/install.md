@@ -8,30 +8,36 @@ description: Как поставить Layero CLI (npx / project-local / гло�
 
 ## Установка
 
-Layero CLI публикуется как npm-пакет [`layero`](https://www.npmjs.com/package/layero). Рекомендуем `npx` или локально в проект — **без `-g`**:
+Layero CLI публикуется как npm-пакет [`layero`](https://www.npmjs.com/package/layero). Рекомендуем `npx layero@latest` — **с версией и без `-g`**:
 
 ```bash
-# Без установки, всегда последняя версия (рекомендуется):
+# Рекомендуется: без установки, всегда последняя версия
 npx layero@latest deploy
 
-# Локально в проект:
-npm install -D layero
-npx layero deploy
+# Локально в проект — версия ПРИКРЕПЛЯЕТСЯ, обновлять руками
+npm install -D layero && npx layero deploy
 
-# Глобально (если очень хочется; в Cursor/Claude Code часто фейлится из-за прав):
-npm install -g layero
+# Глобально (в Cursor/Claude Code часто фейлится из-за прав на /usr/local)
+npm install -g layero@latest
 ```
 
 Требуется **Node.js ≥ 20**.
 
-:::tip Почему не `-g`
-Глобальная установка фейлится в песочницах AI-агентов (Cursor, Claude Code) из-за прав на `/usr/local`. `npx` и локальная установка работают везде, и `npx layero@latest` всегда тянет свежий релиз — никаких ручных апдейтов.
+:::tip Пишите `@latest` — иначе версия прикрепится
+`npx layero` без версии берёт **уже установленную** копию: локальную из
+`node_modules`, а если её нет — глобальную. В реестр он при этом не ходит, и
+вы годами запускаете то, что поставили однажды. Так у нас нашёлся ноутбук с
+`layero@0.8.11` при опубликованном 0.8.20 — и до 0.8.22 CLI даже не мог об
+этом предупредить (запрос к npm был сломан).
+
+`npx layero@latest` тянет свежий релиз каждый раз. Локальную установку
+обновляйте сами: `npm i -D layero@latest`.
 :::
 
 ## Логин
 
 ```bash
-npx layero login
+npx layero@latest login
 ```
 
 CLI:
@@ -40,7 +46,7 @@ CLI:
 2. Печатает URL `https://app.layero.ru/cli?code=5NFW-K2NG` (и пытается открыть его в браузере, если запущен в интерактивном терминале).
 3. Молча поллит каждые 2 секунды до подтверждения или истечения 15-минутного TTL.
 
-В браузере вы выбираете провайдера (**GitHub** или **Яндекс ID**) — если аккаунта в Layero ещё нет, он создаётся автоматически на первом OAuth. После «Разрешить доступ» CLI получает JWT и сохраняет его в `~/.layero/config.json` (chmod 600).
+В браузере вы выбираете способ входа — **код на почту** или **Яндекс ID**. Если аккаунта в Layero ещё нет, он создаётся автоматически при первом входе. Страница называет аккаунт, которому выдаёт доступ: если он не тот, там же есть «войти другим». После «Разрешить доступ» CLI получает JWT и сохраняет его в `~/.layero/config.json` (chmod 600).
 
 :::info Браузер и CLI могут быть на разных машинах
 Это device-flow (как `gh auth login`, `aws sso login`, AppleTV). CLI не открывает локальный сервер на 127.0.0.1 — обмен идёт **через backend**. Поэтому логин работает даже когда CLI запущен на удалённой машине (SSH, Docker, headless CI), а ваш браузер на ноутбуке.
@@ -49,12 +55,12 @@ CLI:
 Проверьте, под каким аккаунтом вы залогинены:
 
 ```bash
-npx layero whoami
+npx layero@latest whoami
 ```
 
 ### Если код истёк
 
-Каждый `user_code` живёт **15 минут**. Если не успели подтвердить — CLI завершится с `auth_expired` или `auth_timeout`. Просто запустите `npx layero login` ещё раз.
+Каждый `user_code` живёт **15 минут**. Если не успели подтвердить — CLI завершится с `auth_expired` или `auth_timeout`. Просто запустите `npx layero@latest login` ещё раз.
 
 ### Аккаунта в Layero нет
 
@@ -65,7 +71,7 @@ npx layero whoami
 Внутри директории сайта запустите:
 
 ```bash
-npx layero init
+npx layero@latest init
 ```
 
 Команда:
@@ -110,7 +116,7 @@ npx layero init
 ## Сброс токена
 
 ```bash
-npx layero logout
+npx layero@latest logout
 ```
 
 Удалит токен из `~/.layero/config.json`. На сервере ничего не отзовёт — JWT валиден до истечения TTL (7 дней). Если хотите отозвать сессию на сервере — `Settings → Active sessions` в дашборде.
@@ -122,8 +128,8 @@ npx layero logout
 ```bash
 # В CI. Токен не печатаем: всё, что попало в лог сборки, видно всем,
 # у кого есть доступ к раннам, и остаётся там после ротации секрета.
-npx layero token set "$LAYERO_TOKEN"
-npx layero deploy --prod --yes --project alice-my-site
+npx layero@latest token set "$LAYERO_TOKEN"
+npx layero@latest deploy --prod --yes --project alice-my-site
 ```
 
 `layero token set` — это «ручное окно» для CI и dev-сценариев. В обычной работе используйте `login`.

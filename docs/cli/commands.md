@@ -28,7 +28,7 @@ description: Полный список команд layero — init, login, proj
 Полный список флагов конкретной команды:
 
 ```bash
-npx layero <cmd> --help
+npx layero@latest <cmd> --help
 ```
 
 Глобальный флаг `--json` переключает CLI в режим JSON-lines на stdout — это для AI-агентов (Cursor, Claude Code) и CI-пайплайнов. Подробнее — [Деплой из AI-агентов](./agents.md).
@@ -39,7 +39,7 @@ npx layero <cmd> --help
 
 ```bash
 cd my-site
-npx layero init
+npx layero@latest init
 ```
 
 Что делает:
@@ -81,8 +81,8 @@ client-x            team      (member)
 Привязать текущую директорию к существующему проекту:
 
 ```bash
-npx layero link 123          # по id
-npx layero link alice-blog   # по slug
+npx layero@latest link 123          # по id
+npx layero@latest link alice-blog   # по slug
 ```
 
 Создаст `./.layero/project.json` со ссылкой на проект. Полезно, когда вы клонировали чужой репо и хотите деплоить в свой проект, или переехали из другой папки.
@@ -96,9 +96,9 @@ npx layero link alice-blog   # по slug
 Показать последние деплои проекта (по умолчанию — default-ветка):
 
 ```bash
-npx layero deploys list                       # текущая default-ветка
-npx layero deploys list --branch=staging      # другая ветка
-npx layero deploys list --limit 50            # больше истории
+npx layero@latest deploys list                       # текущая default-ветка
+npx layero@latest deploys list --branch=staging      # другая ветка
+npx layero@latest deploys list --limit 50            # больше истории
 ```
 
 Каждая строка содержит статус (`ready`/`building`/`failed`), commit SHA, время и **источник** деплоя:
@@ -137,10 +137,10 @@ layero hooks delete <id>                  # отзывается сразу
 Перевести production apex проекта на конкретный ready-деплой. Подробно — [`layero promote`](./promote.md).
 
 ```bash
-npx layero promote                        # default-ветка → последний ready
-npx layero promote --branch=staging       # последний ready ветки staging
-npx layero promote a3f9c2b                # конкретный деплой по commit_sha (позиционный аргумент)
-npx layero promote --yes                  # без подтверждения (CI)
+npx layero@latest promote                        # default-ветка → последний ready
+npx layero@latest promote --branch=staging       # последний ready ветки staging
+npx layero@latest promote a3f9c2b                # конкретный деплой по commit_sha (позиционный аргумент)
+npx layero@latest promote --yes                  # без подтверждения (CI)
 ```
 
 `layero deploy --promote` — короткий путь: «собери и сразу выкати в production», эквивалент `layero deploy ... && layero promote <last-sha>`.

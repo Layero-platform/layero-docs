@@ -200,7 +200,7 @@ address. Pick a different one — prefixed with your organization, for example.
 
 `project` points at a project that does not exist. Either drop the parameter
 (the project will be created on the first deploy) or list what you have:
-`npx layero projects list`.
+`npx layero@latest projects list`.
 
 ## Other CI systems
 

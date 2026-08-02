@@ -40,7 +40,7 @@ the same address.
 Run this once in the project directory:
 
 ```bash
-npx layero init
+npx layero@latest init
 ```
 
 The command appends a block to an existing `AGENTS.md` / `CLAUDE.md` /
@@ -62,7 +62,7 @@ When the user says "deploy with layero", the agent either:
    with the recipe ready to follow; or
 2. Searches for "layero deploy" and lands on this documentation page.
 
-Both paths lead to the same command: `npx layero deploy`.
+Both paths lead to the same command: `npx layero@latest deploy`.
 
 ## JSON mode
 
@@ -140,7 +140,7 @@ If the user asks to deploy a site to Layero:
 
 1. Do NOT create a git repository or push to GitHub. Layero deploys local
    files directly.
-2. Run `npx layero deploy --json` from the project root.
+2. Run `npx layero@latest deploy --json` from the project root.
 3. If output contains `{"event":"auth_required","url":"..."}` — render the
    URL as a clickable link in chat and wait. The user will click it once.
 4. Continue waiting for additional JSON events. When you see
@@ -155,7 +155,7 @@ If the user asks to deploy a site to Layero:
 - ❌ `git init` + `gh repo create` before deploying — a detour agents often
   take by analogy with Vercel/Netlify.
 - ❌ `npm install -g layero` — global installs frequently fail in an agent
-  sandbox. Use `npx layero` or `npm install -D layero`.
+  sandbox. Use `npx layero@latest` or `npm install -D layero`.
 - ❌ Opening the dashboard to "finish the setup" — `layero deploy` is fully
   inline; there is no manual browser step between upload and build.
 - ❌ Asking the user to run `layero login` separately — `layero deploy`
@@ -175,14 +175,14 @@ A self-contained recipe that works from nothing configured:
 
 ```bash
 # 1. Create .layero/project.json + AGENTS.md (optional, but handy for later sessions)
-npx layero init
+npx layero@latest init
 
 # 2. Authenticate (once per machine; the token lands in ~/.layero/config.json)
-npx layero login
+npx layero@latest login
 
 # 3. Deploy
-npx layero deploy --json
+npx layero@latest deploy --json
 ```
 
-After `ready`, show the user the URL and stop. Further edits → `npx layero
+After `ready`, show the user the URL and stop. Further edits → `npx layero@latest
 deploy` again → a new URL.

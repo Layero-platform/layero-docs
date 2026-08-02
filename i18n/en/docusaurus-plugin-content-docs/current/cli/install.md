@@ -8,30 +8,36 @@ description: How to install the Layero CLI (npx, project-local or global), sign 
 
 ## Install
 
-The Layero CLI ships as the npm package [`layero`](https://www.npmjs.com/package/layero). Prefer `npx` or a project-local install — **without `-g`**:
+The Layero CLI ships as the npm package [`layero`](https://www.npmjs.com/package/layero). Prefer `npx layero@latest` — **with the version tag, and without `-g`**:
 
 ```bash
-# No install, always the latest release (recommended):
+# Recommended: no install, always the latest release
 npx layero@latest deploy
 
-# Project-local:
-npm install -D layero
-npx layero deploy
+# Project-local — this PINS the version; you update it yourself
+npm install -D layero && npx layero deploy
 
-# Global (if you insist; often fails in Cursor / Claude Code over permissions):
-npm install -g layero
+# Global (often fails in Cursor / Claude Code over /usr/local permissions)
+npm install -g layero@latest
 ```
 
 Requires **Node.js ≥ 20**.
 
-:::tip Why not `-g`
-Global installs fail inside AI-agent sandboxes (Cursor, Claude Code) because of permissions on `/usr/local`. `npx` and project-local installs work everywhere, and `npx layero@latest` always pulls the current release — no manual updates.
+:::tip Always write `@latest` — otherwise the version gets pinned
+`npx layero` without a version runs the copy you **already have**: the local one
+from `node_modules`, or the global one. It does not contact the registry, so you
+can keep running whatever you installed once, for years. That is how we found a
+laptop on `layero@0.8.11` while 0.8.20 was published — and before 0.8.22 the CLI
+could not even warn about it (its registry request was broken).
+
+`npx layero@latest` fetches the current release every time. A project-local
+install you update yourself: `npm i -D layero@latest`.
 :::
 
 ## Sign in
 
 ```bash
-npx layero login
+npx layero@latest login
 ```
 
 The CLI:
@@ -40,7 +46,7 @@ The CLI:
 2. Prints the URL `https://app.layero.ru/cli?code=5NFW-K2NG` (and tries to open it in a browser when running in an interactive terminal).
 3. Polls quietly every 2 seconds until you approve or the 15-minute TTL expires.
 
-In the browser you pick a provider (**GitHub** or **Yandex ID**) — if you have no Layero account yet, it is created automatically on the first OAuth. After you allow access, the CLI receives a JWT and stores it in `~/.layero/config.json` (chmod 600).
+In the browser you pick a sign-in method — an **emailed code** or **Yandex ID**. If you have no Layero account yet, it is created automatically on first sign-in. The page names the account it is about to authorise; if it is the wrong one, there is a "sign in as someone else" link right there. After you allow access, the CLI receives a JWT and stores it in `~/.layero/config.json` (chmod 600).
 
 :::info The browser and the CLI may be on different machines
 This is a device flow (like `gh auth login`, `aws sso login`, AppleTV). The CLI opens no local server on 127.0.0.1 — the exchange goes **through the backend**. So signing in works even when the CLI runs on a remote machine (SSH, Docker, headless CI) while your browser is on a laptop.
@@ -49,12 +55,12 @@ This is a device flow (like `gh auth login`, `aws sso login`, AppleTV). The CLI 
 Check which account you are signed in as:
 
 ```bash
-npx layero whoami
+npx layero@latest whoami
 ```
 
 ### If the code expired
 
-Each `user_code` lives **15 minutes**. If you did not confirm in time, the CLI exits with `auth_expired` or `auth_timeout`. Just run `npx layero login` again.
+Each `user_code` lives **15 minutes**. If you did not confirm in time, the CLI exits with `auth_expired` or `auth_timeout`. Just run `npx layero@latest login` again.
 
 ### You have no Layero account
 
@@ -65,7 +71,7 @@ There is no separate sign-up. The first sign-in — by an emailed code or with Y
 Inside the site directory, run:
 
 ```bash
-npx layero init
+npx layero@latest init
 ```
 
 The command:
@@ -110,7 +116,7 @@ After the first `deploy` it gains `project_id`, `slug`, `organization_slug` and 
 ## Clearing the token
 
 ```bash
-npx layero logout
+npx layero@latest logout
 ```
 
 Removes the token from `~/.layero/config.json`. It revokes nothing server-side — the JWT stays valid until its TTL expires (7 days). To revoke the session on the server, use `Settings → Active sessions` in the dashboard.
@@ -121,8 +127,8 @@ CI usually has no browser. Get a JWT with `layero login` on a dev machine, copy 
 
 ```bash
 # In CI
-npx layero token set "$LAYERO_TOKEN"
-npx layero deploy --prod --yes --project alice-my-site
+npx layero@latest token set "$LAYERO_TOKEN"
+npx layero@latest deploy --prod --yes --project alice-my-site
 ```
 
 `layero token set` is the manual escape hatch for CI and dev scenarios. In normal use, sign in with `login`.

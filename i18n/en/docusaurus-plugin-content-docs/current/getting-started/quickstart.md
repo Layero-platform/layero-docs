@@ -40,7 +40,7 @@ npm install -D layero
 ## 2. Sign in
 
 ```bash
-npx layero login
+npx layero@latest login
 ```
 
 The command prints a URL like `https://app.layero.ru/cli?code=ABCD-1234` and,
@@ -60,7 +60,7 @@ with an internet connection.
 ## 3. Deploy
 
 ```bash
-npx layero deploy
+npx layero@latest deploy
 ```
 
 The CLI will:
@@ -96,7 +96,7 @@ assemble it from a template. More in
 
 ```bash
 # you edited something in the editor (or an AI agent did)
-npx layero deploy
+npx layero@latest deploy
 # → the new build is published to the project's production address again
 ```
 

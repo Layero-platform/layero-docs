@@ -34,10 +34,10 @@ CLI деплоит **существующий** проект. Если зада�
 В директории проекта запустите один раз:
 
 ```bash
-npx layero init
+npx layero@latest init
 ```
 
-Команда дописывает блок в существующие `AGENTS.md` / `CLAUDE.md` / `.cursorrules` (или создаёт `AGENTS.md`). Блок содержит: device-flow рецепт логина (`auth_required` → клик → poll), таблицу JSON-событий с пояснениями (`detected` / `project_created` / `build_log` / `ready` / `error`), список кодов ошибок с remediation (`auth_required`, `auth_expired`, `cli_deploys_disabled`, ...), правила для `--prod`. Посмотреть точный текст проще всего по факту: запустите `npx layero init` в пустой папке и откройте созданный `AGENTS.md`.
+Команда дописывает блок в существующие `AGENTS.md` / `CLAUDE.md` / `.cursorrules` (или создаёт `AGENTS.md`). Блок содержит: device-flow рецепт логина (`auth_required` → клик → poll), таблицу JSON-событий с пояснениями (`detected` / `project_created` / `build_log` / `ready` / `error`), список кодов ошибок с remediation (`auth_required`, `auth_expired`, `cli_deploys_disabled`, ...), правила для `--prod`. Посмотреть точный текст проще всего по факту: запустите `npx layero@latest init` в пустой папке и откройте созданный `AGENTS.md`.
 
 Любой современный агент читает эти файлы в начале сессии и точно знает что делать без подсказок.
 
@@ -48,7 +48,7 @@ npx layero init
 1. Делает WebFetch на `https://layero.ru/llms.txt` — каноническая страница для AI-агентов с готовым рецептом.
 2. Или WebSearch «layero deploy» — попадает в эту страницу документации.
 
-Оба пути ведут к одной команде: `npx layero deploy`.
+Оба пути ведут к одной команде: `npx layero@latest deploy`.
 
 ## JSON-режим
 
@@ -121,7 +121,7 @@ If the user asks to deploy a site to Layero:
 
 1. Do NOT create a git repository or push to GitHub. Layero deploys local
    files directly.
-2. Run `npx layero deploy --json` from the project root.
+2. Run `npx layero@latest deploy --json` from the project root.
 3. If output contains `{"event":"auth_required","url":"..."}` — render the
    URL as a clickable link in chat and wait. The user will click it once.
 4. Continue waiting for additional JSON events. When you see
@@ -134,7 +134,7 @@ If the user asks to deploy a site to Layero:
 ## Что НЕ делать
 
 - ❌ `git init` + `gh repo create` перед деплоем — это лишний путь, агент часто туда сваливается по аналогии с Vercel/Netlify
-- ❌ `npm install -g layero` — глобальная установка часто фейлится в песочнице агента. Используйте `npx layero` или `npm install -D layero`
+- ❌ `npm install -g layero` — глобальная установка часто фейлится в песочнице агента. Используйте `npx layero@latest` или `npm install -D layero`
 - ❌ Открывать дашборд для «дописать setup» — `layero deploy` сейчас полностью inline, никакой ручной настройки в браузере между «upload» и «build» нет
 - ❌ Просить пользователя запустить `layero login` отдельно — `layero deploy` сам стартует device-flow (`auth_required`), если токена нет
 - ❌ Добавлять `--prod` / отдельный `promote` для CLI-проекта — прямая загрузка и так публикуется в apex автоматически, `--prod` тут ничего не меняет. Важнее обратное следствие: обычный `deploy` — **не** безобидное превью, он заменяет то, что видят посетители. И обойти это из CLI нечем: `--branch` для архивной загрузки игнорируется (см. [`layero deploy`](./deploy.md)). Если пользователю нужна версия «на посмотреть», не трогающая живой адрес, — этого сценария у CLI-проекта сейчас нет, он делается через подключённый репозиторий и пуш в ветку
@@ -145,13 +145,13 @@ If the user asks to deploy a site to Layero:
 
 ```bash
 # 1. Создать .layero/project.json + AGENTS.md (опционально, но удобно для будущих сессий)
-npx layero init
+npx layero@latest init
 
 # 2. Авторизоваться (один раз на машину; токен в ~/.layero/config.json)
-npx layero login
+npx layero@latest login
 
 # 3. Задеплоить
-npx layero deploy --json
+npx layero@latest deploy --json
 ```
 
-После `ready` показать юзеру URL и закончить. Дальнейшие правки → снова `npx layero deploy` → новый URL.
+После `ready` показать юзеру URL и закончить. Дальнейшие правки → снова `npx layero@latest deploy` → новый URL.

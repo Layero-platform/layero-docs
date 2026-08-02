@@ -28,7 +28,7 @@ description: The full list of layero commands — init, login, projects, deploy,
 The full flag list for a command:
 
 ```bash
-npx layero <cmd> --help
+npx layero@latest <cmd> --help
 ```
 
 The global `--json` flag switches the CLI to JSON lines on stdout — that is for
@@ -41,7 +41,7 @@ Run it once inside the site directory:
 
 ```bash
 cd my-site
-npx layero init
+npx layero@latest init
 ```
 
 What it does:
@@ -90,8 +90,8 @@ Shows every project you have access to.
 Link the current directory to an existing project:
 
 ```bash
-npx layero link 123          # by id
-npx layero link alice-blog   # by slug
+npx layero@latest link 123          # by id
+npx layero@latest link alice-blog   # by slug
 ```
 
 It creates `./.layero/project.json` pointing at the project. Useful when you
@@ -108,9 +108,9 @@ Pack the current directory and start a deploy. Details in
 Show the project's recent deploys (the default branch unless told otherwise):
 
 ```bash
-npx layero deploys list                       # the current default branch
-npx layero deploys list --branch=staging      # another branch
-npx layero deploys list --limit 50            # more history
+npx layero@latest deploys list                       # the current default branch
+npx layero@latest deploys list --branch=staging      # another branch
+npx layero@latest deploys list --limit 50            # more history
 ```
 
 Each line carries the status (`ready`/`building`/`failed`), the commit SHA, a
@@ -152,10 +152,10 @@ Point the project's production apex at a specific ready deploy. Details in
 [`layero promote`](./promote).
 
 ```bash
-npx layero promote                        # default branch → latest ready
-npx layero promote --branch=staging       # latest ready of the staging branch
-npx layero promote a3f9c2b                # a specific deploy by commit_sha (positional)
-npx layero promote --yes                  # no confirmation (CI)
+npx layero@latest promote                        # default branch → latest ready
+npx layero@latest promote --branch=staging       # latest ready of the staging branch
+npx layero@latest promote a3f9c2b                # a specific deploy by commit_sha (positional)
+npx layero@latest promote --yes                  # no confirmation (CI)
 ```
 
 `layero deploy --promote` is the short path — "build it and ship it to

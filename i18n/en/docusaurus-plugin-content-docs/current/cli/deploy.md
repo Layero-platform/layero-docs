@@ -14,7 +14,7 @@ directly.
 
 ```bash
 cd my-site
-npx layero deploy
+npx layero@latest deploy
 ```
 
 What happens:
@@ -79,11 +79,11 @@ survive later runs and can be edited by hand.
 ```bash
 # A CLI project (no repository connected): published to the apex AUTOMATICALLY.
 # Direct uploads auto-promote — no separate --prod / promote needed.
-npx layero deploy
+npx layero@latest deploy
 # → the project's production address (the live public address; printed in the output)
 
 # CI mode: no confirmation
-npx layero deploy --prod --yes
+npx layero@latest deploy --prod --yes
 ```
 
 **For a CLI project (no repository)** every `layero deploy` replaces what the
@@ -173,7 +173,7 @@ Artifacts in the dashboard are labelled by source:
 An example CI build:
 
 ```bash
-LAYERO_TOKEN=$LAYERO_DEPLOY_TOKEN npx layero deploy --prod --yes \
+LAYERO_TOKEN=$LAYERO_DEPLOY_TOKEN npx layero@latest deploy --prod --yes \
   --project alice-my-site
 ```
 
@@ -182,7 +182,7 @@ LAYERO_TOKEN=$LAYERO_DEPLOY_TOKEN npx layero deploy --prod --yes \
 Every CLI command supports `--json` (or `LAYERO_JSON=1`):
 
 ```bash
-npx layero deploy --json
+npx layero@latest deploy --json
 ```
 
 Each stdout line is a JSON object with an `event` field:

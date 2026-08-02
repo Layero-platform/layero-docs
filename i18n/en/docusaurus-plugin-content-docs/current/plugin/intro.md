@@ -26,7 +26,7 @@ Unlike the [CLI flow](/en/cli/install), which deploys an **existing** project,
   elicitation); the plugin asks about motivation, vibe and integration, then
   picks the three closest design candidates itself.
 - **Deploying to Layero** is part of the flow: once the files are generated the
-  plugin runs `npx layero deploy --json` through the agent's bash tool.
+  plugin runs `npx layero@latest deploy --json` through the agent's bash tool.
 
 ## Quick start
 

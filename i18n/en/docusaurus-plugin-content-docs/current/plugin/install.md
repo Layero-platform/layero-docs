@@ -83,6 +83,16 @@ for example — open `~/.cursor/mcp.json` and add:
 
 Restart Cursor. That is all.
 
+## If your IDE offers to authenticate
+
+Some editors try OAuth first when connecting a remote server — speculatively,
+before they know whether it is needed. Layero has none: the server is public
+and never returns a 401. The authentication card is safe to dismiss with
+**Skip**; the connection works either way.
+
+The token, when you need one, travels in a header rather than through that
+dialog. The next section shows how.
+
 ## Connecting your account
 
 Installing is enough to build a landing page: picking a structure and a design

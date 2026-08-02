@@ -36,7 +36,7 @@ npm install -D layero
 ## 2. Залогиньтесь
 
 ```bash
-npx layero login
+npx layero@latest login
 ```
 
 Команда напечатает URL вида `https://app.layero.ru/cli?code=ABCD-1234` и (если запущена в обычном терминале) откроет его в браузере. В браузере выбираете провайдера — **GitHub** или **Яндекс ID**, аккаунт в Layero создаётся автоматически при первом OAuth — и жмёте «Разрешить доступ». CLI получит токен в течение пары секунд и сохранит его в `~/.layero/config.json` (chmod 600).
@@ -48,7 +48,7 @@ npx layero login
 ## 3. Задеплойте
 
 ```bash
-npx layero deploy
+npx layero@latest deploy
 ```
 
 CLI:
@@ -80,7 +80,7 @@ CLI:
 
 ```bash
 # отредактировали что-то в редакторе (или AI-агент это сделал)
-npx layero deploy
+npx layero@latest deploy
 # → новая сборка снова публикуется на production-адрес проекта
 ```
 
