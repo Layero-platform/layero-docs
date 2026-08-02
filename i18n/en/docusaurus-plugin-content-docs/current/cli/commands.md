@@ -9,7 +9,7 @@ description: The full list of layero commands — init, login, projects, deploy,
 | Command | What it does |
 |---|---|
 | `layero init` | Auto-detect the framework, scaffold `.layero/project.json` and add a block for AI agents to `AGENTS.md` / `CLAUDE.md` / `.cursorrules`. |
-| `layero login` | Sign in through the browser (GitHub / Yandex ID) — a device flow. |
+| `layero login` | Sign in through the browser (an emailed code or Yandex ID) — a device flow. |
 | `layero logout` | Remove the saved token. |
 | `layero whoami` | Show the current account. |
 | `layero orgs list` | List your Layero organizations (personal + teams). |

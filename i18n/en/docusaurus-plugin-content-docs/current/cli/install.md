@@ -58,7 +58,7 @@ Each `user_code` lives **15 minutes**. If you did not confirm in time, the CLI e
 
 ### You have no Layero account
 
-There is no separate sign-up. The first OAuth through GitHub or Yandex creates your Layero account and personal organisation automatically. After signing in you may be asked to pick a username once — it becomes the slug of your personal organisation. For projects created before the move to `layero.app` (26 July 2026) it also ended up in the site address — `<username>-<project>.layero.app`. New addresses consist of the project slug alone.
+There is no separate sign-up. The first sign-in — by an emailed code or with Yandex ID — creates your Layero account and personal organisation automatically. After signing in you may be asked to pick a username once — it becomes the slug of your personal organisation. For projects created before the move to `layero.app` (26 July 2026) it also ended up in the site address — `<username>-<project>.layero.app`. New addresses consist of the project slug alone.
 
 ## Initialise a project
 
