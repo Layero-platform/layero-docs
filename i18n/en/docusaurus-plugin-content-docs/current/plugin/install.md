@@ -75,7 +75,7 @@ for example — open `~/.cursor/mcp.json` and add:
   "mcpServers": {
     "layero": {
       "url": "https://mcp.layero.ru/mcp",
-      "transport": "http"
+      "type": "http"
     }
   }
 }
@@ -114,7 +114,7 @@ and pass it as a header in the server config — once per IDE.
   "mcpServers": {
     "layero": {
       "url": "https://mcp.layero.ru/mcp",
-      "transport": "http",
+      "type": "http",
       "headers": { "Authorization": "Bearer <your token>" }
     }
   }

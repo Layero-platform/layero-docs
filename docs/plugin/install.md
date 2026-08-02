@@ -63,7 +63,7 @@ codex mcp add layero --url https://mcp.layero.ru/mcp --bearer-token-env-var LAYE
   "mcpServers": {
     "layero": {
       "url": "https://mcp.layero.ru/mcp",
-      "transport": "http"
+      "type": "http"
     }
   }
 }
@@ -102,7 +102,7 @@ Layero-токен не передан. Выпустите токен на https:
   "mcpServers": {
     "layero": {
       "url": "https://mcp.layero.ru/mcp",
-      "transport": "http",
+      "type": "http",
       "headers": { "Authorization": "Bearer <твой токен>" }
     }
   }
