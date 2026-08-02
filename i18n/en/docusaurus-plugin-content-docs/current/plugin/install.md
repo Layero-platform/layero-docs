@@ -28,9 +28,9 @@ you never edit the file. `@layero` becomes available in the chat.
 If you are curious, the button builds:
 
 ```
-cursor://anysphere.cursor-deeplink/mcp/install
+https://cursor.com/en/install-mcp
   ?name=layero
-  &config=<base64({"url":"https://mcp.layero.ru/mcp","type":"http"})>
+  &config=<base64({"url":"https://mcp.layero.ru/mcp"})>
 ```
 
 Cursor decodes the base64, validates it and applies it.

@@ -26,9 +26,9 @@ Install MCP Server
 Если интересно, кнопка строит:
 
 ```
-cursor://anysphere.cursor-deeplink/mcp/install
+https://cursor.com/en/install-mcp
   ?name=layero
-  &config=<base64({"url":"https://mcp.layero.ru/mcp","type":"http"})>
+  &config=<base64({"url":"https://mcp.layero.ru/mcp"})>
 ```
 
 Cursor парсит base64, валидирует и применяет.
