@@ -195,6 +195,8 @@ Do not write handling for codes that are not on this list.
 | `auth_expired` | The login no longer works: either the `user_code` expired (15 min TTL) without confirmation, or the saved token expired (7-day TTL) / its session was revoked — the API answered `401` | Run `layero login` again |
 | `auth_timeout` | The CLI polled for 15 minutes and the user never confirmed | Run `layero login` again |
 | `plan_limit` | A plan limit: the API answered `402` (e.g. more projects than the free plan allows) | Change the plan at `app.layero.ru/billing`, or delete what you no longer need |
+| `username_required` | The account has no username (it doubles as the personal organisation's address) — the API answers `412`. An interactive terminal is asked during `login`/`deploy`; in agent mode there is nobody to ask | `layero username <name>` |
+| `username_rejected` | The name is taken, reserved, or malformed | Pick another: lowercase latin letters, digits and hyphens, 2–32 characters |
 | `oauth_unavailable` | The sign-in provider is unreachable | Ours to fix — retry later |
 | `project_unknown` | Run outside a project directory and without `--project` | Run from the project directory or pass `--project <id\|slug>` |
 | `project_not_found` | `--project` points at a project that does not exist | `layero projects list` |
