@@ -91,7 +91,7 @@ Determined by the lockfile:
 | `pnpm-lock.yaml` | pnpm |
 | `package-lock.json`, or none | npm |
 
-:::caution npm and optional dependencies
+:::caution[npm and optional dependencies]
 If your `package-lock.json` was generated on macOS while the build environment
 is Linux, `npm ci` can hang for a long time on platform-specific optional
 dependencies. If you hit this, commit a lockfile generated on Linux, or switch

@@ -150,7 +150,7 @@ and publishing answers that no token was passed.
 
 Restart the IDE afterwards so it re-reads the config.
 
-:::tip Why there is no sign-in from the chat
+:::tip[Why there is no sign-in from the chat]
 An MCP server keeps no session between calls and cannot open a browser for you
 — it only sees the HTTP request the IDE sent. So the account is wired once in
 the config rather than by a command inside the conversation.

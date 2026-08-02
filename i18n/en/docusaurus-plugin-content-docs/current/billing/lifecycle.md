@@ -81,7 +81,7 @@ within seconds.
 | Deletion by timer | **None.** Suspended projects are kept indefinitely |
 | Paying for Pro again | Everything is restored automatically |
 
-:::tip How to avoid downtime
+:::tip[How to avoid downtime]
 If you keep more than 5 projects or rely on a custom domain, leave
 auto-renewal on. Then there are no "Free ↔ Pro" transitions or suspensions
 at all.

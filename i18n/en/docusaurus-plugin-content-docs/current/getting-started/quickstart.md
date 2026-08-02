@@ -11,7 +11,7 @@ are not required** — Layero uploads the local directory directly. If you want
 automatic deploys on `git push`, that is a day-N upgrade: see
 [Deploying from GitHub](../deploys/github).
 
-:::note No code yet?
+:::note[No code yet?]
 This page is about publishing a project that **already exists**. If the site
 does not exist yet and you want to build it from scratch inside the IDE chat,
 that is a different tool: the [`@layero` plugin](../plugin/intro) for Cursor,
@@ -50,7 +50,7 @@ automatically on the first OAuth — and press "Allow access". The CLI picks up
 the token within a couple of seconds and saves it to `~/.layero/config.json`
 (chmod 600).
 
-:::tip CLI on one machine, browser on another
+:::tip[CLI on one machine, browser on another]
 This is a device flow, like `gh auth login` or an Apple TV. The CLI does not
 open a local HTTP server — the exchange goes through `api.layero.ru`. So the
 login works from SSH, a Docker container, the Cursor sandbox and anywhere else
@@ -81,7 +81,7 @@ so later `layero deploy` runs go to the same project.
 When the build finishes the CLI prints the address — open it. The site is live
 straight away; there is no host warm-up to wait for.
 
-:::tip What address the project gets
+:::tip[What address the project gets]
 User sites live in their own zone, `layero.app`. A new project gets an address
 from a single slug: `https://my-site.layero.app`. Projects created before the
 move (26 July 2026) still carry the organization prefix:
@@ -107,7 +107,7 @@ neither `--prod` nor `promote` is needed.
 The flip side is worth stating plainly: a plain deploy is **not** an isolated
 preview — it replaces what visitors see.
 
-:::danger `--branch` does nothing in `layero deploy`
+:::danger[`--branch` does nothing in `layero deploy`]
 The flag is accepted and silently ignored: the backend files **every** archive
 upload under the reserved `cli` environment, so that a manual upload can never
 collide with a branch of a connected repository (`projects.py:2865`). Verified

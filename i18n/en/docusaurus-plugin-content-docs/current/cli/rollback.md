@@ -6,7 +6,7 @@ description: How to bring the production apex back to a working deploy — with 
 
 # Rollback
 
-:::tip Fixed on 27 July 2026
+:::tip[Fixed on 27 July 2026]
 `layero rollback` used to print `rolled back to <sha>` while moving only
 `environments.active_deploy_id` — and the public address resolves through
 `projects.production_deploy_id`. The command reported success without
@@ -22,7 +22,7 @@ Rolling back a *different* branch still leaves the apex alone: if the owner
 deliberately keeps production on another branch, that is their choice.
 :::
 
-:::warning Not available for runtime apps yet
+:::warning[Not available for runtime apps yet]
 Rollback works for static projects only. If your project runs as a runtime app
 — Next SSR, Streamlit, Gradio — `layero rollback` prints a plan and then fails:
 the artifact of such a deploy lives in the image registry rather than in Object

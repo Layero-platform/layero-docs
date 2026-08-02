@@ -220,7 +220,7 @@ Do not write handling for codes that are not on this list.
 | `no_runs` | No speed-check runs recorded | `layero perf check` |
 | `internal` | An unexpected CLI error (network, unhandled exception) | Re-run with `--debug` |
 
-:::note The deploy code is built from the status
+:::note[The deploy code is built from the status]
 The code for an unsuccessful deploy is assembled as `deploy_<status>` from the
 build status, and a deploy has four statuses: `ready`, `building`, `failed`,
 `cancelled`. So in practice you will only ever see `deploy_failed` and

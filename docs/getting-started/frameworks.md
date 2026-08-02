@@ -89,7 +89,7 @@ SSR Next.js (без `output: 'export'`), Streamlit, Gradio, Flask и т. п.
 | `pnpm-lock.yaml` | pnpm |
 | `package-lock.json` или ничего | npm |
 
-:::caution npm и optional dependencies
+:::caution[npm и optional dependencies]
 Если ваш `package-lock.json` сгенерирован на macOS, а билд-окружение —
 Linux, `npm ci` может надолго зависнуть на платформо-специфичных
 optional-зависимостях. Если столкнулись — опубликуйте lockfile,

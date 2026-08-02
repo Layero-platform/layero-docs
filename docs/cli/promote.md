@@ -7,7 +7,7 @@ description: Перевести production apex на конкретный деп
 # `layero promote`
 
 
-:::danger Формы команды проверены 27.07.2026
+:::danger[Формы команды проверены 27.07.2026]
 - Деплой указывается **позиционным аргументом**: `layero promote <commit-sha>`.
   Флага `--deploy=` не существует. Sha берётся из `layero deploys list`.
 - **`layero promote --rollback` не существует** — CLI отвечает

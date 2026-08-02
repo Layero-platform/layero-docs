@@ -11,7 +11,7 @@ Continue and the like) can deploy a site **within a single conversation** — no
 `git init`, no push to GitHub, no wizard in the dashboard. The only thing the
 user does is click one login link.
 
-:::tip Want a landing page built from scratch inside the IDE chat?
+:::tip[Want a landing page built from scratch inside the IDE chat?]
 
 The CLI deploys an **existing** project. If the task is the opposite — build a
 landing page from a description — see the [`@layero` MCP plugin](../plugin/intro):

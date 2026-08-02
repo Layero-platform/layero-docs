@@ -52,12 +52,12 @@ The label was **preserved** during the move — only the zone changed. So
 projects that existed before 26 July still carry the organization prefix,
 while new ones get a short address from the project slug alone.
 
-:::tip Do not guess the address from a template
+:::tip[Do not guess the address from a template]
 The real address is shown on the project card in the dashboard and printed by
 `layero deploy` (the `url` field in JSON mode). Take it from there.
 :::
 
-:::note Old addresses work until 31 August 2026
+:::note[Old addresses work until 31 August 2026]
 Everything that used to be at `<...>.layero.ru`, branch addresses and preview
 forms included, returns a `301` to the new address, preserving path and query.
 Links you have shared keep working. **On 31 August the redirect goes away** —
@@ -96,7 +96,7 @@ deploy — no waiting for host registration. After that it never goes down:
 switching between deploys happens through the `production_deploy_id` pointer,
 with no hostname re-registration.
 
-:::note There is no longer a CDN in front of sites
+:::note[There is no longer a CDN in front of sites]
 `*.layero.ru` used to sit behind YC CDN, and the first deploy of a new host
 waited 5–15 minutes to warm up. Since July 2026 the user zone resolves
 **straight to the platform load balancer** (NLB → edge). Three practical
@@ -126,7 +126,7 @@ certificate at the edge and works right after a successful build.
 Preview hosts are served with `X-Robots-Tag: noindex` — search engines get the
 production address, not every branch.
 
-:::note Preview links do not expire
+:::note[Preview links do not expire]
 A preview URL used to stop working 24 hours after the branch's first
 successful deploy, and you could extend it with a "Pin preview" button.
 Neither exists any more: the worker that retired hosts on a TTL was removed,

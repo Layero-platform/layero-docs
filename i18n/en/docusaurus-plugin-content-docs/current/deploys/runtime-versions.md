@@ -96,7 +96,7 @@ We email you before a version closes.
 
 **Node.js 18** is at step one. New builds on it close on **1 September 2026**.
 
-:::tip Worth upgrading early
+:::tip[Worth upgrading early]
 Node.js 18 genuinely cannot build a modern frontend any more — Vite, for
 instance, fails with `ReferenceError: CustomEvent is not defined`, a function
 added in Node 19. If your project is pinned to 18, moving to 22 usually needs

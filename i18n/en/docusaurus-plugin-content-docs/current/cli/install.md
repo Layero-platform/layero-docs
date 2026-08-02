@@ -23,7 +23,7 @@ npm install -g layero@latest
 
 Requires **Node.js ≥ 20**.
 
-:::tip Always write `@latest` — otherwise the version gets pinned
+:::tip[Always write `@latest` — otherwise the version gets pinned]
 `npx layero` without a version runs the copy you **already have**: the local one
 from `node_modules`, or the global one. It does not contact the registry, so you
 can keep running whatever you installed once, for years. That is how we found a
@@ -48,7 +48,7 @@ The CLI:
 
 In the browser you pick a sign-in method — an **emailed code** or **Yandex ID**. If you have no Layero account yet, it is created automatically on first sign-in. The page names the account it is about to authorise; if it is the wrong one, there is a "sign in as someone else" link right there. After you allow access, the CLI receives a JWT and stores it in `~/.layero/config.json` (chmod 600).
 
-:::info The browser and the CLI may be on different machines
+:::info[The browser and the CLI may be on different machines]
 This is a device flow (like `gh auth login`, `aws sso login`, AppleTV). The CLI opens no local server on 127.0.0.1 — the exchange goes **through the backend**. So signing in works even when the CLI runs on a remote machine (SSH, Docker, headless CI) while your browser is on a laptop.
 :::
 

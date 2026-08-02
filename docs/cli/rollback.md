@@ -6,7 +6,7 @@ description: Как вернуть production apex на предыдущий р�
 
 # Rollback
 
-:::tip Починено 27.07.2026
+:::tip[Починено 27.07.2026]
 Раньше `layero rollback` печатал `rolled back to <sha>`, но двигал только
 `environments.active_deploy_id` — а публичный адрес резолвится через
 `projects.production_deploy_id`. Команда рапортовала об успехе, не
@@ -22,7 +22,7 @@ description: Как вернуть production apex на предыдущий р�
 держит production на другой ветке, это его выбор.
 :::
 
-:::warning Пока не работает для runtime-приложений
+:::warning[Пока не работает для runtime-приложений]
 Откат доступен только проектам со статикой. Если проект работает как
 runtime-приложение — SSR на Next, Streamlit, Gradio, — `layero rollback`
 покажет план и завершится ошибкой: артефакт такого деплоя лежит не в Object

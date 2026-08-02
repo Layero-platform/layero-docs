@@ -27,7 +27,7 @@ headers.
 The `_headers` file is how you pass that intent down to the serving layer:
 the builder reads it and attaches the listed headers to edge responses.
 
-:::note SSR and runtime apps
+:::note[SSR and runtime apps]
 Everything here is about **static** sites. If you run an SSR or runtime app
 (Next.js in server mode, Streamlit, Flask), the process runs on the server
 and can set headers itself, in code (`res.setHeader(...)`,
@@ -102,7 +102,7 @@ overrides below:
 Here `/assets/style.css` gets the long cache, everything else gets
 `must-revalidate`.
 
-:::warning `Cache-Control` currently arrives twice
+:::warning[`Cache-Control` currently arrives twice]
 Verified on a live project on 27 July 2026. If you set `Cache-Control` in
 `_headers`, the edge still adds its own, and the response carries **two**
 headers:

@@ -28,7 +28,7 @@ The plan applies at the account level.
 | Team organizations | — | ✅ |
 | Team seats included | — | 1 |
 
-:::danger Indexing is off by default — for everyone
+:::danger[Indexing is off by default — for everyone]
 Every new project is created with `indexing_enabled = false`, and the platform
 serves its site with an `X-Robots-Tag: noindex, nofollow` header. While the flag
 is off the site **cannot appear** in Yandex or Google, whatever your
@@ -47,7 +47,7 @@ curl -sI https://<your-project-address> | grep -i x-robots-tag
 ```
 :::
 
-:::note Runtime is available on Free too
+:::note[Runtime is available on Free too]
 SSR and runtime apps (Next.js in server mode, Streamlit, Gradio, Flask)
 work on **both** plans. Pro differs by a boosted runtime tier, not by the
 ability to run dynamic apps.

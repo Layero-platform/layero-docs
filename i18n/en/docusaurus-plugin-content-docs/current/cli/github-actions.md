@@ -68,7 +68,7 @@ start failing with a 401 exactly seven days later. Pipelines get a separate
 You can revoke the token on the same page — builds using it start getting 401
 right away.
 
-:::warning The token carries account-level rights
+:::warning[The token carries account-level rights]
 It can do everything an ordinary login can. Create a separate token per
 repository: then a compromise of one is contained without breaking the rest.
 :::
@@ -93,7 +93,7 @@ to the wrong account.
 | `working-directory` | no | `.` | Where to run the deploy from |
 | `version` | no | `latest` | Version of the `layero` npm package |
 
-:::danger `name` creates a new project on every run
+:::danger[`name` creates a new project on every run]
 If the workflow is meant to keep updating the same project, pass **`project`**
 — it takes an id or a slug and targets one specific existing project.
 
@@ -161,7 +161,7 @@ live sites are built and rolled out on every push.
             output: dist
 ```
 
-:::tip fail-fast: false is not paranoia
+:::tip[fail-fast: false is not paranoia]
 Without it, one broken example cancels the rollout of all the others,
 including the ones already built. A single broken dependency takes down every
 live demo.

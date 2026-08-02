@@ -6,7 +6,7 @@ description: Point the production apex at a specific deploy — from any branch,
 
 # `layero promote`
 
-:::danger The command forms were verified on 27 July 2026
+:::danger[The command forms were verified on 27 July 2026]
 - The deploy is given as a **positional argument**: `layero promote <commit-sha>`.
   There is no `--deploy=` flag. Take the sha from `layero deploys list`.
 - **`layero promote --rollback` does not exist** — the CLI answers

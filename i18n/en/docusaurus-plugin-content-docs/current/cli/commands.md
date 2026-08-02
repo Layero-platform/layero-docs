@@ -141,7 +141,7 @@ Verified on a live project: `POST` returns `202` with a `deploy_id` and starts
 a build, while `GET` returns `405` — so a crawler or an accidental visit in a
 browser cannot fire one.
 
-:::warning The hook URL is a credential
+:::warning[The hook URL is a credential]
 Anyone holding it can start a build. To rotate, delete the hook and create a
 new one; there is no separate "regenerate token".
 :::

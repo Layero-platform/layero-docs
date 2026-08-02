@@ -107,7 +107,7 @@ direct CLI uploads the apex moves anyway):
 - `--promote` = "once it builds, point the apex at this deploy". Works for any
   branch — the short path for "hot-fix from a feature branch → production".
 
-:::danger `--branch` does nothing in `layero deploy`
+:::danger[`--branch` does nothing in `layero deploy`]
 The flag is accepted and silently ignored: the backend files **every** archive
 upload under the reserved `cli` environment, so that a manual upload can never
 collide with a branch of a connected repository (`projects.py:2865`). Verified
@@ -128,7 +128,7 @@ environment through the webhook.
 :::
 
 
-:::warning `--prebuilt` does not look at `.gitignore`
+:::warning[`--prebuilt` does not look at `.gitignore`]
 The flag points at a **build output directory**, where source-tree rules are
 meaningless, so `.gitignore` and `.layeroignore` are not applied there. That is
 by design — but it has a flip side.

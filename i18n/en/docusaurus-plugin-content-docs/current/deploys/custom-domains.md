@@ -15,7 +15,7 @@ starts serving the project, with its own HTTPS certificate.
 A custom domain behaves like the main address: it shows whichever deploy the
 production pointer refers to. Promote and rollback work on it unchanged.
 
-:::note Beta
+:::note[Beta]
 The "Domains" section is currently in beta. It is marked "Coming soon" in the
 project sidebar — press the **"Beta"** button in the dialog that opens to
 reach the working setup wizard.
