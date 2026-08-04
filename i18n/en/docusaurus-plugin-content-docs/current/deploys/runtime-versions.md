@@ -32,15 +32,18 @@ build log as `[config] node=22.18.0 (.nvmrc)`.
 
 Listed in priority order; the first one found wins.
 
-**1. `.nvmrc` in the repository root**
+**1. Project settings** — **Project → Settings → Node version** (you can also
+pick it while creating the project).
+
+**2. `.nvmrc` in the repository root**
 
 ```
 22
 ```
 
-**2. `.node-version`** — same format.
+**3. `.node-version`** — same format.
 
-**3. `engines.node` in `package.json`**
+**4. `engines.node` in `package.json`**
 
 ```json
 {
@@ -48,12 +51,16 @@ Listed in priority order; the first one found wins.
 }
 ```
 
-**4. Project settings** — **Project → Settings → Node version**.
+The dashboard setting takes priority over repository files: it is the last place
+where you tell the platform what you want, and that choice should not lose
+silently to a file. If the version is set in both places we build on the one you
+picked, and name the pin we overrode in the build log:
 
-Repository files take priority over the dashboard setting. That is deliberate:
-if you keep the version in your repo, it stays the source of truth, and your
-deploy will not start differing from your local build because of a toggle in a
-panel. The setting is for people who would rather not keep the version in code.
+```
+[config] node=24 (project settings); project setting overrode .nvmrc=22
+```
+
+Leave the setting on "Auto" if you want the repository to decide.
 
 A major (`22`) is enough. We update the exact build within a major ourselves,
 along with security updates.
