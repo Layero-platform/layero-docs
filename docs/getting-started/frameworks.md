@@ -74,10 +74,14 @@ SSR Next.js (без `output: 'export'`), Streamlit, Gradio, Flask и т. п.
 
 Приоритет источников:
 
-1. `.nvmrc`
-2. `.node-version`
-3. `package.json` → `engines.node`
-4. По умолчанию — Node 20
+1. Настройка проекта (**Проект → Настройки → Версия Node.js**)
+2. `.nvmrc`
+3. `.node-version`
+4. `package.json` → `engines.node`
+5. По умолчанию — Node 22
+
+Подробнее, включая перекрытия и снятие версий с поддержки, —
+[Версии рантайма](../deploys/runtime-versions.md).
 
 ## Пакетный менеджер
 

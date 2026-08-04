@@ -32,7 +32,7 @@ build log as `[config] node=22.18.0 (.nvmrc)`.
 
 Listed in priority order; the first one found wins.
 
-**1. Project settings** — **Project → Settings → Node version** (you can also
+**1. Project settings** — **Project → Settings → Node.js version** (you can also
 pick it while creating the project).
 
 **2. `.nvmrc` in the repository root**

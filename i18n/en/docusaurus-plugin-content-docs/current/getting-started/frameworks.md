@@ -76,10 +76,14 @@ and the like run as containers — a separate mode, see
 
 Sources, in priority order:
 
-1. `.nvmrc`
-2. `.node-version`
-3. `package.json` → `engines.node`
-4. Node 20 by default
+1. Project settings (**Project → Settings → Node.js version**)
+2. `.nvmrc`
+3. `.node-version`
+4. `package.json` → `engines.node`
+5. Node 22 by default
+
+For overrides and version retirement, see
+[Runtime versions](../deploys/runtime-versions).
 
 ## Package manager
 
