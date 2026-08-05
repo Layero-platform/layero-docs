@@ -31,9 +31,10 @@ reach the working setup wizard.
    the **two DNS records** you need to add.
 4. Open your registrar's control panel, add the records (the wizard shows
    instructions for your specific registrar) and save.
-5. There is nothing else to press. Layero checks DNS every 10 seconds, issues
-   the certificate and connects the domain by itself. The card updates its
-   status in real time.
+5. There is nothing else to do: Layero re-checks DNS by itself roughly
+   every 15 minutes, then issues the certificate and connects the domain.
+   You do not have to wait — the **"Check"** button on the card runs the
+   check right away.
 
 ## Which DNS records are needed
 
@@ -81,15 +82,67 @@ A few things worth knowing:
 - **TXT without quotes.** Paste the TXT value as-is, without surrounding
   quotes — most panels add them themselves.
 
+## Moving from another host
+
+Records from the previous host stay in the zone and keep working — adding your
+own on top is not enough. While the old records are there, they route both
+visitors and the Let's Encrypt check to someone else's server. **Delete them
+before you press "Check".**
+
+What to look for in the registrar's panel:
+
+- **An `ALIAS` (also called `ANAME`; in Cloudflare, a `CNAME` at the apex)
+  pointing elsewhere.** The DNS standard forbids `CNAME` at the apex of a
+  zone, and many panels offer `ALIAS` as a way around that. It overrides your
+  `A` record even when that record sits right next to it and looks correct:
+  the domain hands out the other server's address, and Let's Encrypt goes
+  there to validate ownership. Leave only the `A` record pointing at Layero's
+  IP.
+- **A `CAA` record.** It lists the certificate authorities allowed to issue for
+  the domain. The previous host may have put its own CA there — and then Let's
+  Encrypt will not issue a certificate no matter how many times you press
+  "Check". Either delete the `CAA` record or add another `CAA` record with the
+  value `0 issue "letsencrypt.org"`. Layero checks `CAA` both on the domain
+  itself and on its parent zones: for `shop.my-site.com`, also on
+  `my-site.com`.
+- **Stale `A` and `AAAA` records** pointing at the old host's IPs. Nothing
+  subtle here — just delete them.
+
+To see what DNS serves right now, ask one record type at a time:
+
+```bash
+dig +short my-site.com A
+dig +short my-site.com AAAA
+dig +short my-site.com CAA
+```
+
+Asking for `ANY` is useless: public resolvers answer that question with a
+placeholder, so the zone looks empty. An `ALIAS` is not always visible either
+— some providers, Cloudflare among them, resolve it on their side and hand out
+plain `A` addresses. If the `A` record looks right but the domain still serves
+the old site, look for an `ALIAS` in the registrar's panel.
+
+Everything blocking the connection is listed with its current value in the
+yellow bar above the checklist.
+
 ## Common problems
 
 - **The registrar's parking records.** Many registrars add their own "parking"
   `A` and `AAAA` records when a domain is bought. Those must be **deleted**,
   otherwise the domain opens intermittently — some requests go to the parking
-  page.
-- **The `AAAA` record (IPv6).** Layero is IPv4-only for now. Any `AAAA` record
-  on the domain breaks certificate issuance (Let's Encrypt prefers IPv6) —
-  remove it. The wizard warns you if it sees one.
+  page. Records from a previous host go the same way — see
+  [Moving from another host](#moving-from-another-host).
+- **The `AAAA` record (IPv6).** Layero is IPv4-only for now, so we do not issue
+  a certificate while any `AAAA` record exists: Let's Encrypt prefers IPv6 and
+  would go validate the domain over it — that is, past us. Delete the `AAAA`;
+  the wizard warns you if it sees one. Sometimes there is no `AAAA` in the
+  panel yet the domain still has IPv6: those addresses come from an `ALIAS`
+  pointing elsewhere.
+- **The verification code changed.** We issue a new one every time you add the
+  domain to a project. If you removed the domain and added it again, the
+  previous `_layero-verify` `TXT` value no longer matches — while the
+  instructions look exactly the same. Copy the current code from the domain
+  card.
 - **DNS does not update instantly.** After you save at the registrar, records
   propagate in 5 minutes to an hour. Layero waits by itself — you do not need
   to keep the page open.
