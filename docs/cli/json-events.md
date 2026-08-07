@@ -206,7 +206,7 @@ CLI упаковал директорию в tar.gz.
 | `bad_format` | Аргумент не разобран | Формат — в сообщении |
 | `domain_not_found` | Домена нет у проекта | `layero domains list` |
 | `domain_rejected` | Платформа отклонила домен | Причина — в сообщении |
-| `forbidden` | Операции не хватает scope у токена | Выпустить токен с нужным scope |
+| `forbidden` | Операции не хватает scope у токена CI (`layero_ci_*`) | Выпустить токен с нужным scope |
 | `branch_without_env` | Для ветки ещё нет окружения | Сначала задеплоить эту ветку |
 | `analytics_not_connected` | Аналитика не подключена | `layero analytics connect` |
 | `no_runs` | Нет прогонов замера скорости | `layero perf check` |
