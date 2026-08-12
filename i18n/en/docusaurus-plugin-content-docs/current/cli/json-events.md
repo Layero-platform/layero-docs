@@ -127,6 +127,24 @@ project's previous type.
 Project settings (`framework_hint` / `build_cmd` / `output_dir`) were applied
 on the first deploy. No fields.
 
+### `repeated_failure_guard`
+
+Consecutive builds failed with the **same** error, so the platform stopped
+before starting another one. The event carries the error text itself: an agent
+that reached the repeat usually never read it — it arrives at the end of a long
+build log while the agent looks at the exit code.
+
+Next the CLI either asks for confirmation (interactive terminal) or exits with
+the `repeated_failure` code. It cannot continue automatically — that is exactly
+the loop this rule breaks.
+
+| field | type |
+|---|---|
+| `streak` | number — consecutive failures with this error |
+| `threshold` | number — the stop threshold |
+| `failure_stage` | string, optional — build stage |
+| `error` | string, optional — error text |
+
 ### `deploy_started`
 
 The backend accepted the job.
@@ -207,6 +225,8 @@ Do not write handling for codes that are not on this list.
 | `prebuilt_no_index` | The `--prebuilt` directory has no `index.html` | Point it at the folder containing the built `index.html` |
 | `deploy_not_started` | The build never started | Re-run `layero deploy`; if it repeats, check the project in the dashboard |
 | `deploy_failed` | The build never reached `ready` | Open the logs at the URL in `next_action` |
+| `repeated_failure` | Consecutive builds keep failing with the **same** error, so the platform refused to ship another one blindly. The error text is in `message` and in the `repeated_failure_guard` event | Read the error and fix its cause. Re-running unchanged fails the same way. If you already fixed it — `layero deploy --confirm-repeated-failure` |
+| `repeated_failure_declined` | Same, but the interactive prompt «ship anyway?» was answered no | Fix the error and run `layero deploy` again |
 | `no_deploy` / `no_deploys` | The project has no deploys yet | Run `layero deploy` first |
 | `rollback_unsupported` | The deploy has no servable artifact: either a runtime project, or static whose artifact was purged by retention | Rebuild the commit with `layero deploy` |
 | `env_not_found` | No such variable | `layero env list` |
