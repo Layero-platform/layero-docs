@@ -140,10 +140,16 @@ the loop this rule breaks.
 
 | field | type |
 |---|---|
-| `streak` | number — consecutive failures with this error |
+| `streak` | number — how many failures with this error were counted |
 | `threshold` | number — the stop threshold |
+| `scope` | `"project"` \| `"owner"` — where it was counted: in this project, or summed across all your projects |
 | `failure_stage` | string, optional — build stage |
 | `error` | string, optional — error text |
+
+`scope: "owner"` answers the first question this raises: "I only built here
+three times, where does ten come from?". The same error is also counted across
+all of the owner's projects — moving the app into a fresh project does not get
+around the rule, because the cause is not the project.
 
 ### `deploy_started`
 
