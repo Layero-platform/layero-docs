@@ -1,9 +1,4 @@
 {
   "label": "Data API",
-  "position": 4,
-  "link": {
-    "type": "generated-index",
-    "slug": "/data-api",
-    "description": "HTTP-доступ к базе проекта: таблицы, функции, вход пользователей, файлы и исходящие вызовы. Бэкенда писать не нужно."
-  }
+  "position": 4
 }
