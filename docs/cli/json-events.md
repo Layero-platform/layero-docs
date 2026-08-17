@@ -233,6 +233,9 @@ CLI упаковал директорию в tar.gz.
 | `domain_not_found` | Домена нет у проекта | `layero domains list` |
 | `domain_rejected` | Платформа отклонила домен | Причина — в сообщении |
 | `forbidden` | Операции не хватает scope у токена CI (`layero_ci_*`) | Выпустить токен с нужным scope |
+| `org_unknown` | У аккаунта несколько организаций, а команда не знает, в какой работать | Передать `--org <slug>`; список — `layero orgs list` |
+| `database_unknown` | В организации нет базы с таким именем, слагом или id | `layero db list`; завести — `layero db create <имя>` |
+| `sql_missing` | `layero db sql` вызван без запроса | Передать запрос: `-c "select 1"` |
 | `branch_without_env` | Для ветки ещё нет окружения | Сначала задеплоить эту ветку |
 | `analytics_not_connected` | Аналитика не подключена | `layero analytics connect` |
 | `no_runs` | Нет прогонов замера скорости | `layero perf check` |

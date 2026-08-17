@@ -23,7 +23,14 @@ description: Полный список команд layero — init, login, proj
 | `layero promote` | Переключить production apex на конкретный ready-деплой. |
 | `layero promote <sha>` | Вернуть апекс на конкретный деплой по `commit_sha` — рабочий способ отката, см. [Rollback](./rollback.md). |
 | `layero hooks list/create/delete` | Deploy-хуки — URL-токены, по POST на которые запускается сборка (CMS, cron, внешний CI). |
-| `layero token set <jwt>` | Задать токен вручную (для CI). |
+| `layero db list` | Базы организации: имя, слаг, включён ли Data API, объём. |
+| `layero db create <имя>` | Завести базу. Строка подключения печатается один раз. |
+| `layero db connect <база>` | Подключить проект к базе — строка подключения приедет в его переменные. |
+| `layero db sql <база> -c "SQL"` | Выполнить запрос или скрипт в базе. |
+| `layero data env` | Адрес и публичный ключ [Data API](/data-api) для фронтенда. |
+| `layero token create <имя>` | Выпустить долгоживущий токен для CI и агентов. |
+| `layero token list` / `revoke <id>` | Посмотреть и отозвать выпущенные токены. |
+| `layero token set <jwt>` | Сохранить токен, полученный иначе. |
 
 Полный список флагов конкретной команды:
 
@@ -144,3 +151,55 @@ npx layero@latest promote --yes                  # без подтвержден
 ```
 
 `layero deploy --promote` — короткий путь: «собери и сразу выкати в production», эквивалент `layero deploy ... && layero promote <last-sha>`.
+
+
+## `layero db`
+
+Базы организации из терминала — чтобы не уходить в браузер посреди работы и
+чтобы то же самое умел агент в CI.
+
+```bash
+npx layero@latest db list                            # какие базы есть
+npx layero@latest db create crm                      # завести
+npx layero@latest db connect crm                     # подключить текущий проект
+npx layero@latest db sql crm -c "select count(*) from entries"
+```
+
+Организация выбирается сама, если она одна; иначе — `--org <slug>`.
+База адресуется именем, слагом или id.
+
+:::warning[Строка подключения печатается один раз]
+Пароль базы после создания больше не покажет никто — только ротация в панели.
+Сохраните вывод `db create` сразу.
+:::
+
+`db sql` выполняет и скрипт из нескольких операторов — одной транзакцией, с
+результатом по каждому оператору. Отказ называет номер оператора, а не только
+текст ошибки Postgres.
+
+## `layero token`
+
+Вход человеком (`layero login`) требует браузера и подтверждения — в CI это
+тупик. Для CI и агентов выпускается долгоживущий токен:
+
+```bash
+npx layero@latest token create ci                    # read + deploy
+npx layero@latest token create ci --scope read       # только чтение
+npx layero@latest token list
+npx layero@latest token revoke <id>
+```
+
+Токен показывается **один раз** — в базе лежит только его хеш. Дальше он живёт
+в переменной окружения:
+
+```bash
+LAYERO_TOKEN=<токен> npx layero@latest deploy
+```
+
+По умолчанию токен умеет читать и деплоить, но не умеет необратимого: удалить
+проект, сменить адрес сайта, передать владение, выписать себе новый токен. Для
+этого нужен `--scope admin`, и запрашивается он явно.
+
+На машине без браузера (SSH, контейнер, среда агента) обычный вход тоже
+работает — `layero login --no-browser` печатает адрес и код, открыть их можно
+где угодно.
