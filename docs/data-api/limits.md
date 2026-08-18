@@ -40,8 +40,29 @@ description: Что не поддержано в Data API и какие есть
 
 ## Клиент
 
-Официального npm-пакета `@layero/data` нет — используйте
-`@supabase/supabase-js` (контракт совместим) или несколько строк на `fetch`:
+Свой пакет — `@layero/data`. Он тонкий: вызов функций базы и внешних вызовов
+через шлюз, без обёртки над таблицами.
+
+```bash
+npm i @layero/data
+```
+
+```js
+import { createClient } from "@layero/data";
+
+const db = createClient({
+  url: import.meta.env.VITE_LAYERO_DATA_URL,   // https://data.layero.ru/<база>
+  key: import.meta.env.VITE_LAYERO_DATA_KEY,   // pk_live_…
+});
+
+const menu = await db.rpc("menu");
+```
+
+⚠️ Версия 0.x: HTTP-контракт ещё меняется, пин версии в проде обязателен.
+
+Для таблиц, фильтров и входа пользователей берите `@supabase/supabase-js` —
+контракт совместим, и он умеет всё, чего `@layero/data` пока не умеет.
+Обойтись можно и без пакетов, запрос уместится в несколько строк:
 
 ```js
 const call = (fn, args) =>
