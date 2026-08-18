@@ -89,16 +89,29 @@ jobs:
       - name: Deploy docs
         env:
           CDN_RESOURCE_ID: bc8r7guaub3kynogbziz
+          # 🚨 Профиль передаётся ЯВНО: раннеры всех репозиториев делят $HOME,
+          # и активный профиль в момент заливки мог поставить сосед. 18.08 так
+          # и вышло — каждый PutObject ответил 403, а выкатка отчиталась
+          # успехом, не выложив ни одного файла.
+          YC_PROFILE: ci-docs
+          BUILD_ID: ${{ github.sha }}
         run: bash deploy.sh
 
       - name: Verify
+        env:
+          BUILD_ID: ${{ github.sha }}
         run: |
+          # 🚨 Проверяем ИДЕНТИФИКАТОР СБОРКИ, а не наличие сайта. Прежний шаг
+          # искал строку «Layero» на главной — она там и при полностью
+          # провалившейся заливке, поэтому зелёный ничего не значил.
+          want="${BUILD_ID}"
           for i in $(seq 1 36); do
-            if curl -sf https://docs.layero.ru/ | grep -q "Layero"; then
-              echo "OK: docs.layero.ru returns content"
+            got=$(curl -sf "https://docs.layero.ru/build-id.txt?cb=$i" | tr -d '[:space:]' || true)
+            if [ -n "$got" ] && [ "${want#"$got"}" != "$want" ]; then
+              echo "OK: docs.layero.ru отдаёт эту сборку ($got)"
               exit 0
             fi
             sleep 5
           done
-          echo "Timed out waiting for CDN propagation" >&2
+          echo "На docs.layero.ru не эта сборка: ждали ${want:0:8}, отдаётся «${got:-—}»" >&2
           exit 1

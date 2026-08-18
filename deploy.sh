@@ -6,9 +6,29 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 BUCKET="${BUCKET:-layero-docs}"
+
+# 🚨 ПРОФИЛЬ `yc` ПЕРЕДАЁТСЯ ЯВНО, и это не украшение. Раннеры всех
+# репозиториев живут на одной VM под пользователем `layero`, то есть делят
+# `$HOME` и список профилей: активный профиль в момент заливки мог поставить
+# сосед. Workflow заводит отдельный `ci-docs` ровно поэтому — а скрипт до
+# 18.08 звал `yc` без `--profile` и уходил под чужой личностью.
+#
+# Цена промаха измерена: 18.08 весь накопленный backlog пошёл разом на один
+# узел, каждый PutObject ответил 403 AccessDenied, и выкатка отчиталась
+# УСПЕХОМ, не выложив ни одного файла.
+# ⚠️ `if`, а не `&&`: под `set -e` ложное условие последней команды роняет
+# скрипт целиком — то есть локальный запуск без YC_PROFILE падал бы на ровном
+# месте. И раскрытие через `${a[@]+…}`: на bash 3.2 пустой массив под `set -u`
+# это «unbound variable».
+YC_PROFILE="${YC_PROFILE:-}"
+yc_args=()
+if [[ -n "$YC_PROFILE" ]]; then
+  yc_args=(--profile "$YC_PROFILE")
+fi
+yc_() { yc ${yc_args[@]+"${yc_args[@]}"} "$@"; }
 BUILD_DIR="${BUILD_DIR:-build}"
 
-CDN_RESOURCE_ID="${CDN_RESOURCE_ID:-$(yc cdn resource list --format json 2>/dev/null \
+CDN_RESOURCE_ID="${CDN_RESOURCE_ID:-$(yc_ cdn resource list --format json 2>/dev/null \
   | python3 -c "import json,sys; print(next((r['id'] for r in json.load(sys.stdin) if r.get('cname')=='docs.layero.ru'), ''))" 2>/dev/null || true)}"
 
 if [[ ! -d "$BUILD_DIR" ]]; then
@@ -51,22 +71,47 @@ cache_control() {
 echo "==> Generating llms.txt (ru + en)"
 python3 scripts/gen-llms.py --build "$BUILD_DIR"
 
-echo "==> Uploading $BUILD_DIR to s3://$BUCKET/"
+# Идентификатор сборки уезжает вместе с ней: по нему проверка ПОСЛЕ выкатки
+# отличает «сайт жив» от «выложено то, что мы собрали». Без него шаг Verify
+# зеленел на прежнем содержимом.
+BUILD_ID="${BUILD_ID:-$(git rev-parse --short HEAD 2>/dev/null || date -u +%Y%m%dT%H%M%SZ)}"
+printf '%s\n' "$BUILD_ID" > "$BUILD_DIR/build-id.txt"
+
+echo "==> Uploading $BUILD_DIR to s3://$BUCKET/ (профиль: ${YC_PROFILE:-активный})"
 cd "$BUILD_DIR"
-find . -type f | while read -r path; do
+failed=0
+uploaded=0
+# 🚨 Без конвейера: `find | while` уводит тело в подоболочку, и счётчик отказов
+# оттуда не возвращается — ровно поэтому 403 на каждом файле оставался
+# незамеченным, а выкатка зеленела.
+while IFS= read -r -d '' path; do
   key="${path#./}"
   ct=$(content_type "$key")
   cc=$(cache_control "$key")
-  yc storage s3 cp "$key" "s3://$BUCKET/$key" \
-    --content-type "$ct" \
-    --cache-control "$cc" >/dev/null
-  echo "  $key  ($ct)"
-done
+  if yc_ storage s3 cp "$key" "s3://$BUCKET/$key" \
+       --content-type "$ct" --cache-control "$cc" >/dev/null; then
+    uploaded=$((uploaded + 1))
+  else
+    failed=$((failed + 1))
+    echo "  ✘ $key" >&2
+  fi
+done < <(find . -type f -print0)
 cd - >/dev/null
+
+echo "==> Выложено файлов: $uploaded, отказов: $failed"
+if (( failed > 0 )); then
+  echo "✘ выкатка НЕ состоялась: $failed файлов не залилось (см. выше)." >&2
+  echo "  Частая причина — чужой профиль yc: передайте YC_PROFILE." >&2
+  exit 1
+fi
+if (( uploaded == 0 )); then
+  echo "✘ не залито ни одного файла — сборки нет?" >&2
+  exit 1
+fi
 
 if [[ -n "$CDN_RESOURCE_ID" ]]; then
   echo "==> Purging CDN cache (resource $CDN_RESOURCE_ID)"
-  yc cdn cache purge --resource-id "$CDN_RESOURCE_ID" --path '/*' >/dev/null || true
+  yc_ cdn cache purge --resource-id "$CDN_RESOURCE_ID" --path '/*' >/dev/null || true
 else
   echo "==> CDN resource not found yet — skipping cache purge (first deploy?)"
 fi
