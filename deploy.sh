@@ -88,13 +88,21 @@ while IFS= read -r -d '' path; do
   key="${path#./}"
   ct=$(content_type "$key")
   cc=$(cache_control "$key")
-  if yc_ storage s3 cp "$key" "s3://$BUCKET/$key" \
-       --content-type "$ct" --cache-control "$cc" >/dev/null; then
-    uploaded=$((uploaded + 1))
-  else
-    failed=$((failed + 1))
-    echo "  ✘ $key" >&2
-  fi
+  # 🚨 КОД ВОЗВРАТА `yc storage s3 cp` ВРАТЬ УМЕЕТ. Проверено мутацией
+  # 18.08: заливка в несуществующий бакет печатает «upload failed … NoSuchBucket»
+  # и выходит с НУЛЁМ. То есть проверка «if yc …; then» ловит ровно ничего —
+  # ровно поэтому 403 на каждом файле и оставался незамеченным. Судим по
+  # выводу, а не по коду.
+  out=$(yc_ storage s3 cp "$key" "s3://$BUCKET/$key" \
+          --content-type "$ct" --cache-control "$cc" 2>&1) || true
+  # ⚠️ Судим по ПОЛОЖИТЕЛЬНОМУ признаку: успешная заливка печатает
+  # «upload: <файл> to s3://…». Чёрный список слов («error», «denied») здесь
+  # не годится — путь `errors/index.html` попал бы в отказы, будучи залитым.
+  case "$out" in
+    upload:*) uploaded=$((uploaded + 1)) ;;
+    *)  failed=$((failed + 1))
+        echo "  ✘ $key: $(printf '%s' "$out" | head -1)" >&2 ;;
+  esac
 done < <(find . -type f -print0)
 cd - >/dev/null
 
@@ -109,6 +117,18 @@ if (( uploaded == 0 )); then
   exit 1
 fi
 
+# Доказательство, не обещание: читаем обратно то, что только что положили.
+# Любая проверка выше опирается на поведение чужой утилиты; эта — на факт.
+echo "==> Сверяю выложенное: build-id.txt"
+probe=$(mktemp)
+yc_ storage s3 cp "s3://$BUCKET/build-id.txt" "$probe" >/dev/null 2>&1 || true
+if [[ "$(tr -d '[:space:]' < "$probe")" != "$BUILD_ID" ]]; then
+  echo "✘ в бакете НЕ эта сборка: ждали $BUILD_ID, лежит «$(tr -d '[:space:]' < "$probe")»" >&2
+  rm -f "$probe"
+  exit 1
+fi
+rm -f "$probe"
+
 if [[ -n "$CDN_RESOURCE_ID" ]]; then
   echo "==> Purging CDN cache (resource $CDN_RESOURCE_ID)"
   yc_ cdn cache purge --resource-id "$CDN_RESOURCE_ID" --path '/*' >/dev/null || true
@@ -122,9 +142,13 @@ fi
 # Ошибки игнорируем — внешний сервис не должен ронять деплой.
 INDEXNOW_KEY="305edf9b810aa739d9d8f7f022d960b2"
 echo "==> Pinging IndexNow (Yandex + Bing)"
-python3 - <<PY || true
+# 🚨 Разделитель В КАВЫЧКАХ, а ключ — переменной окружения. Без кавычек
+# оболочка разбирает ТЕЛО скрипта Python: обратные кавычки в комментарии
+# (`lat > cyr`) исполнялись как команда, печатали «lat: command not found» и
+# оставляли в корне репозитория пустой файл `cyr` — на каждой выкатке.
+INDEXNOW_KEY="$INDEXNOW_KEY" BUILD_DIR="$BUILD_DIR" python3 - <<'PY' || true
 import json, os, re, urllib.parse, urllib.request, urllib.error
-key  = "${INDEXNOW_KEY}"
+key  = os.environ["INDEXNOW_KEY"]
 host = "docs.layero.ru"
 # Docusaurus с i18n кладёт ОТДЕЛЬНЫЙ sitemap в каждую локаль: build/sitemap.xml
 # (ru) и build/en/sitemap.xml. Долгое время отправлялся только первый, и
@@ -138,7 +162,7 @@ host = "docs.layero.ru"
 # английские адреса фильтруются по фактическому языку СОБРАННОГО html.
 # Проверка самонастраивающаяся: по мере перевода страницы начинают попадать
 # в пуш сами, без правки этого скрипта.
-BUILD = "${BUILD_DIR}"
+BUILD = os.environ["BUILD_DIR"]
 
 def is_english(url: str) -> bool:
     # Адрес из карты сайта процентно-закодирован, а файл на диске лежит с
