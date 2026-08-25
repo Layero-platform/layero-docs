@@ -56,10 +56,10 @@ Through [`layero.json`](../deploys/layero-json) in the repository root:
 
 ```json
 {
-  "$schema": "https://layero.ru/schema/layero-v1.json",
+  "$schema": "https://layero.ru/schema/layero-v2.json",
   "framework": "vite",
-  "build": "pnpm build:prod",
-  "output": "bundle"
+  "buildCommand": "pnpm build:prod",
+  "outputDirectory": "bundle"
 }
 ```
 

@@ -1,129 +1,197 @@
 ---
 sidebar_position: 2
 title: layero.json — configuration in the repository
-description: Override the framework, the build command and the output folder through a file in the repository. Versioned in git, readable by agents (Claude, Cursor), and it beats any dashboard setting.
+description: A file in the repository sets the framework, the install and build commands, the output folder and the Node version. Versioned in git, readable by agents (Claude, Cursor), stronger than any dashboard setting.
 ---
 
 # `layero.json` — configuration in the repository
 
-`layero.json` is an optional JSON file at the root of the repository (or in a
-subfolder, for a monorepo). It overrides Layero's auto-detection for **this**
-repository and **this** deploy. It is useful when:
+An optional file at the root of the repository. It sets what Layero would
+otherwise detect on its own, and it lives next to your code — so it travels
+with it and can differ per branch.
 
-- an AI agent (Claude Code, Cursor) sets up the deploy for you — it puts the
-  right values into this file in a single PR;
-- the configuration has to differ per branch (staging builds differently from
-  production);
-- the team wants to see in code review who changed the build settings and why.
+There is one rule:
+
+> Whatever you set in the file, Layero must apply. Whatever you leave out,
+> Layero decides for itself.
+
+The file is useful when:
+
+- an AI agent sets up the deploy for you — it puts the right values in with a
+  single PR;
+- the configuration has to differ per branch: staging builds differently from
+  production;
+- the team wants to see in code review who changed the build and why.
 
 ## A minimal example
 
 ```json title="layero.json"
 {
-  "$schema": "https://layero.ru/schema/layero-v1.json",
-  "framework": "nextjs",
-  "build": "npm run build",
-  "output": "out",
-  "node": "20"
+  "$schema": "https://layero.ru/schema/layero-v2.json",
+  "framework": "vite",
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "nodeVersion": "22"
 }
 ```
 
-Every field is optional. You can include only what you need to override:
+Every field is optional, `$schema` included. An empty file is valid too:
 
-```json title="layero.json — output only"
+```json title="layero.json"
+{}
+```
+
+It means "decide everything yourself" and breaks nothing.
+
+You can set only what you need to change:
+
+```json title="layero.json — output folder only"
 {
-  "$schema": "https://layero.ru/schema/layero-v1.json",
-  "output": "bundle"
+  "$schema": "https://layero.ru/schema/layero-v2.json",
+  "outputDirectory": "bundle"
 }
 ```
 
-Adding `$schema` gives you autocompletion and error highlighting in any IDE that
-supports JSON Schema (VS Code, JetBrains, Neovim).
+`$schema` enables autocomplete and error highlighting in any editor with JSON
+Schema support — VS Code, JetBrains, Neovim. The field does not affect the
+build.
 
-## Fields
+## What you can set
 
 ### `framework`
 
-The framework name. It overrides Layero's auto-detection. The accepted values
-and aliases are in the
+Framework name. Wins over auto-detection. Accepted values are in the
 [list of supported frameworks](../getting-started/frameworks).
 
-### `build`
+### `installCommand`
 
-The shell command Layero runs to build. It overrides the framework's default.
-For example: `"pnpm build:prod"`.
+The command that installs dependencies. By default Layero uses your package
+manager's reproducible-install command: `npm ci`,
+`yarn install --frozen-lockfile`, `pnpm install --frozen-lockfile`.
 
-### `install`
+### `buildCommand`
 
-The shell command for installing dependencies. The default is your package
-manager's reproducible command (`npm ci`, `yarn install --frozen-lockfile`,
-`pnpm install --frozen-lockfile`).
+The build command. For example, `pnpm build:prod`.
 
-### `output`
+### `outputDirectory`
 
-The path to the folder with the built static files, relative to the project
-root. Layero uploads its contents to storage and serves them from the platform
-edge. Examples: `dist`, `build`, `out`, `.next`, `dist/app/browser`.
+The folder holding the built site, relative to the application root. Layero
+serves its contents at the project's address. For example: `dist`, `build`,
+`out`, `dist/my-app/browser`.
 
-### `node`
+### `nodeVersion`
 
-The Node version to build with. It overrides `.nvmrc` and `engines.node` from
-`package.json`. It accepts a major (`"20"`), a full version (`"20.11.1"`) or an
-alias (`"lts"`).
+The Node.js major to build on. Accepts `"22"`, `"22.14.0"` or `"lts"`.
 
-### `runtime` (reserved)
+### `startCommand`
 
-For SSR and runtime apps only (`ssr_node`, `streamlit`, `gradio`, `flask`). Most
-static projects do not need this field.
+The start command for apps Layero runs in a container rather than serving as
+files.
 
-### `env`, `ignore` (reserved)
+## Short names keep working
 
-To be supported in later versions of the schema.
+Four fields have a short form, and it is **not deprecated**: files written with
+short names will keep working.
 
-## The override order
+| main name | short |
+|---|---|
+| `installCommand` | `install` |
+| `buildCommand` | `build` |
+| `outputDirectory` | `output` |
+| `nodeVersion` | `node` |
+| `startCommand` | `start` |
 
-On a deploy Layero resolves each field top to bottom, and the first one set
-wins:
+If both names for one field end up in the file, the main one is applied and
+Layero mentions the other in the build log — staying quiet would be worse: you
+would be editing the wrong line.
+
+## What beats what
+
+Per field, independently:
 
 ```
-1. layero.json in the repository    (highest priority)
-2. The project's dashboard settings
-3. Auto-detection from repository signals
-4. The framework default            (lowest priority)
+layero.json  →  project settings  →  found in the repository  →  framework default
 ```
 
-The deploy log shows where every value came from:
+The first one set wins. For example, with this `package.json`:
+
+```json
+{ "scripts": { "build": "vite build" } }
+```
+
+and this `layero.json`:
+
+```json
+{ "buildCommand": "npm run build:production" }
+```
+
+the build runs `npm run build:production`.
+
+`nodeVersion` has a slightly longer order, because the repository itself can
+declare a version:
+
+```
+layero.json → project settings → .nvmrc → .node-version → engines.node → Layero default
+```
+
+An overridden pin is named in the build log, never applied silently.
+
+The log shows where every value came from:
 
 ```
 [config] framework=nextjs (from layero.json)
-[config] node=20.11.1 (from .nvmrc)
+[config] node=22.18.0 (source: layero.json); layero.json overrode .nvmrc=20
 [config] build=`npm run build` (from layero.json)
 [config] output=out (default for nextjs)
 ```
 
-## Where the file belongs
+## A field from the file is not editable in the dashboard
 
-- **An ordinary project:** at the repository root.
-- **A monorepo:** in the same subfolder the project's `root_directory` points
-  at. If the dashboard says `apps/web`, Layero reads `apps/web/layero.json`.
+When a field is declared in `layero.json`, the dashboard shows its value and a
+badge with the file name — instead of an edit button. Clicking the badge opens
+the file in the repository.
 
-## What the dashboard shows
+This is deliberate. An open field is a promise that your edit will apply, and
+an edit in the dashboard would be undone by the very next build: the file is
+stronger. Change such a value where it is set — in the repository.
 
-When `layero.json` is found and valid, Layero shows a blue banner in the setup
-wizard and in the deploy log:
+A locked field is left out of saving too: the dashboard will not write into the
+project settings a value that would lose to the file anyway.
 
-> ⓘ Found `layero.json` in the repository. The fields below were filled in from
-> that file.
+## Where the file goes
 
-If the file has errors — invalid JSON, unknown fields, empty values — an amber
-banner appears with the list of complaints. The deploy does not fail: invalid
-fields are ignored and the correct ones are applied.
+- **A regular project** — at the repository root.
+- **A monorepo** — in the same subfolder the project settings name as the
+  application folder. Set `apps/web`, and Layero reads `apps/web/layero.json`.
 
-## The schema URL
+## An error in the file never fails the build
+
+Layero never refuses to build because of `layero.json`. Anything it could not
+read becomes a note in the build log and in the dashboard:
+
+| what is in the file | what Layero does |
+|---|---|
+| invalid JSON | says so and builds as if the file were absent |
+| unknown field name | says so, suggests the closest known one, skips the field |
+| empty value | says so, skips the field |
+| a `framework` not present in the repository | warns and applies it anyway |
+
+Notes are shown in the setup wizard and on the deploy page, under the contents
+of the file itself.
+
+## Schema URL
+
+```
+https://layero.ru/schema/layero-v2.json
+```
+
+The previous address keeps working and will not be removed:
 
 ```
 https://layero.ru/schema/layero-v1.json
 ```
 
-The URL is stable. Later versions of the schema will be named `v2`, `v3`, and so
-on; the old ones keep working.
+If your repositories point at `v1`, there is no need to change them — the file
+is read the same way. New projects are better off with the new address: it
+knows the main field names and does not flag as an error what Layero accepts.
