@@ -78,7 +78,11 @@ The build command. For example, `pnpm build:prod`.
 
 The folder holding the built site, relative to the application root. Layero
 serves its contents at the project's address. For example: `dist`, `build`,
-`out`, `dist/my-app/browser`.
+`out`, `dist/my-app/browser`. It is a folder, not a file.
+
+The field applies only to sites Layero serves as files. Apps Layero runs in a
+container have no output folder: the container answers requests itself. Set
+[`startCommand`](#startcommand) for such an app.
 
 ### `nodeVersion`
 
@@ -88,6 +92,12 @@ The Node.js major to build on. Accepts `"22"`, `"22.14.0"` or `"lts"`.
 
 The start command for apps Layero runs in a container rather than serving as
 files.
+
+The app's working directory in the container is `/app`: your code lands there,
+and Layero installs dependencies and builds the project there. Paths in the
+command are relative to it: `node server.js` runs `/app/server.js`. With the
+field unset Layero derives the command itself: for a Node app that is usually
+`npm start` from `package.json`.
 
 ## Short names keep working
 
