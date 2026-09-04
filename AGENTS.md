@@ -97,5 +97,5 @@ python3 ../mcp/check-tool-names.py           # имена инструменто
 
 - `../core/docs/TEXT-CHECKS.md` — **обязательно** перед выкаткой текстов
 - `../mcp/SOUL.md` — как Layero говорит; при правке тона
-- `../core/ARCHITECTURE.md` — при описании устройства платформы
+- `../core/ARCH.md` — при описании устройства платформы
 - `sidebars.ts` — при добавлении страницы
