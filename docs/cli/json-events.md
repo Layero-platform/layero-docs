@@ -235,7 +235,8 @@ CLI упаковал директорию в tar.gz.
 | `forbidden` | Операции не хватает scope у токена CI (`layero_ci_*`) | Выпустить токен с нужным scope |
 | `org_unknown` | У аккаунта несколько организаций, а команда не знает, в какой работать | Передать `--org <slug>`; список — `layero orgs list` |
 | `database_unknown` | В организации нет базы с таким именем, слагом или id | `layero db list`; завести — `layero db create <имя>` |
-| `sql_missing` | `layero db sql` вызван без запроса | Передать запрос: `-c "select 1"` |
+| `sql_missing` | `layero db sql` вызван без запроса | Передать запрос следом за именем базы: `layero db sql моя-база "select 1"` |
+| `gb_not_supported` | `layero db create --gb` — объём базы так не выбирается. Флаг остался ради этого отказа: раньше он молча ничего не делал | У базы из тарифа объём задан тарифом, у выделенного инстанса — диском ступени |
 | `branch_without_env` | Для ветки ещё нет окружения | Сначала задеплоить эту ветку |
 | `analytics_not_connected` | Аналитика не подключена | `layero analytics connect` |
 | `no_runs` | Нет прогонов замера скорости | `layero perf check` |
