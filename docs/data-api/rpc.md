@@ -6,6 +6,13 @@ description: Вызов функций базы по HTTP. Схема api — е
 
 # Функции и RPC
 
+:::warning[Раздел в тестировании]
+
+Data API открыт пока не всем — идёт закрытый пилот. Как получить доступ
+и чего ждать от страниц, написано в [«Что такое Data API»](./index.md).
+
+:::
+
 ```
 POST     https://data.layero.ru/<база>/rest/v1/rpc/<функция>     форма PostgREST
 GET      https://data.layero.ru/<база>/rest/v1/rpc/<функция>     только STABLE/IMMUTABLE
