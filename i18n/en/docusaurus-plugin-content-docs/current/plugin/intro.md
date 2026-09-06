@@ -69,7 +69,7 @@ not only the first step.
 ## SOUL — the plugin's philosophy
 
 The plugin follows a fixed set of behavioural rules, written down in
-[SOUL.md](https://github.com/LayeroInfra/layero-claude/blob/main/SOUL.md):
+[SOUL.md](https://github.com/LayeroInfra/layero-agents/blob/main/SOUL.md):
 
 - **Beautiful landings should take zero effort.** The user thinks about what;
   the plugin thinks about everything else.

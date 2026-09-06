@@ -103,5 +103,5 @@ say, "a landing page for a yoga retreat" — it:
 4. Says what it did, in one sentence
 
 More on this in the
-["When the user's case doesn't fit"](https://github.com/LayeroInfra/layero-claude/blob/main/SOUL.md#when-the-users-case-doesnt-fit)
+["When the user's case doesn't fit"](https://github.com/LayeroInfra/layero-agents/blob/main/SOUL.md#when-the-users-case-doesnt-fit)
 section of SOUL.md.

@@ -41,7 +41,7 @@ Claude Code has no URL protocol, so installing takes two slash commands inside
 the IDE:
 
 ```
-/plugin marketplace add LayeroInfra/layero-claude
+/plugin marketplace add LayeroInfra/layero-agents
 /plugin install layero@layero-claude
 ```
 
@@ -50,7 +50,7 @@ After that, `@layero` is available in the chat.
 The same thing from a terminal, if you prefer:
 
 ```bash
-claude plugin marketplace add LayeroInfra/layero-claude
+claude plugin marketplace add LayeroInfra/layero-agents
 claude plugin install layero@layero-claude
 ```
 

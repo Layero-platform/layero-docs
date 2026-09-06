@@ -56,7 +56,7 @@ description: MCP-плагин для Cursor, Claude Code и Codex, которы�
 
 ## SOUL — философия плагина
 
-Плагин действует по фиксированным правилам поведения, описанным в [SOUL.md](https://github.com/LayeroInfra/layero-claude/blob/main/SOUL.md):
+Плагин действует по фиксированным правилам поведения, описанным в [SOUL.md](https://github.com/LayeroInfra/layero-agents/blob/main/SOUL.md):
 
 - **Beautiful landings should take zero effort.** Пользователь думает о чём, плагин — о всём остальном.
 - **Asking is a tax. Acting is a gift.** Каждый вопрос юзеру стоит ему внимания. Если можно решить самостоятельно — решаем.

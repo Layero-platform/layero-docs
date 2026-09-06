@@ -38,7 +38,7 @@ Cursor парсит base64, валидирует и применяет.
 В Claude Code нет URL-протокола, поэтому установка идёт через две slash-команды внутри IDE:
 
 ```
-/plugin marketplace add LayeroInfra/layero-claude
+/plugin marketplace add LayeroInfra/layero-agents
 /plugin install layero@layero-claude
 ```
 
