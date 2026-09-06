@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 title: Подключение к базе
 description: Строка подключения к базе Layero, режимы сетевого доступа и проверка сертификата сервера (verify-full) для psql, asyncpg, node-pg, Prisma и Drizzle.
 ---
